@@ -1,0 +1,6 @@
+{
+  "name": "Campus Runner",
+  "description": "Campus-only food delivery platform for university students, campus food stalls, student runners, and dispatch admins.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
