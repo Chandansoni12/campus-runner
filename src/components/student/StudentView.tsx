@@ -22,28 +22,23 @@ import {
   Minus,
   Trash2,
   Leaf,
-  ShieldAlert,
+  AlertCircle,
   ArrowRight,
-  Info,
   CheckCircle2,
-  KeyRound,
   Utensils,
   History,
-  AlertCircle,
   X,
-  ExternalLink,
   ChevronDown,
   Phone,
   Bike,
   Flame,
-  Coffee,
-  Compass,
-  ArrowLeft,
+  LogOut,
+  Bell,
+  SlidersHorizontal,
+  Heart,
   ChevronRight,
   ShieldCheck,
-  CookingPot,
-  Sparkle,
-  LogOut,
+  Package,
 } from 'lucide-react';
 
 export const StudentView: React.FC = () => {
@@ -69,74 +64,50 @@ export const StudentView: React.FC = () => {
   } = useAppStore();
 
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'browse' | 'cart' | 'track' | 'history'>('browse');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [pureVegOnlyFilter, setPureVegOnlyFilter] = useState(false);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [browsePage, setBrowsePage] = useState(0); // 0: Home, 1: Popular Dishes, 2+: Stalls
-  const [cartPage, setCartPage] = useState(0); // 0: Items, 1: Bill & Checkout
-  const [historyPage, setHistoryPage] = useState(0);
-  const [showUpiModal, setShowUpiModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orderError, setOrderError] = useState<string | null>(null);
-  const [cookingInstruction, setCookingInstruction] = useState('');
+  const [activeTab, setActiveTab] = useState<'browse' | 'cart' | 'track' | 'history'>('browse');
 
-  // Profile Form State
+  // Favorites state
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  // Profile modal state
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({
-    name: currentUser.name || 'Aarav Sharma',
-    phone: currentUser.phone || '9876543210',
-    hostelBlock: currentUser.hostelBlock || 'Aryabhatta Hall (Block A)',
+    name: currentUser.name || '',
+    phone: currentUser.phone || '',
+    hostelBlock: currentUser.hostelBlock || 'Aryabhatta Hall',
     roomNumber: currentUser.roomNumber || 'A-204',
   });
 
-  // Identify student's hostel
+  // Checkout submission states
+  const [showUpiModal, setShowUpiModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Sync profile form when currentUser changes
+  useEffect(() => {
+    setProfileForm({
+      name: currentUser.name || '',
+      phone: currentUser.phone || '',
+      hostelBlock: currentUser.hostelBlock || 'Aryabhatta Hall',
+      roomNumber: currentUser.roomNumber || 'A-204',
+    });
+  }, [currentUser]);
+
+  const toggleFavorite = (itemId: string) => {
+    setFavorites((prev) =>
+      prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]
+    );
+  };
+
   const studentHostel = hostels.find(
     (h) => h.name === currentUser.hostelBlock || h.code === currentUser.hostelBlock
   );
-  const isHostelStrictVeg = studentHostel?.vegOnlyEnforced ?? false;
+  const isHostelStrictVeg = studentHostel?.vegOnlyEnforced || false;
 
-  // Selected vendor
-  const activeVendor = vendors.find((v) => v.id === selectedVendorId) || vendors[0];
-
-  // Cart financial summary
-  const totalCartQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = cart.reduce((sum, item) => sum + item.menuItem.price * item.quantity, 0);
-  const cartVendor = cart.length > 0 ? vendors.find((v) => v.id === cart[0].vendorId) : null;
-  const deliveryFee = cartVendor
-    ? calculateDeliveryFee(currentUser.hostelBlock || 'Block A', cartVendor.location)
-    : 15;
-  const grandTotal = subtotal + deliveryFee;
-
-  // Tracked order (either active order or newest placed by this student)
-  const studentOrders = orders.filter((o) => o.studentId === currentUser.id);
-  const trackedOrder =
-    studentOrders.find((o) => o.id === activeStudentOrderId) || studentOrders[0];
-
-  // Dedicated real-time order tracking store with Supabase subscription
-  const {
-    trackOrder,
-    currentStatus,
-    connectionStatus,
-    statusHistory,
-    syncWithOrder,
-  } = useOrderTrackingStore();
-
-  useEffect(() => {
-    if (trackedOrder?.id) {
-      trackOrder(trackedOrder.id, trackedOrder);
-    }
-  }, [trackedOrder?.id]);
-
-  useEffect(() => {
-    if (trackedOrder) {
-      syncWithOrder(trackedOrder);
-    }
-  }, [trackedOrder?.status, trackedOrder?.runnerName, trackedOrder?.otpCode]);
-
-  // Check ordering availability
+  const isHostelPaused = settings.pausedHostelBlocks.includes(currentUser.hostelBlock);
   const orderingStatus = isOrderingOpen(selectedSlot, new Date(), settings.cutoffTime);
-  const isHostelPaused = settings.pausedHostelBlocks.includes(currentUser.hostelBlock || '');
   const isBlocked = settings.globalOrderingPaused || isHostelPaused || !orderingStatus.isOpen;
 
   const handleProfileSave = (e: React.FormEvent) => {
@@ -145,154 +116,182 @@ export const StudentView: React.FC = () => {
     setIsEditingProfile(false);
   };
 
-  const handleStartCheckout = () => {
-    setOrderError(null);
-    if (cart.length === 0) return;
-    if (isBlocked) {
-      setOrderError(
-        settings.globalOrderingPaused
-          ? 'Ordering is paused campus-wide by administration.'
-          : isHostelPaused
-          ? `Deliveries to ${currentUser.hostelBlock} are temporarily suspended.`
-          : orderingStatus.reason || 'Ordering is closed.'
-      );
-      return;
-    }
-    setShowUpiModal(true);
-  };
-
-  const handleConfirmUpi = () => {
+  const handleConfirmUpi = (enteredUpiId: string) => {
     setIsSubmitting(true);
     setTimeout(() => {
       const res = createOrder({
         slot: selectedSlot,
-        hostelBlock: currentUser.hostelBlock || 'Aryabhatta Hall (Block A)',
-        roomNumber: currentUser.roomNumber || 'A-204',
+        hostelBlock: profileForm.hostelBlock,
+        roomNumber: profileForm.roomNumber,
       });
+
       setIsSubmitting(false);
       setShowUpiModal(false);
+
       if (res.success && res.orderId) {
-        setActiveStudentOrderId(res.orderId);
+        useOrderTrackingStore.getState().initOrderTracking(res.orderId);
         setActiveTab('track');
-      } else {
-        setOrderError(res.error || 'Failed to place order.');
       }
-    }, 600);
+    }, 1200);
   };
 
-  // Swiggy/Zomato Quick Category Chips
+  const activeVendor = vendors.find((v) => v.id === cart[0]?.vendorId) || vendors[0];
+  const subtotal = cart.reduce((sum, item) => sum + item.menuItem.price * item.quantity, 0);
+  const deliveryFee = calculateDeliveryFee(currentUser.hostelBlock, activeVendor?.location || 'Stall A');
+  const grandTotal = subtotal + (cart.length > 0 ? deliveryFee : 0);
+  const totalCartQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const studentOrders = orders.filter((o) => o.studentId === currentUser.id);
+  const trackedOrder = orders.find((o) => o.id === activeStudentOrderId) || studentOrders[0];
+
   const categoryChips = [
-    { id: 'all', label: 'All Dishes', icon: '🍽️' },
-    { id: 'meal', label: 'Thali & Meals', icon: '🍛' },
-    { id: 'breakfast', label: 'Dosa & Tiffin', icon: '🥞' },
-    { id: 'snacks', label: 'Maggi & Rolls', icon: '🍜' },
-    { id: 'beverage', label: 'Chai & Shakes', icon: '🧋' },
-    { id: 'bakery', label: 'Puffs & Cafe', icon: '🥐' },
+    { id: 'all', label: 'All', icon: '✨' },
+    { id: 'snacks', label: 'Burgers & Maggi', icon: '🍔' },
+    { id: 'meals', label: 'Pizza & Thali', icon: '🍕' },
+    { id: 'beverages', label: 'Cold Coffee & Chai', icon: '☕' },
+    { id: 'desserts', label: 'Cookies & Desserts', icon: '🍪' },
   ];
 
-  // Filtered stalls
-  const filteredVendors = vendors.filter((vendor) => {
+  const allMenuItems = vendors.flatMap((v) =>
+    v.menuItems.map((item) => ({
+      ...item,
+      vendorName: v.name,
+      vendorLocation: v.location,
+    }))
+  );
+
+  const filteredDishes = allMenuItems.filter((item) => {
+    if (isHostelStrictVeg && !item.isVeg) return false;
+    if (pureVegOnlyFilter && !item.isVeg) return false;
+    if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      const matchName = vendor.name.toLowerCase().includes(q);
-      const matchCuisine = vendor.cuisineTag.toLowerCase().includes(q);
-      const matchItems = vendor.menuItems.some((i) => i.name.toLowerCase().includes(q));
-      if (!matchName && !matchCuisine && !matchItems) return false;
+      if (!item.name.toLowerCase().includes(q) && !item.vendorName.toLowerCase().includes(q)) return false;
     }
     return true;
   });
 
-  // Calculate stall pagination
-  const STALLS_PER_PAGE = 2;
-  const maxStallPages = Math.ceil(filteredVendors.length / STALLS_PER_PAGE);
-  const totalBrowsePages = 2 + maxStallPages; // 0: Home, 1: Popular, 2+: Stalls
-
   return (
-    <div className="w-full h-full bg-[#FAFAFA] text-[#1A1A1A] flex flex-col relative overflow-hidden">
-      {/* 1. TOP HEADER */}
-      <div className="sticky top-0 z-30 clean-header">
-        {/* Top Row: Search / Location / Cart */}
-        <div className="flex items-center justify-between gap-3">
-          {/* Search Icon */}
-          <button
-            onClick={() => document.getElementById('mobile-search-input')?.focus()}
-            className="w-10 h-10 rounded-full border border-[#E5E5E5] flex items-center justify-center text-[#6B6B6B] hover:bg-[#F2F2F2] transition-colors"
-          >
-            <Search className="w-4.5 h-4.5" />
-          </button>
-
-          {/* Location Picker */}
-          <button
-            id="mobile-address-switcher-btn"
+    <div className="w-full h-full bg-[#0D0D0D] text-white flex flex-col relative overflow-hidden font-sans">
+      
+      {/* 1. DELIVO TOP HEADER */}
+      <div className="sticky top-0 z-30 bg-[#000000]/90 backdrop-blur-md px-5 pt-4 pb-3 border-b border-white/10">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          
+          {/* Profile Section */}
+          <div
             onClick={() => setIsEditingProfile(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#E5E5E5] hover:bg-[#F2F2F2] transition-colors group"
+            className="flex items-center gap-2.5 cursor-pointer group"
           >
-            <MapPin className="w-4 h-4 text-[#6B6B6B]" />
-            <span className="text-sm font-semibold text-[#1A1A1A] truncate max-w-[180px]">
-              {currentUser.hostelBlock?.split(' ')[0] || 'Campus'}, Rm {currentUser.roomNumber || 'A-204'}
-            </span>
-            <ChevronDown className="w-4 h-4 text-[#ACACAC] group-hover:text-[#6B6B6B] transition-colors" />
-          </button>
-
-          {/* Cart Icon */}
-          <button
-            onClick={() => setActiveTab('cart')}
-            className="w-10 h-10 rounded-full border border-[#E5E5E5] flex items-center justify-center text-[#6B6B6B] hover:bg-[#F2F2F2] transition-colors relative"
-          >
-            <ShoppingBag className="w-4.5 h-4.5" />
-            {totalCartQty > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#34A853] text-white text-[10px] font-bold flex items-center justify-center">
-                {totalCartQty}
+            <div className="w-10 h-10 rounded-full bg-[#FD6931]/20 border border-[#FD6931]/40 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
+              <img
+                src="/assets/img/profile.png"
+                alt="Profile"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
+              <span className="text-sm font-bold text-[#FD6931]">
+                {currentUser.name ? currentUser.name[0] : 'A'}
               </span>
-            )}
-          </button>
+            </div>
+
+            {/* Location Section */}
+            <div className="text-left">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-[#697586] flex items-center gap-1">
+                <span>Delivery location</span>
+                <ChevronDown className="w-3 h-3 text-[#FD6931]" />
+              </div>
+              <div className="text-xs font-bold text-white flex items-center gap-1 truncate max-w-[170px]">
+                <MapPin className="w-3.5 h-3.5 text-[#FD6931] shrink-0" />
+                <span className="truncate">
+                  {currentUser.hostelBlock?.split(' ')[0] || 'Aryabhatta'}, Rm {currentUser.roomNumber || 'A-204'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Header Actions (Notification & Cart) */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsEditingProfile(true)}
+              className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors relative"
+            >
+              <Bell className="w-4.5 h-4.5" />
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#FD6931]" />
+            </button>
+
+            <button
+              onClick={() => setActiveTab('cart')}
+              className="w-9 h-9 rounded-full bg-[#FD6931]/15 border border-[#FD6931]/40 flex items-center justify-center text-[#FD6931] hover:bg-[#FD6931] hover:text-white transition-all relative"
+            >
+              <ShoppingBag className="w-4.5 h-4.5" />
+              {totalCartQty > 0 && (
+                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-[#FD6931] text-white text-[9px] font-bold flex items-center justify-center border border-[#0D0D0D]">
+                  {totalCartQty}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative mt-3">
-          <Search className="w-4 h-4 text-[#ACACAC] absolute left-4 top-1/2 -translate-y-1/2" />
-          <input
-            id="mobile-search-input"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search 'Butter Maggi', 'Masala Dosa', 'Cold Coffee'..."
-            className="w-full bg-[#F2F2F2] border-none rounded-full pl-11 pr-10 py-3 text-sm text-[#1A1A1A] placeholder:text-[#ACACAC] outline-none focus:ring-2 focus:ring-[#2D2D2D]/20 transition-all font-medium"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ACACAC] hover:text-[#1A1A1A] transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+        {/* Header Title */}
+        <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-3">
+          What would you prefer to eat today?
+        </h1>
+
+        {/* Search Bar & Filter Button */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-[#697586] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              id="mobile-search-input"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search menu, canteen dishes..."
+              className="w-full bg-[#1A1A1A] border border-white/10 rounded-full pl-10 pr-9 py-2.5 text-xs text-white placeholder:text-[#697586] outline-none focus:border-[#FD6931] transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#697586] hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          <button
+            onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
+            className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${
+              pureVegOnlyFilter
+                ? 'bg-[#FD6931] border-[#FD6931] text-white shadow-lg shadow-[#FD6931]/30'
+                : 'bg-[#1A1A1A] border-white/10 text-[#697586] hover:text-white'
+            }`}
+            title="Toggle Veg Only filter"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {/* 2. WARNING BANNERS */}
-      <div className="px-4 pt-3 space-y-2">
+      {/* 2. SYSTEM WARNING BANNERS */}
+      <div className="px-5 pt-3 space-y-2">
         {isHostelStrictVeg && (
-          <div
-            id="veg-policy-pill"
-            className="alert-success p-3 flex items-center gap-2.5 text-sm"
-          >
-            <Leaf className="w-5 h-5 text-[#34A853] shrink-0" />
-            <span className="leading-tight font-medium">
-              <strong className="font-bold">Bhaskara Hall policy:</strong> Only vegetarian dishes available.
-            </span>
+          <div className="bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-2xl p-3 flex items-center gap-2.5 text-xs">
+            <Leaf className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span><strong>Bhaskara Hall:</strong> Strict Vegetarian Policy Enforced.</span>
           </div>
         )}
 
         {isBlocked && (
-          <div
-            id="student-ordering-blocked-banner"
-            className="alert-warning p-3.5 flex items-start gap-3 text-sm"
-          >
-            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-            <div className="leading-snug">
-              <strong className="block font-bold mb-0.5">Ordering Temporarily Paused</strong>
-              <span className="font-medium text-red-700/80">
+          <div className="bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-2xl p-3 flex items-start gap-2.5 text-xs">
+            <AlertCircle className="w-4.5 h-4.5 text-rose-400 shrink-0 mt-0.5" />
+            <div>
+              <strong className="block font-bold">Ordering Suspended</strong>
+              <span>
                 {settings.globalOrderingPaused
                   ? 'University administration has temporarily paused campus deliveries.'
                   : isHostelPaused
@@ -304,27 +303,20 @@ export const StudentView: React.FC = () => {
         )}
       </div>
 
-      {/* TAB A: BROWSE DISHES & STALLS */}
+      {/* 3. TAB CONTENT */}
+
+      {/* BROWSE TAB */}
       {activeTab === 'browse' && (
-        <div className="flex-1 flex flex-col px-4 pt-5 pb-32 overflow-y-auto no-scrollbar space-y-7">
-          {/* HERO HEADING */}
-          <div>
-            <h1 className="font-display text-3xl sm:text-4xl font-black text-[#1A1A1A] leading-tight tracking-tight">
-              Craving some<br />delicious today?
-            </h1>
-            <p className="text-sm text-[#6B6B6B] mt-2 font-medium">
-              Campus food delivered to your hostel room
-            </p>
-          </div>
+        <div className="flex-1 flex flex-col px-5 pt-4 pb-28 overflow-y-auto hide-scrollbar space-y-6">
 
           {/* DELIVERY SLOT PICKER */}
-          <div className="card-elevated-static p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#6B6B6B] uppercase tracking-wider flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-[#2D2D2D]" />
-                <span>Delivery Slot</span>
+          <div className="delivo-card-static p-4 space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-[#697586] uppercase tracking-wider flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[#FD6931]" />
+                <span>Select Delivery Slot</span>
               </span>
-              <span className="text-xs text-[#ACACAC] font-semibold">
+              <span className="text-[11px] text-[#FD6931] font-bold">
                 Cutoff: {settings.cutoffTime}
               </span>
             </div>
@@ -345,21 +337,20 @@ export const StudentView: React.FC = () => {
                 return (
                   <button
                     key={slotKey}
-                    id={`mobile-slot-${slotKey.toLowerCase()}`}
                     disabled={!slotStatus.isOpen}
                     onClick={() => setSelectedSlot(slotKey)}
-                    className={`py-2.5 px-1.5 rounded-2xl text-center flex flex-col items-center justify-center transition-all ${
+                    className={`py-2 px-1 rounded-xl text-center flex flex-col items-center justify-center transition-all ${
                       isSelected
-                        ? 'bg-[#2D2D2D] text-white shadow-md'
+                        ? 'bg-[#FD6931] text-white shadow-md shadow-[#FD6931]/30 font-bold'
                         : slotStatus.isOpen
-                        ? 'bg-[#F2F2F2] text-[#1A1A1A] hover:bg-[#E8E8E8]'
-                        : 'bg-[#F8F8F8] text-[#CACACA] cursor-not-allowed'
+                        ? 'bg-white/5 text-white/90 hover:bg-white/10'
+                        : 'bg-white/5 text-white/30 cursor-not-allowed'
                     }`}
                   >
-                    <span className="text-lg">{iconMap[slotKey]}</span>
-                    <span className="text-[11px] font-bold mt-1 capitalize">{slotKey.toLowerCase()}</span>
-                    <span className="text-[9px] font-medium opacity-70 mt-0.5">
-                      {slotStatus.isOpen ? slotConfig.label.split('(')[1].replace(')', '') : 'Closed'}
+                    <span className="text-base">{iconMap[slotKey]}</span>
+                    <span className="text-[10px] font-bold mt-0.5 capitalize">{slotKey.toLowerCase()}</span>
+                    <span className="text-[8px] opacity-70 mt-0.5">
+                      {slotStatus.isOpen ? slotConfig.label.split('(')[1]?.replace(')', '') : 'Closed'}
                     </span>
                   </button>
                 );
@@ -367,179 +358,263 @@ export const StudentView: React.FC = () => {
             </div>
           </div>
 
-          {/* CATEGORY CHIPS */}
-          <div className="flex items-center gap-2.5 overflow-x-auto pb-1 no-scrollbar">
-            {/* Veg filter chip */}
-            <button
-              id="quick-veg-filter-btn"
-              onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
-              className={pureVegOnlyFilter || isHostelStrictVeg ? 'chip-active' : 'chip-default'}
-            >
-              <span>🥗</span>
-              <span>Veg Only</span>
-            </button>
-            {categoryChips.map((chip) => {
-              const isSelected = selectedCategory === chip.id;
-              return (
-                <button
-                  key={chip.id}
-                  onClick={() => setSelectedCategory(chip.id)}
-                  className={isSelected ? 'chip-active' : 'chip-default'}
-                >
-                  <span>{chip.icon}</span>
-                  <span>{chip.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          {/* CATEGORIES SCROLL */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-extrabold text-white">Categories</h2>
+            </div>
 
-          {/* POPULAR DISH CARDS */}
-          <div>
-            <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">
-              Popular Near You
-            </h2>
+            <div className="flex items-center gap-2.5 overflow-x-auto pb-1 hide-scrollbar">
+              {/* Veg filter pill */}
+              <button
+                onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
+                className={`delivo-chip ${pureVegOnlyFilter || isHostelStrictVeg ? 'active' : ''}`}
+              >
+                <span>🥗</span>
+                <span>Veg Only</span>
+              </button>
 
-            <div className="grid grid-cols-2 gap-4">
-              {vendors
-                .flatMap((v) =>
-                  v.menuItems.map((item) => ({ ...item, vendorName: v.name, vendorLocation: v.location }))
-                )
-                .filter((item) => {
-                  if (isHostelStrictVeg && !item.isVeg) return false;
-                  if (pureVegOnlyFilter && !item.isVeg) return false;
-                  if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
-                  if (searchQuery.trim()) {
-                    const q = searchQuery.toLowerCase();
-                    if (!item.name.toLowerCase().includes(q)) return false;
-                  }
-                  return true;
-                })
-                .slice(0, 10)
-                .map((item) => {
-                  const cartItem = cart.find((c) => c.menuItem.id === item.id);
-                  const qty = cartItem?.quantity || 0;
-
-                  return (
-                    <div
-                      key={item.id}
-                      className="card-elevated flex flex-col justify-between group"
-                    >
-                      {/* Food Image */}
-                      <div className="h-36 w-full bg-[#F2F2F2] relative overflow-hidden">
-                        <img
-                          src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
-                          alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {/* Price Badge */}
-                        <div className="absolute bottom-2 left-2 price-badge">
-                          ₹{item.price}
-                        </div>
-                        {/* Veg / Non-Veg indicator */}
-                        <div className={`absolute top-2.5 right-2.5 w-5 h-5 rounded border-2 flex items-center justify-center ${
-                          item.isVeg ? 'border-[#34A853]' : 'border-red-500'
-                        }`}>
-                          <span className={`w-2.5 h-2.5 rounded-full ${
-                            item.isVeg ? 'bg-[#34A853]' : 'bg-red-500'
-                          }`} />
-                        </div>
-                      </div>
-
-                      {/* Item Info */}
-                      <div className="p-3.5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h4 className="font-bold text-sm text-[#1A1A1A] leading-snug line-clamp-1">
-                            {item.name}
-                          </h4>
-                          <p className="text-xs text-[#ACACAC] font-medium mt-0.5 line-clamp-1">
-                            {item.vendorName}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-end pt-2">
-                          {qty > 0 ? (
-                            <div className="qty-stepper">
-                              <button onClick={() => updateCartQuantity(item.id, qty - 1)}>
-                                <Minus className="w-3.5 h-3.5" />
-                              </button>
-                              <span className="qty-value">{qty}</span>
-                              <button onClick={() => updateCartQuantity(item.id, qty + 1)}>
-                                <Plus className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                const vendorObj = vendors.find((v) => v.id === item.vendorId) || vendors[0];
-                                const res = addToCart(item, vendorObj);
-                                if (!res.success && res.message) alert(res.message);
-                              }}
-                              className="btn-add"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+              {categoryChips.map((chip) => {
+                const isSelected = selectedCategory === chip.id;
+                return (
+                  <button
+                    key={chip.id}
+                    onClick={() => setSelectedCategory(chip.id)}
+                    className={`delivo-chip ${isSelected ? 'active' : ''}`}
+                  >
+                    <span>{chip.icon}</span>
+                    <span>{chip.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* FOOD COURT STALL CARDS */}
-          <div>
-            <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">
-              Campus Food Court Stalls
-            </h2>
+          {/* SUPER DEALS 🔥 (HORIZONTAL RAIL) */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-extrabold text-white flex items-center gap-1.5">
+                <span>Super Deals</span>
+                <span className="text-[#FD6931]">🔥</span>
+              </h2>
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className="text-xs font-bold text-[#FD6931] hover:underline"
+              >
+                See All
+              </button>
+            </div>
 
-            <div className="space-y-4">
-              {filteredVendors
-                .map((vendor) => {
-                const availableItems = vendor.menuItems.filter((i) => {
-                  if (isHostelStrictVeg && !i.isVeg) return false;
-                  if (pureVegOnlyFilter && !i.isVeg) return false;
-                  return true;
-                });
+            <div className="flex items-center gap-4 overflow-x-auto pb-2 hide-scrollbar">
+              {filteredDishes.slice(0, 5).map((item) => {
+                const isFav = favorites.includes(item.id);
+                const cartItem = cart.find((c) => c.menuItem.id === item.id);
+                const qty = cartItem?.quantity || 0;
+                const vendorObj = vendors.find((v) => v.id === item.vendorId);
 
                 return (
                   <div
-                    key={vendor.id}
-                    id={`mobile-vendor-card-${vendor.id}`}
-                    onClick={() => setSelectedVendorId(vendor.id)}
-                    className="card-elevated cursor-pointer group"
+                    key={item.id}
+                    className="delivo-card w-64 shrink-0 flex flex-col justify-between group"
                   >
-                    {/* Cover Banner */}
-                    <div className="h-32 w-full bg-[#F2F2F2] relative overflow-hidden">
+                    {/* Image Container */}
+                    <div className="h-36 w-full relative overflow-hidden bg-neutral-900">
                       <img
-                        src={vendor.coverImage || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800'}
-                        alt={vendor.name}
+                        src={item.image || '/assets/img/onboarding-bg.jpg'}
+                        alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
+                        }}
                       />
-                      {/* Rating Badge */}
-                      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-xl bg-[#34A853] text-white text-xs font-bold shadow flex items-center gap-1">
-                        <span>{vendor.rating}</span>
-                        <Star className="w-3 h-3 fill-white" />
+
+                      {/* Discount Badge */}
+                      <span className="absolute top-2.5 left-2.5 badge-discount shadow-md">
+                        10% OFF
+                      </span>
+
+                      {/* Favorite Button */}
+                      <button
+                        onClick={() => toggleFavorite(item.id)}
+                        className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:scale-110 transition-transform"
+                      >
+                        <Heart
+                          className={`w-4 h-4 ${
+                            isFav ? 'fill-[#FD6931] text-[#FD6931]' : 'text-white'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-3.5 space-y-2 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <h3 className="font-bold text-sm text-white truncate max-w-[150px]">
+                            {item.name}
+                          </h3>
+                          <span className="font-extrabold text-sm text-[#FD6931]">
+                            ₹{item.price}
+                          </span>
+                        </div>
+
+                        <div className="text-[11px] text-[#697586] flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-[#FD6931]" />
+                          <span>15-20 min</span>
+                          <span>•</span>
+                          <span className="truncate">{item.vendorName}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center gap-1 text-xs font-bold text-amber-400">
+                          <Star className="w-3.5 h-3.5 fill-amber-400" />
+                          <span>4.8</span>
+                          <span className="text-[10px] text-[#697586] font-medium">(32)</span>
+                        </div>
+
+                        {qty > 0 ? (
+                          <div className="flex items-center gap-2 bg-[#1F1F1F] rounded-lg border border-[#FD6931]/30 p-1">
+                            <button
+                              onClick={() => updateCartQuantity(item.id, qty - 1)}
+                              className="w-5 h-5 rounded bg-[#2D2D2D] text-white flex items-center justify-center font-bold text-xs hover:bg-[#FD6931]"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <span className="font-bold text-xs text-white px-1">{qty}</span>
+                            <button
+                              onClick={() => vendorObj && addToCart(item, vendorObj)}
+                              className="w-5 h-5 rounded bg-[#FD6931] text-white flex items-center justify-center font-bold text-xs"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => vendorObj && addToCart(item, vendorObj)}
+                            className="px-3.5 py-1.5 rounded-full bg-[#FD6931] text-white font-bold text-xs hover:bg-[#e55a24] active:scale-95 transition-all shadow-md shadow-[#FD6931]/20 flex items-center gap-1"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Add</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* PROMO AD BANNER */}
+          <div className="rounded-3xl bg-gradient-to-r from-[#FD6931] to-amber-600 p-5 relative overflow-hidden shadow-xl shadow-[#FD6931]/15">
+            <div className="relative z-10 max-w-[65%] space-y-2">
+              <span className="bg-black/30 backdrop-blur-md text-white font-bold text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-block">
+                Campus Special Offer
+              </span>
+              <h3 className="text-lg font-black text-white leading-tight">
+                Up To 30% Off On First Hostel Order
+              </h3>
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className="px-4 py-2 rounded-full bg-white text-[#FD6931] font-extrabold text-xs hover:bg-neutral-100 transition-colors shadow-md"
+              >
+                Order Now
+              </button>
+            </div>
+
+            {/* Decorative background graphics */}
+            <div className="absolute -right-4 -bottom-6 w-36 h-36 rounded-full bg-white/10 blur-md pointer-events-none" />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-5xl opacity-80 pointer-events-none">
+              🍕
+            </div>
+          </div>
+
+          {/* HOT DEALS 🔥 (VERTICAL LIST) */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-extrabold text-white flex items-center gap-1.5">
+                <span>Hot Deals</span>
+                <span className="text-[#FD6931]">🔥</span>
+              </h2>
+              <span className="text-xs text-[#697586] font-medium">
+                {filteredDishes.length} Items Available
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {filteredDishes.map((item) => {
+                const cartItem = cart.find((c) => c.menuItem.id === item.id);
+                const qty = cartItem?.quantity || 0;
+                const vendorObj = vendors.find((v) => v.id === item.vendorId);
+
+                return (
+                  <div
+                    key={item.id}
+                    className="delivo-card p-3 flex items-center gap-3.5 group"
+                  >
+                    {/* Thumbnail Image */}
+                    <div className="w-20 h-20 rounded-2xl bg-neutral-900 relative overflow-hidden shrink-0">
+                      <img
+                        src={item.image || '/assets/img/onboarding-bg.jpg'}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
+                        }}
+                      />
+                      <div className={`absolute top-1.5 left-1.5 w-3.5 h-3.5 rounded-full border border-white/40 ${
+                        item.isVeg ? 'bg-emerald-500' : 'bg-rose-500'
+                      }`} />
+                    </div>
+
+                    {/* Item Metadata */}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <h3 className="font-bold text-sm text-white truncate">
+                        {item.name}
+                      </h3>
+                      <div className="text-[11px] text-[#697586] flex items-center gap-1.5">
+                        <span>15-25 min</span>
+                        <span>•</span>
+                        <span className="truncate">{item.vendorName}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-extrabold text-[#FD6931]">
+                          ₹{item.price}
+                        </span>
+                        <div className="flex items-center gap-1 text-[11px] text-amber-400 font-bold">
+                          <Star className="w-3 h-3 fill-amber-400" />
+                          <span>4.7</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Stall Info */}
-                    <div className="p-4">
-                      <h3 className="font-bold text-base text-[#1A1A1A]">{vendor.name}</h3>
-                      <p className="text-xs text-[#ACACAC] font-medium mt-0.5">{vendor.cuisineTag}</p>
-
-                      <div className="flex items-center gap-4 mt-3 text-xs text-[#6B6B6B] font-medium">
-                        <div className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>15-20 min</span>
+                    {/* Action Button */}
+                    <div>
+                      {qty > 0 ? (
+                        <div className="flex items-center gap-2 bg-[#1A1A1A] rounded-xl border border-[#FD6931]/30 p-1">
+                          <button
+                            onClick={() => updateCartQuantity(item.id, qty - 1)}
+                            className="w-6 h-6 rounded-lg bg-[#2D2D2D] text-white flex items-center justify-center font-bold text-xs hover:bg-[#FD6931]"
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="font-bold text-xs text-white px-1.5">{qty}</span>
+                          <button
+                            onClick={() => vendorObj && addToCart(item, vendorObj)}
+                            className="w-6 h-6 rounded-lg bg-[#FD6931] text-white flex items-center justify-center font-bold text-xs"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
                         </div>
-                        <div>
-                          Fee: ₹{calculateDeliveryFee(currentUser.hostelBlock || '', vendor.location)}
-                        </div>
-                        <span className="text-[#34A853] font-bold ml-auto">
-                          {availableItems.length} items
-                        </span>
-                      </div>
+                      ) : (
+                        <button
+                          onClick={() => vendorObj && addToCart(item, vendorObj)}
+                          className="px-4 py-2 rounded-full bg-[#FD6931] text-white font-bold text-xs hover:bg-[#e55a24] active:scale-95 transition-all shadow-md shadow-[#FD6931]/20"
+                        >
+                          Add
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -549,318 +624,198 @@ export const StudentView: React.FC = () => {
         </div>
       )}
 
-      {/* TAB B: CART & CHECKOUT */}
+      {/* CART TAB */}
       {activeTab === 'cart' && (
-        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-28">
-          {/* Cart Header */}
-          <div className="flex items-center justify-between px-4 pt-4 pb-3">
-            <div className="flex items-center gap-3">
-              <button onClick={() => setActiveTab('browse')} className="w-9 h-9 rounded-full border border-[#E5E5E5] flex items-center justify-center text-[#6B6B6B] hover:bg-[#F2F2F2] transition-colors">
-                <ArrowLeft className="w-4 h-4" />
+        <div className="flex-1 flex flex-col px-5 pt-4 pb-28 overflow-y-auto hide-scrollbar space-y-5">
+          <div className="flex items-center justify-between pb-2 border-b border-white/10">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveTab('browse')}
+                className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white"
+              >
+                <ChevronRight className="w-4 h-4 rotate-180" />
               </button>
-              <h2 className="text-lg font-bold text-[#1A1A1A]">Cart</h2>
+              <h2 className="text-lg font-black text-white">Your Cart</h2>
             </div>
             {cart.length > 0 && (
               <button
-                id="clear-cart-btn"
                 onClick={clearCart}
-                className="w-9 h-9 rounded-full border border-[#E5E5E5] flex items-center justify-center text-[#ACACAC] hover:text-red-500 hover:border-red-200 transition-colors"
+                className="text-xs font-bold text-rose-400 hover:underline flex items-center gap-1"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" /> Clear All
               </button>
             )}
           </div>
 
           {cart.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center px-4 text-center space-y-4">
-              <div className="w-20 h-20 rounded-full bg-[#F2F2F2] flex items-center justify-center">
-                <ShoppingBag className="w-8 h-8 text-[#ACACAC]" />
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-16 space-y-4">
+              <div className="w-20 h-20 rounded-full bg-[#FD6931]/10 border border-[#FD6931]/20 flex items-center justify-center text-4xl">
+                🛒
               </div>
-              <h3 className="font-bold text-[#1A1A1A] text-base">Your cart is empty</h3>
-              <p className="text-sm text-[#6B6B6B] max-w-xs">
-                Explore campus stalls and add your favorite dishes.
-              </p>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-1">Your Cart is Empty</h3>
+                <p className="text-xs text-[#697586] max-w-xs">
+                  Add some delicious Maggi, Dosa, or Beverages to start your hostel order!
+                </p>
+              </div>
               <button
                 onClick={() => setActiveTab('browse')}
-                className="px-6 py-2.5 rounded-full bg-[#2D2D2D] text-white text-sm font-bold hover:bg-[#1A1A1A] transition-colors"
+                className="px-6 py-2.5 rounded-full bg-[#FD6931] text-white font-bold text-xs shadow-lg shadow-[#FD6931]/30"
               >
-                Browse Stalls
+                Browse Menu
               </button>
             </div>
           ) : (
-            <div className="px-4 space-y-4 flex-1 flex flex-col">
-              {/* Cart Items */}
-              <div className="space-y-1">
-                {cart.map((c) => (
-                  <div key={c.menuItem.id} className="flex items-center gap-4 py-4 border-b border-[#F2F2F2] last:border-b-0">
-                    {/* Circular Food Image */}
-                    <div className="w-20 h-20 rounded-full overflow-hidden bg-[#F2F2F2] shrink-0 shadow-sm">
-                      <img
-                        src={c.menuItem.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'}
-                        alt={c.menuItem.name}
-                        className="w-full h-full object-cover"
-                      />
+            <div className="space-y-4">
+              {/* Vendor Info */}
+              <div className="bg-[#1A1A1A] rounded-2xl p-3 border border-white/10 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#FD6931]/20 flex items-center justify-center text-[#FD6931] font-bold text-lg">
+                  🍳
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white">{cart[0]?.vendorName}</div>
+                  <div className="text-[10px] text-[#697586]">Ordering from campus stall</div>
+                </div>
+              </div>
+
+              {/* Cart Items List */}
+              <div className="space-y-3">
+                {cart.map((item) => (
+                  <div
+                    key={item.menuItem.id}
+                    className="delivo-card p-3.5 flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 rounded-xl bg-neutral-900 overflow-hidden shrink-0">
+                        <img
+                          src={item.menuItem.image || '/assets/img/onboarding-bg.jpg'}
+                          alt={item.menuItem.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm text-white">{item.menuItem.name}</div>
+                        <div className="text-xs text-[#FD6931] font-semibold">₹{item.menuItem.price} each</div>
+                      </div>
                     </div>
 
-                    {/* Item Details */}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-[#1A1A1A] text-sm">{c.menuItem.name}</h4>
-                      <p className="text-xs text-[#ACACAC] font-medium mt-0.5 line-clamp-1">
-                        {c.vendorName} · {formatRupees(c.menuItem.price)} each
-                      </p>
-
-                      {/* Quantity Stepper */}
-                      <div className="mt-2.5">
-                        <div className="qty-stepper">
-                          <button onClick={() => updateCartQuantity(c.menuItem.id, c.quantity - 1)}>
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span className="qty-value">{c.quantity}</span>
-                          <button onClick={() => updateCartQuantity(c.menuItem.id, c.quantity + 1)}>
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-2 bg-[#1A1A1A] rounded-xl border border-white/10 p-1">
+                      <button
+                        onClick={() => updateCartQuantity(item.menuItem.id, item.quantity - 1)}
+                        className="w-6 h-6 rounded-lg bg-[#2D2D2D] text-white flex items-center justify-center font-bold text-xs"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="font-bold text-xs text-white px-1.5">{item.quantity}</span>
+                      <button
+                        onClick={() => updateCartQuantity(item.menuItem.id, item.quantity + 1)}
+                        className="w-6 h-6 rounded-lg bg-[#FD6931] text-white flex items-center justify-center font-bold text-xs"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Cooking Instructions */}
-              <input
-                type="text"
-                placeholder="Add cooking instructions (e.g. less spicy)..."
-                value={cookingInstruction}
-                onChange={(e) => setCookingInstruction(e.target.value)}
-                className="w-full bg-[#F2F2F2] rounded-2xl px-4 py-3 text-sm text-[#1A1A1A] placeholder:text-[#ACACAC] outline-none focus:ring-2 focus:ring-[#2D2D2D]/15 transition-all"
-              />
-
-              {/* Bill Summary */}
-              <div className="card-elevated-static p-4 space-y-2.5 text-sm mt-auto">
-                <div className="flex justify-between text-[#6B6B6B]">
-                  <span>Subtotal</span>
-                  <span className="font-semibold">{formatRupees(subtotal)}</span>
+              {/* Bill Summary Table */}
+              <div className="delivo-card p-4 space-y-2.5 text-xs">
+                <div className="font-bold text-white border-b border-white/10 pb-2">Bill Summary</div>
+                <div className="flex justify-between text-[#697586]">
+                  <span>Item Subtotal</span>
+                  <span className="font-semibold text-white">₹{subtotal}</span>
                 </div>
-                <div className="flex justify-between text-[#6B6B6B]">
-                  <span>Delivery Fee</span>
-                  <span className="font-semibold">{formatRupees(deliveryFee)}</span>
+                <div className="flex justify-between text-[#697586]">
+                  <span>Hostel Delivery Fee</span>
+                  <span className="font-semibold text-white">₹{deliveryFee}</span>
                 </div>
-                <div className="flex justify-between text-[#6B6B6B]">
-                  <span>Platform Fee</span>
-                  <span className="font-bold text-[#34A853]">Free</span>
+                <div className="flex justify-between text-[#697586]">
+                  <span>Platform Service Fee</span>
+                  <span className="font-semibold text-emerald-400">FREE</span>
                 </div>
-                <div className="pt-2.5 mt-1 border-t border-[#E5E5E5] flex justify-between text-base font-bold text-[#1A1A1A]">
-                  <span>Total</span>
-                  <span>{formatRupees(grandTotal)}</span>
+                <div className="flex justify-between pt-2 border-t border-white/10 font-black text-sm text-white">
+                  <span>Grand Total</span>
+                  <span className="text-[#FD6931]">₹{grandTotal}</span>
                 </div>
               </div>
 
-              {/* Delivery Address */}
-              <div className="flex items-center justify-between text-sm px-1">
-                <div className="flex items-center gap-2 text-[#6B6B6B]">
-                  <MapPin className="w-4 h-4 text-[#2D2D2D]" />
-                  <span>
-                    <strong className="text-[#1A1A1A]">{currentUser.hostelBlock?.split(' ')[0]}</strong>, Rm {currentUser.roomNumber}
-                  </span>
-                </div>
-                <button
-                  onClick={() => setIsEditingProfile(true)}
-                  className="text-[#2D2D2D] font-bold text-sm hover:underline"
-                >
-                  Change
-                </button>
-              </div>
-
-              {orderError && (
-                <div className="alert-warning p-3 text-sm">{orderError}</div>
-              )}
-
-              {/* Bottom Actions */}
-              <div className="flex items-center gap-3 pt-2 pb-4">
-                <button
-                  onClick={clearCart}
-                  className="flex items-center gap-2 px-4 py-3 rounded-2xl border border-[#E5E5E5] text-[#6B6B6B] text-sm font-semibold hover:bg-[#F2F2F2] transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>Clear All</span>
-                </button>
-                <button
-                  id="proceed-upi-checkout-btn"
-                  disabled={isBlocked}
-                  onClick={handleStartCheckout}
-                  className="flex-1 py-3.5 rounded-2xl bg-[#2D2D2D] hover:bg-[#1A1A1A] disabled:bg-[#E5E5E5] disabled:text-[#ACACAC] text-white font-bold text-sm flex items-center justify-center gap-2 transition-all"
-                >
-                  <span>Checkout</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+              {/* Checkout CTA */}
+              <button
+                disabled={isBlocked}
+                onClick={() => setShowUpiModal(true)}
+                className="w-full py-3.5 rounded-full bg-[#FD6931] text-white font-extrabold text-sm hover:bg-[#e55a24] active:scale-[0.98] transition-all shadow-xl shadow-[#FD6931]/30 flex items-center justify-center gap-2"
+              >
+                <span>Proceed to Checkout (₹{grandTotal})</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           )}
         </div>
       )}
 
-      {/* TAB C: LIVE ORDER TRACKER */}
+      {/* TRACK TAB */}
       {activeTab === 'track' && (
-        <div className="flex-1 flex flex-col px-4 pt-4 pb-28 overflow-y-auto no-scrollbar">
-          {!trackedOrder ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-16 h-16 rounded-full bg-[#F2F2F2] flex items-center justify-center">
-                <Clock className="w-7 h-7 text-[#ACACAC]" />
+        <div className="flex-1 flex flex-col px-5 pt-4 pb-28 overflow-y-auto hide-scrollbar space-y-5">
+          <h2 className="text-lg font-black text-white border-b border-white/10 pb-2">Live Order Status</h2>
+
+          {trackedOrder ? (
+            <div className="delivo-card p-5 space-y-5">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                  <div className="text-xs text-[#697586]">Order ID</div>
+                  <div className="font-mono font-bold text-sm text-white">{trackedOrder.id}</div>
+                </div>
+                <OrderStatusBadge status={trackedOrder.status} />
               </div>
-              <h3 className="font-bold text-[#1A1A1A]">No active orders</h3>
-              <p className="text-sm text-[#6B6B6B]">Place an order to track your delivery here.</p>
+
+              {/* Delivery Details */}
+              <div className="grid grid-cols-2 gap-3 text-xs bg-white/5 p-3 rounded-2xl border border-white/10">
+                <div>
+                  <span className="text-[#697586] block text-[10px]">Destination</span>
+                  <span className="font-bold text-white">{trackedOrder.hostelBlock}, Rm {trackedOrder.roomNumber}</span>
+                </div>
+                <div>
+                  <span className="text-[#697586] block text-[10px]">OTP Handover Code</span>
+                  <span className="font-mono font-black text-sm text-[#FD6931]">{trackedOrder.otpCode}</span>
+                </div>
+              </div>
+
+              {/* Items Summary */}
+              <div className="space-y-2 text-xs">
+                <div className="font-bold text-white">Order Items ({trackedOrder.items.length})</div>
+                {trackedOrder.items.map((i) => (
+                  <div key={i.id} className="flex justify-between text-[#697586]">
+                    <span>{i.quantity}x {i.name}</span>
+                    <span className="font-semibold text-white">₹{i.priceEach * i.quantity}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="card-elevated-static p-5 space-y-4">
-                <div className="flex items-start justify-between gap-2 pb-3 border-b border-[#F2F2F2]">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-[#1A1A1A] text-sm">{trackedOrder.id}</span>
-                      <OrderStatusBadge status={trackedOrder.status} size="sm" />
-                    </div>
-                    <div className="text-xs text-[#ACACAC] mt-0.5">
-                      {trackedOrder.vendorName} • {new Date(trackedOrder.createdAt).toLocaleTimeString()}
-                    </div>
-                  </div>
-                  <SlotBadge slot={trackedOrder.slot} size="sm" />
-                </div>
-
-                {trackedOrder.status === OrderStatus.OUT_FOR_DELIVERY ? (
-                  <div id="student-handover-otp-box" className="bg-[#FFF8F0] border-2 border-[#FF9500] rounded-2xl p-4 text-center space-y-2">
-                    <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#FF9500] uppercase">
-                      <KeyRound className="w-4 h-4" />
-                      <span>Share with runner at door</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 my-2">
-                      {trackedOrder.otpCode.split('').map((digit, idx) => (
-                        <div key={idx} className="w-11 h-14 rounded-xl bg-white border-2 border-[#FF9500]/40 flex items-center justify-center text-2xl font-mono font-black text-[#1A1A1A] shadow-sm">
-                          {digit}
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-xs text-[#6B6B6B]">
-                      Runner <strong className="text-[#1A1A1A]">{trackedOrder.runnerName}</strong> will verify this OTP.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="bg-[#F2F2F2] rounded-xl p-3 flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-[#6B6B6B]">
-                      <KeyRound className="w-4 h-4 text-[#2D2D2D]" />
-                      <span>Handover OTP</span>
-                    </div>
-                    <span className="font-mono font-bold text-[#ACACAC]">
-                      {trackedOrder.status === OrderStatus.DELIVERED ? '✓ Verified' : '••••'}
-                    </span>
-                  </div>
-                )}
-
-                {trackedOrder.runnerName && (() => {
-                  const assignedRunner = users.find((u) => u.id === trackedOrder.runnerId || u.name === trackedOrder.runnerName);
-                  const phoneNum = trackedOrder.runnerPhone || assignedRunner?.phone || '9876543210';
-                  return (
-                    <div className="bg-[#F8F8F8] rounded-xl p-3.5 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#2D2D2D] text-white flex items-center justify-center">
-                          <Bike className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-[#1A1A1A] flex items-center gap-1.5">
-                            <span>{trackedOrder.runnerName}</span>
-                            <span className="text-[10px] text-[#34A853] font-semibold">✓ Student</span>
-                          </div>
-                          <div className="text-xs text-[#ACACAC]">Campus Runner</div>
-                        </div>
-                      </div>
-                      <a href={`tel:${phoneNum}`} className="w-10 h-10 rounded-full bg-[#2D2D2D] text-white flex items-center justify-center hover:bg-[#1A1A1A] transition-colors" title="Call Runner">
-                        <Phone className="w-4 h-4" />
-                      </a>
-                    </div>
-                  );
-                })()}
-
-                <div className="space-y-4 pt-2">
-                  <div className="text-xs font-bold text-[#ACACAC] uppercase tracking-wider">Live Progress</div>
-                  <div className="space-y-3.5">
-                    {[
-                      { statusKey: OrderStatus.PLACED, title: 'Order Placed & Confirmed', subtitle: 'Sent to stall via UPI' },
-                      { statusKey: OrderStatus.PREPARING, title: 'Kitchen Cooking & Packing', subtitle: 'Freshly prepared' },
-                      { statusKey: OrderStatus.READY, title: 'Food Packed & Ready', subtitle: 'Waiting for runner pickup' },
-                      { statusKey: OrderStatus.OUT_FOR_DELIVERY, title: 'Out for Delivery', subtitle: `Heading to ${trackedOrder.hostelBlock.split(' ')[0]}` },
-                      { statusKey: OrderStatus.DELIVERED, title: 'Delivered & Completed', subtitle: 'OTP verified' },
-                    ].map((step, idx) => {
-                      const statusSeq = [OrderStatus.PLACED, OrderStatus.ACCEPTED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED];
-                      const currentIdx = statusSeq.indexOf(trackedOrder.status);
-                      const stepIdx = statusSeq.indexOf(step.statusKey);
-                      const isComplete = currentIdx >= stepIdx;
-                      const isCurrent = currentIdx === stepIdx;
-                      return (
-                        <div key={idx} className="flex items-start gap-3">
-                          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all ${isComplete ? 'bg-[#34A853] text-white' : 'bg-[#F2F2F2] text-[#ACACAC]'} ${isCurrent ? 'ring-4 ring-[#34A853]/20' : ''}`}>
-                            {isComplete ? '✓' : idx + 1}
-                          </div>
-                          <div>
-                            <div className={`text-sm font-bold ${isComplete ? 'text-[#1A1A1A]' : 'text-[#ACACAC]'}`}>{step.title}</div>
-                            <div className="text-xs text-[#ACACAC]">{step.subtitle}</div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-[#F2F2F2] flex items-center justify-between text-xs text-[#ACACAC]">
-                  <span>Sync engine:</span>
-                  <span className="flex items-center gap-1.5 text-[#34A853] font-medium">
-                    <span className="w-2 h-2 rounded-full bg-[#34A853] animate-ping" />
-                    <span>Realtime Live</span>
-                  </span>
-                </div>
-              </div>
-            </div>
+            <div className="text-center py-12 text-[#697586] text-xs">No active order tracked right now.</div>
           )}
         </div>
       )}
 
-      {/* TAB D: ORDER HISTORY */}
+      {/* HISTORY TAB */}
       {activeTab === 'history' && (
-        <div className="flex-1 flex flex-col px-4 pt-4 pb-28 overflow-y-auto no-scrollbar">
-          <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">
-            Past Deliveries ({studentOrders.length})
-          </h2>
+        <div className="flex-1 flex flex-col px-5 pt-4 pb-28 overflow-y-auto hide-scrollbar space-y-4">
+          <h2 className="text-lg font-black text-white border-b border-white/10 pb-2">Order History</h2>
 
           {studentOrders.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-16 h-16 rounded-full bg-[#F2F2F2] flex items-center justify-center">
-                <History className="w-7 h-7 text-[#ACACAC]" />
-              </div>
-              <p className="text-sm text-[#6B6B6B]">No previous orders found.</p>
-            </div>
+            <div className="text-center py-12 text-[#697586] text-xs">No past orders found.</div>
           ) : (
             <div className="space-y-3">
               {studentOrders.map((ord) => (
-                <div key={ord.id} className="card-elevated-static p-4 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-[#1A1A1A] text-sm">{ord.id}</span>
-                      <OrderStatusBadge status={ord.status} size="sm" />
-                    </div>
-                    <div className="text-xs text-[#ACACAC] mt-0.5">
-                      {ord.vendorName} • {new Date(ord.createdAt).toLocaleDateString()}
-                    </div>
-                    <div className="text-xs text-[#CACACA] mt-1 line-clamp-1">
-                      {ord.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')}
-                    </div>
+                <div key={ord.id} className="delivo-card p-4 flex items-center justify-between gap-3 text-xs">
+                  <div>
+                    <div className="font-mono font-bold text-white text-sm">{ord.id}</div>
+                    <div className="text-[#697586] mt-0.5">{ord.vendorName} • ₹{ord.totalAmount}</div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <div className="font-bold text-[#1A1A1A] text-sm">{formatRupees(ord.totalAmount)}</div>
-                    <button
-                      onClick={() => { setActiveStudentOrderId(ord.id); setActiveTab('track'); }}
-                      className="text-[#2D2D2D] hover:underline text-xs font-bold mt-1 inline-block"
-                    >
-                      View Status →
-                    </button>
-                  </div>
+                  <OrderStatusBadge status={ord.status} />
                 </div>
               ))}
             </div>
@@ -868,26 +823,25 @@ export const StudentView: React.FC = () => {
         </div>
       )}
 
-      {/* FLOATING CART PILL */}
+      {/* 4. FLOATING CART PILL (WHEN ITEMS ADDED IN BROWSE TAB) */}
       {activeTab === 'browse' && cart.length > 0 && (
-        <div className="fixed bottom-16 left-4 right-4 max-w-md mx-auto z-40 animate-bounce-in">
+        <div className="fixed bottom-20 left-4 right-4 max-w-md mx-auto z-40 animate-delivo-fade">
           <button
-            id="mobile-floating-cart-pill"
             onClick={() => setActiveTab('cart')}
-            className="cart-pill w-full p-3.5 flex items-center justify-between"
+            className="delivo-cart-pill w-full p-3.5 flex items-center justify-between cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center font-bold text-white text-sm">
+              <div className="w-9 h-9 rounded-full bg-[#FD6931] flex items-center justify-center font-bold text-white text-sm">
                 {totalCartQty}
               </div>
               <div className="text-left">
-                <div className="text-xs font-bold uppercase tracking-wider">
+                <div className="text-xs font-bold uppercase tracking-wider text-white">
                   {totalCartQty} ITEM{totalCartQty > 1 ? 'S' : ''}
                 </div>
-                <div className="text-xs font-bold text-white/70">{formatRupees(grandTotal)}</div>
+                <div className="text-xs font-bold text-[#FD6931]">₹{grandTotal}</div>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 text-sm font-bold bg-white text-[#2D2D2D] px-4 py-2 rounded-xl">
+            <div className="flex items-center gap-1.5 text-xs font-bold bg-[#FD6931] text-white px-4 py-2 rounded-full shadow-md">
               <span>View Cart</span>
               <ChevronRight className="w-4 h-4" />
             </div>
@@ -895,79 +849,155 @@ export const StudentView: React.FC = () => {
         </div>
       )}
 
-      {/* BOTTOM NAVIGATION */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 clean-bottom-nav">
+      {/* 5. DELIVO BOTTOM NAVIGATION DOCK */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 delivo-bottom-nav py-2.5">
         <div className="max-w-md mx-auto grid grid-cols-4 gap-1 text-center px-4">
-          <button id="mobile-nav-explore" onClick={() => setActiveTab('browse')} className={`py-2 flex flex-col items-center justify-center transition-all ${activeTab === 'browse' ? 'text-[#1A1A1A]' : 'text-[#ACACAC] hover:text-[#6B6B6B]'}`}>
+          <button
+            onClick={() => setActiveTab('browse')}
+            className={`flex flex-col items-center justify-center transition-all ${
+              activeTab === 'browse' ? 'text-[#FD6931]' : 'text-[#697586] hover:text-white'
+            }`}
+          >
             <Utensils className="w-5 h-5" />
-            <span className={`text-[10px] mt-0.5 ${activeTab === 'browse' ? 'font-bold' : 'font-medium'}`}>Discover</span>
+            <span className={`text-[10px] mt-1 ${activeTab === 'browse' ? 'font-bold' : 'font-medium'}`}>
+              Discover
+            </span>
           </button>
-          <button id="mobile-nav-cart" onClick={() => setActiveTab('cart')} className={`py-2 flex flex-col items-center justify-center relative transition-all ${activeTab === 'cart' ? 'text-[#1A1A1A]' : 'text-[#ACACAC] hover:text-[#6B6B6B]'}`}>
+
+          <button
+            onClick={() => setActiveTab('cart')}
+            className={`flex flex-col items-center justify-center relative transition-all ${
+              activeTab === 'cart' ? 'text-[#FD6931]' : 'text-[#697586] hover:text-white'
+            }`}
+          >
             <ShoppingBag className="w-5 h-5" />
-            <span className={`text-[10px] mt-0.5 ${activeTab === 'cart' ? 'font-bold' : 'font-medium'}`}>Cart</span>
+            <span className={`text-[10px] mt-1 ${activeTab === 'cart' ? 'font-bold' : 'font-medium'}`}>
+              Cart
+            </span>
             {totalCartQty > 0 && (
-              <span className="absolute top-0.5 right-5 w-4 h-4 rounded-full bg-[#34A853] text-white text-[9px] font-bold flex items-center justify-center">{totalCartQty}</span>
+              <span className="absolute top-0 right-5 w-4 h-4 rounded-full bg-[#FD6931] text-white text-[9px] font-bold flex items-center justify-center">
+                {totalCartQty}
+              </span>
             )}
           </button>
-          <button id="mobile-nav-track" onClick={() => setActiveTab('track')} className={`py-2 flex flex-col items-center justify-center relative transition-all ${activeTab === 'track' ? 'text-[#1A1A1A]' : 'text-[#ACACAC] hover:text-[#6B6B6B]'}`}>
+
+          <button
+            onClick={() => setActiveTab('track')}
+            className={`flex flex-col items-center justify-center relative transition-all ${
+              activeTab === 'track' ? 'text-[#FD6931]' : 'text-[#697586] hover:text-white'
+            }`}
+          >
             <Bike className="w-5 h-5" />
-            <span className={`text-[10px] mt-0.5 ${activeTab === 'track' ? 'font-bold' : 'font-medium'}`}>Live Order</span>
+            <span className={`text-[10px] mt-1 ${activeTab === 'track' ? 'font-bold' : 'font-medium'}`}>
+              Live Order
+            </span>
             {trackedOrder && trackedOrder.status !== OrderStatus.DELIVERED && (
-              <span className="absolute top-1 right-4 w-2.5 h-2.5 rounded-full bg-[#34A853] animate-ping" />
+              <span className="absolute top-1 right-4 w-2 h-2 rounded-full bg-[#FD6931] animate-ping" />
             )}
           </button>
-          <button id="mobile-nav-history" onClick={() => setActiveTab('history')} className={`py-2 flex flex-col items-center justify-center transition-all ${activeTab === 'history' ? 'text-[#1A1A1A]' : 'text-[#ACACAC] hover:text-[#6B6B6B]'}`}>
+
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex flex-col items-center justify-center transition-all ${
+              activeTab === 'history' ? 'text-[#FD6931]' : 'text-[#697586] hover:text-white'
+            }`}
+          >
             <History className="w-5 h-5" />
-            <span className={`text-[10px] mt-0.5 ${activeTab === 'history' ? 'font-bold' : 'font-medium'}`}>History</span>
+            <span className={`text-[10px] mt-1 ${activeTab === 'history' ? 'font-bold' : 'font-medium'}`}>
+              History
+            </span>
           </button>
         </div>
       </nav>
 
       {/* PROFILE / ROOM SWITCHER MODAL */}
       {isEditingProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-5 animate-bounce-in">
-            <div className="flex items-center justify-between pb-3 border-b border-[#F2F2F2]">
-              <h3 className="font-bold text-[#1A1A1A] text-base">Delivery Address</h3>
-              <button onClick={() => setIsEditingProfile(false)} className="w-8 h-8 rounded-full bg-[#F2F2F2] flex items-center justify-center text-[#6B6B6B] hover:bg-[#E5E5E5] transition-colors">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="bg-[#161616] border border-white/10 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-5 animate-delivo-fade text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <h3 className="font-bold text-white text-base">Student Profile & Address</h3>
+              <button
+                onClick={() => setIsEditingProfile(false)}
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:text-white"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleProfileSave} className="space-y-4 text-sm">
+
+            <form onSubmit={handleProfileSave} className="space-y-4 text-xs">
               <div>
-                <label className="text-[#6B6B6B] font-semibold block mb-1.5">Student Name</label>
-                <input type="text" required value={profileForm.name} onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })} className="w-full bg-[#F2F2F2] rounded-xl px-4 py-2.5 text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#2D2D2D]/20 transition-all" />
+                <label className="text-[#697586] font-semibold block mb-1">Student Name</label>
+                <input
+                  type="text"
+                  required
+                  value={profileForm.name}
+                  onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                  className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[#FD6931]"
+                />
               </div>
+
               <div>
-                <label className="text-[#6B6B6B] font-semibold block mb-1.5">Phone Number</label>
-                <input type="tel" required value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} className="w-full bg-[#F2F2F2] rounded-xl px-4 py-2.5 text-[#1A1A1A] font-mono outline-none focus:ring-2 focus:ring-[#2D2D2D]/20 transition-all" />
+                <label className="text-[#697586] font-semibold block mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  required
+                  value={profileForm.phone}
+                  onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                  className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono outline-none focus:border-[#FD6931]"
+                />
               </div>
+
               <div>
-                <label className="text-[#6B6B6B] font-semibold block mb-1.5">Hostel Block</label>
-                <select value={profileForm.hostelBlock} onChange={(e) => setProfileForm({ ...profileForm, hostelBlock: e.target.value })} className="w-full bg-[#F2F2F2] rounded-xl px-4 py-2.5 text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#2D2D2D]/20 transition-all">
+                <label className="text-[#697586] font-semibold block mb-1">Hostel Block</label>
+                <select
+                  value={profileForm.hostelBlock}
+                  onChange={(e) => setProfileForm({ ...profileForm, hostelBlock: e.target.value })}
+                  className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[#FD6931]"
+                >
                   {hostels.map((h) => (
-                    <option key={h.id} value={h.name}>{h.name} {h.vegOnlyEnforced ? '🥗 (Strict Veg)' : ''}</option>
+                    <option key={h.id} value={h.name} className="bg-[#0D0D0D] text-white">
+                      {h.name} {h.vegOnlyEnforced ? '🥗 (Strict Veg)' : ''}
+                    </option>
                   ))}
                 </select>
               </div>
+
               <div>
-                <label className="text-[#6B6B6B] font-semibold block mb-1.5">Room Number</label>
-                <input type="text" required value={profileForm.roomNumber} onChange={(e) => setProfileForm({ ...profileForm, roomNumber: e.target.value })} className="w-full bg-[#F2F2F2] rounded-xl px-4 py-2.5 text-[#1A1A1A] font-mono outline-none focus:ring-2 focus:ring-[#2D2D2D]/20 transition-all" />
+                <label className="text-[#697586] font-semibold block mb-1">Room Number</label>
+                <input
+                  type="text"
+                  required
+                  value={profileForm.roomNumber}
+                  onChange={(e) => setProfileForm({ ...profileForm, roomNumber: e.target.value })}
+                  className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono outline-none focus:border-[#FD6931]"
+                />
               </div>
+
               <div className="flex items-center justify-between gap-3 pt-2">
-                <button type="button" onClick={() => setIsEditingProfile(false)} className="px-4 py-2.5 rounded-xl text-[#6B6B6B] font-semibold hover:bg-[#F2F2F2] transition-colors">Cancel</button>
-                <button type="submit" className="px-6 py-2.5 rounded-xl bg-[#2D2D2D] text-white font-bold hover:bg-[#1A1A1A] transition-colors">Update Profile</button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingProfile(false)}
+                  className="px-4 py-2.5 rounded-xl text-[#697586] font-semibold hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-full bg-[#FD6931] text-white font-bold hover:bg-[#e55a24]"
+                >
+                  Update Profile
+                </button>
               </div>
             </form>
 
-            <div className="pt-3 border-t border-[#F2F2F2]">
+            <div className="pt-3 border-t border-white/10">
               <button
                 type="button"
                 onClick={() => {
                   setIsEditingProfile(false);
                   logout();
                 }}
-                className="w-full py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 font-bold text-sm hover:bg-rose-100 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                className="w-full py-2.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold text-xs hover:bg-rose-500/20 flex items-center justify-center gap-2 transition-all"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Log Out of Student Portal</span>
