@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivo - PWA HTML Template Documentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #fd6931;
+      --primary-rgb: 253, 105, 49;
+      --dark-bg: #0d0d0d;
+      --card-bg: #1a1a1a;
+      --text-color: #ffffff;
+      --text-muted: #9ca3af;
+      --border-color: #2a2a2a;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--dark-bg);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 40px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Navigation */
+    .toc {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+      border: 1px solid var(--border-color);
+    }
+
+    .toc h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+
+    .toc ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: block;
+      padding: 4px 0;
+    }
+
+    .toc a:hover {
+      color: var(--primary-color);
+    }
+
+    /* Content Sections */
+    section {
+      margin-bottom: 60px;
+      scroll-margin-top: 40px;
+    }
+
+    h2 {
+      color: var(--text-color);
+      font-size: 1.75rem;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+      display: inline-block;
+    }
+
+    h3 {
+      color: var(--text-color);
+      font-size: 1.25rem;
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    ul {
+      color: var(--text-muted);
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* File Structure */
+    .file-tree {
+      background: #111;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      color: #d4d4d4;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+    }
+
+    .file-tree .folder {
+      color: #e1ad0f;
+    }
+
+    .file-tree .file {
+      color: #cccccc;
+    }
+
+    .file-tree .comment {
+      color: #6a9955;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(253, 105, 49, 0.1);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    td {
+      color: var(--text-muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: #111;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: var(--primary-color);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(253, 105, 49, 0.2);
+      color: var(--primary-color);
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Delivo</h1>
+      <p class="subtitle">Premium Food Delivery PWA Mobile Template</p>
+      <p>Version 1.0.0 | Created: 2026</p>
+    </header>
+
+    <nav class="toc">
+      <h2>Table of Contents</h2>
+      <ul>
+        <li><a href="#introduction">1. Introduction</a></li>
+        <li><a href="#features">2. Key Features</a></li>
+        <li><a href="#folder-structure">3. Folder Structure</a></li>
+        <li><a href="#pages">4. Included Pages</a></li>
+        <li><a href="#customization">5. Customization</a></li>
+        <li><a href="#pwa">6. PWA Configuration</a></li>
+        <li><a href="#credits">7. Credits & Libraries</a></li>
+        <li><a href="#support">8. Support</a></li>
+      </ul>
+    </nav>
+
+    <section id="introduction">
+      <h2>1. Introduction</h2>
+      <p>Thank you for purchasing <strong>Delivo</strong>. Delivo is a modern, mobile-first PWA (Progressive Web App)
+        template designed specifically for food delivery apps, restaurants, and culinary services. It bridges the gap
+        between web and native apps by providing an app-like experience directly in the browser.</p>
+      <p>Built with <strong>Bootstrap 5</strong> and <strong>SCSS</strong>, it offers a robust foundation for your next
+        mobile project with a stunning dark-themed design and smooth interactions.</p>
+    </section>
+
+    <section id="features">
+      <h2>2. Key Features</h2>
+      <ul>
+        <li><strong>PWA Ready:</strong> Includes Service Worker and Manifest for installability and offline support.
+        </li>
+        <li><strong>Bootstrap 5 Framework:</strong> Uses the latest Bootstrap utilities and grid system.</li>
+        <li><strong>SCSS Sources:</strong> Highly modular SCSS files for easy styling and theming.</li>
+        <li><strong>W3C Validated:</strong> Clean, semantic, and error-free HTML code.</li>
+        <li><strong>Mobile First:</strong> Optimized specifically for handheld devices.</li>
+        <li><strong>Retina Ready:</strong> SVG icons and high-resolution image support.</li>
+        <li><strong>Cross-Browser:</strong> Works seamlessly on Chrome, Safari, Firefox, and Edge.</li>
+        <li><strong>Google Fonts:</strong> Uses 'Plus Jakarta Sans' for modern typography.</li>
+      </ul>
+    </section>
+
+    <section id="folder-structure">
+      <h2>3. Folder Structure</h2>
+      <p>The project file structure is organized for ease of use and scalability.</p>
+      <div class="file-tree">
+        <span class="folder">Delivo-Pwa/</span> <span class="comment">(Root Directory)</span>
+        ├── <span class="folder">assets/</span> <span class="comment"># Contains all static resources</span>
+        │ ├── <span class="folder">css/</span> <span class="comment"># Compiled CSS files (Do not edit directly)</span>
+        │ ├── <span class="folder">scss/</span> <span class="comment"># Source SASS files (Edit your styles here)</span>
+        │ │ ├── <span class="file">styles.scss</span> <span class="comment"># Main import file</span>
+        │ │ ├── <span class="file">_base.scss</span> <span class="comment"># Global variables & reset</span>
+        │ │ └── <span class="file">...</span> <span class="comment"># Other component styles</span>
+        │ ├── <span class="folder">js/</span> <span class="comment"># JavaScript logic</span>
+        │ │ ├── <span class="file">script.js</span> <span class="comment"># Main app functionality</span>
+        │ │ ├── <span class="file">auth-script.js</span> <span class="comment"># Authentication form handling</span>
+        │ │ └── <span class="file">realtime-mock.js</span> <span class="comment"># Mock data for order tracking</span>
+        │ └── <span class="folder">img/</span> <span class="comment"># Images and illustrations</span>
+        │
+        ├── <span class="folder">icons/</span> <span class="comment"># App Icons for PWA installation (192, 512,
+          etc.)</span>
+        │
+        ├── <span class="folder">HTML Pages</span> <span class="comment"># All app screens (40+ files)</span>
+        │ ├── <span class="file">index.html</span> <span class="comment"># Demo Landing Page</span>
+        │ ├── <span class="file">app.html</span> <span class="comment"># Main App Entry (Splash Screen)</span>
+        │ ├── <span class="file">home.html</span>, <span class="file">signin.html</span>, <span class="file">...</span>
+        │
+        ├── <span class="file">manifest.json</span> <span class="comment"># Configuration for App Install (Name, Icons,
+          Theme)</span>
+        ├── <span class="file">service-worker.js</span> <span class="comment"># Script for Offline Caching & PWA
+          features</span>
+        ├── <span class="file">package.json</span> <span class="comment"># NPM definitions (for SCSS compilation)</span>
+        └── <span class="file">documentation.html</span> <span class="comment"># This documentation file</span>
+      </div>
+
+      <h3>Key Directories Explained</h3>
+      <ul>
+        <li><strong>assets/scss/:</strong> This is where you should make style changes. The `styles.scss` file imports
+          all other partials.</li>
+        <li><strong>assets/js/:</strong> Contains the logic for the app. `script.js` manages general UI interactions,
+          while `auth-script.js` handles form validation.</li>
+        <li><strong>manifest.json:</strong> Controls how your app looks when installed on a user's device (Name, Icon,
+          Colors).</li>
+        <li><strong>service-worker.js:</strong> Allows the app to work offline by caching files. Update this file's file
+          list when you add new pages.</li>
+      </ul>
+    </section>
+
+    <section id="pages">
+      <h2>4. Included Pages</h2>
+      <p>Delivo includes over 40+ HTML screens covering common app flows.</p>
+
+      <h3>Onboarding & Auth</h3>
+      <ul>
+        <li><code>app.html</code> - Splash & Onboarding Carousel</li>
+        <li><code>signin.html</code> - Login Screen</li>
+        <li><code>signup.html</code> - Registration Screen</li>
+        <li><code>verification.html</code> - OTP Verification</li>
+        <li><code>forgot-password.html</code> - Forgot Password Input</li>
+        <li><code>forgot-password-otp.html</code> - Reset OTP</li>
+        <li><code>create-password.html</code> - Set New Password</li>
+        <li><code>account-setup.html</code> - Complete Profile</li>
+      </ul>
+
+      <h3>Main Functions</h3>
+      <ul>
+        <li><code>home.html</code> - Main Dashboard / Feed</li>
+        <li><code>search.html</code> - Search Page</li>
+        <li><code>filter.html</code> - Filter Modal/Page</li>
+        <li><code>notifications.html</code> - User Notifications</li>
+        <li><code>favorites.html</code> - Saved Items</li>
+      </ul>
+
+      <h3>Product & Ordering</h3>
+      <ul>
+        <li><code>menu-detail.html</code> - Food/Item Detail View</li>
+        <li><code>reviews.html</code> - User Reviews</li>
+        <li><code>checkout.html</code> - Cart & Checkout</li>
+        <li><code>address-selection.html</code> - Choose Delivery Address</li>
+        <li><code>payment-selection.html</code> - Choose Payment Method</li>
+      </ul>
+
+      <h3>Order Tracking</h3>
+      <ul>
+        <li><code>order-placed.html</code> - Order Confirmation</li>
+        <li><code>order-tracking.html</code> - Live Map Tracking</li>
+        <li><code>order-delivery.html</code> - Delivery Status steps</li>
+        <li><code>order-arrived.html</code> - Driver Arrived Alert</li>
+        <li><code>order-delivered.html</code> - Successful Delivery</li>
+        <li><code>rating-driver.html</code> - Rate the Service</li>
+      </ul>
+
+      <h3>Profile & Settings</h3>
+      <ul>
+        <li><code>user-profile.html</code> - Profile Hub</li>
+        <li><code>personal-data.html</code> - Edit Personal Info</li>
+        <li><code>payment-account.html</code> - Linked Payment Accounts</li>
+        <li><code>your-card.html</code> - Manage Cards</li>
+        <li><code>add-new-card.html</code> - Add Card Form</li>
+        <li><code>change-password.html</code> - Security Settings</li>
+        <li><code>language.html</code> - App Language</li>
+        <li><code>help-center.html</code> - Support Hub</li>
+        <li><code>privacy-policy.html</code> - Legal Text</li>
+      </ul>
+    </section>
+
+    <section id="customization">
+      <h2>5. Customization</h2>
+      <p>You can customize the look and feel by editing the SCSS variables.</p>
+
+      <h3>Colors</h3>
+      <p>Open <code>assets/scss/_base.scss</code> to change the color scheme:</p>
+      <pre><code>:root {
+  --delivo-primary: #fd6931; /* Change your brand color here */
+  --delivo-bg: #0d0d0d;      /* Change background color */
+  /* ... */
+}</code></pre>
+
+      <h3>Fonts</h3>
+      <p>The template uses <strong>Plus Jakarta Sans</strong> loaded from Google Fonts. To change it:</p>
+      <ol>
+        <li>Update the <code>&lt;link&gt;</code> tag in the <code>&lt;head&gt;</code> of your HTML files.</li>
+        <li>Update the <code>font-family</code> variable in <code>assets/scss/_base.scss</code>.</li>
+      </ol>
+    </section>
+
+    <section id="pwa">
+      <h2>6. PWA Configuration</h2>
+      <p>To make the app installable:</p>
+      <ol>
+        <li><strong>Manifest:</strong> Edit <code>manifest.json</code> to update the app Name, Short Name, and Theme
+          Color.</li>
+        <li><strong>Icons:</strong> Replace the icons in the <code>icons/</code> folder. Ensure you keep the same
+          filenames or update `manifest.json`.</li>
+        <li><strong>Service Worker:</strong> The `service-worker.js` caches your assets for offline use. If you add new
+          CSS/JS files, add them to the `urlsToCache` array in this file.</li>
+      </ol>
+    </section>
+
+    <section id="credits">
+      <h2>7. Credits & Libraries</h2>
+      <ul>
+        <li><strong>Bootstrap 5:</strong> <a href="https://getbootstrap.com/" target="_blank">getbootstrap.com</a></li>
+        <li><strong>Google Fonts:</strong> <a href="https://fonts.google.com/" target="_blank">fonts.google.com</a></li>
+        <li><strong>Remix Icons (or similar SVGs):</strong> Used for interface icons.</li>
+      </ul>
+    </section>
+
+    <section id="support">
+      <h2>8. Support</h2>
+      <p>If you have any questions that are beyond the scope of this help file, please feel free to email via my user
+        page contact form. Thank you so much!</p>
+    </section>
+
+  </div>
+
+</body>
+
+</html>

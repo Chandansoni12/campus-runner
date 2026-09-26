@@ -1,0 +1,27 @@
+{
+  "name": "delivo-pwa",
+  "version": "1.0.0",
+  "description": "Delivo PWA - Food Delivery App Onboarding",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8000 -o",
+    "sass": "sass styles.scss styles.css",
+    "sass:watch": "sass --watch styles.scss:styles.css",
+    "build:css": "sass styles.scss styles.css --style compressed"
+  },
+  "keywords": [
+    "pwa",
+    "food-delivery",
+    "onboarding",
+    "mobile-first",
+    "bootstrap",
+    "scss"
+  ],
+  "author": "oxlao_inc",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "jimp": "^1.6.0",
+    "sass": "^1.69.5"
+  }
+}

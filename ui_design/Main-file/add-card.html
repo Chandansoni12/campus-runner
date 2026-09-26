@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Add Card - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="add-card-page">
+    <!-- Add Card Screen -->
+    <div class="add-card-screen">
+        <!-- Header -->
+        <header class="add-card-header">
+            <a href="payment-selection.html" class="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </a>
+            <h1 class="add-card-title">Add Card</h1>
+        </header>
+
+        <!-- Content Area -->
+        <div class="add-card-content">
+            <!-- Card Display Widget -->
+            <div class="card-display-widget">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-top">
+                        <div class="card-balance">
+                            <span class="balance-label">Current Balance</span>
+                            <span class="balance-amount" id="display-balance">$4,570,80</span>
+                        </div>
+                        <div class="card-brand-logo">
+                            <img src="assets/img/card/mastercard.png" alt="Mastercard" class="card-logo-img">
+                        </div>
+                    </div>
+                    <div class="card-number-display" id="display-card-number">5294 2436 4780 9568</div>
+                    <div class="card-bottom">
+                        <div class="card-expiry" id="display-expiry">12/24</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Fields -->
+            <form class="add-card-form" id="add-card-form">
+                <div class="form-group">
+                    <label for="card-holder-name" class="form-label">Card Holder Name</label>
+                    <input type="text" class="form-control" id="card-holder-name" placeholder="Enter name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="card-number" class="form-label">Card Number</label>
+                    <input type="text" class="form-control" id="card-number" placeholder="Enter card number"
+                        maxlength="19" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cvv" class="form-label">CVV</label>
+                        <input type="text" class="form-control" id="cvv" placeholder="Cvv" maxlength="4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expire-date" class="form-label">Expire Date</label>
+                        <input type="text" class="form-control" id="expire-date" placeholder="Date" maxlength="5"
+                            required>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Fixed Bottom Button -->
+        <div class="add-card-footer">
+            <button type="submit" form="add-card-form" class="btn btn-primary continue-btn"
+                id="continue-btn">Continue</button>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        const cardNumberInput = document.getElementById('card-number');
+        const cardHolderInput = document.getElementById('card-holder-name');
+        const cvvInput = document.getElementById('cvv');
+        const expireDateInput = document.getElementById('expire-date');
+
+        const displayCardNumber = document.getElementById('display-card-number');
+        const displayExpiry = document.getElementById('display-expiry');
+
+        // Format card number with spaces
+        cardNumberInput.addEventListener('input', function (e) {
+            let value = this.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            this.value = formattedValue;
+
+            // Update display
+            if (value.length > 0) {
+                displayCardNumber.textContent = formattedValue.padEnd(19, '*').replace(/(.{4})/g, '$1 ').trim();
+            } else {
+                displayCardNumber.textContent = '5294 2436 4780 9568';
+            }
+        });
+
+        // Format expiry date
+        expireDateInput.addEventListener('input', function (e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            this.value = value;
+
+            // Update display
+            if (value.length >= 5) {
+                displayExpiry.textContent = value;
+            } else {
+                displayExpiry.textContent = '12/24';
+            }
+        });
+
+        // CVV - only numbers
+        cvvInput.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Form submission
+        document.getElementById('add-card-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const cardHolder = cardHolderInput.value.trim();
+            const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+            const cvv = cvvInput.value;
+            const expireDate = expireDateInput.value;
+
+            // Validation
+            if (!cardHolder) {
+                alert('Please enter card holder name');
+                return;
+            }
+
+            if (cardNumber.length < 16) {
+                alert('Please enter a valid card number');
+                return;
+            }
+
+            if (cvv.length < 3) {
+                alert('Please enter a valid CVV');
+                return;
+            }
+
+            if (expireDate.length < 5) {
+                alert('Please enter a valid expiry date');
+                return;
+            }
+
+            // Store card data
+            const cardData = {
+                holderName: cardHolder,
+                cardNumber: cardNumber,
+                lastFour: cardNumber.slice(-4),
+                cvv: cvv,
+                expireDate: expireDate,
+                type: 'mastercard' // Can be determined from card number
+            };
+
+            localStorage.setItem('newCardData', JSON.stringify(cardData));
+
+            // Navigate to payment amount page
+            window.location.href = 'payment-amount.html';
+        });
+    </script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>

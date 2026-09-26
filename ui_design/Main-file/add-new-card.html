@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>Add New Card - Delivo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="wallet-page">
+  <div class="wallet-flow">
+    <header class="profile-flow-header">
+      <a href="your-card.html" class="back-btn-profile" aria-label="Back"><svg width="24" height="24"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6" />
+        </svg></a>
+      <h1 class="profile-flow-title">Add New Card</h1>
+    </header>
+    <main class="wallet-main add-card-main">
+      <!-- Card Preview -->
+      <div class="add-card-preview">
+        <div class="add-card-preview-top">
+          <div class="add-card-balance-info">
+            <span class="add-card-label">Current Balance</span>
+            <div class="add-card-amount">$3,242,23</div>
+          </div>
+          <div class="add-card-logo-container">
+            <img src="assets/img/card/visa.png" alt="Visa Debit" class="add-card-logo">
+            <span class="add-card-debit">Debit</span>
+          </div>
+        </div>
+        <div class="add-card-preview-bottom">
+          <span class="add-card-number" id="previewCardNumber">9865 3567 4563 4235</span>
+          <span class="add-card-expiry" id="previewExpiry">12/24</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form class="wallet-form add-card-form" id="addNewCardForm">
+        <div class="form-group-profile">
+          <label class="form-label-profile">Card Number</label>
+          <input type="text" class="form-input-profile" name="cardNumber" placeholder="Enter Card Number" maxlength="19"
+            id="cardNumber">
+        </div>
+        <div class="form-group-profile">
+          <label class="form-label-profile">Card Holder Name</label>
+          <input type="text" class="form-input-profile" name="cardHolder" placeholder="Enter Holder Name"
+            id="cardHolder">
+        </div>
+        <div class="form-row-2">
+          <div class="form-group-profile">
+            <label class="form-label-profile">Expired</label>
+            <input type="text" class="form-input-profile" name="expiry" placeholder="MM/YY" maxlength="5" id="expiry">
+          </div>
+          <div class="form-group-profile">
+            <label class="form-label-profile">CVV Code</label>
+            <input type="text" class="form-input-profile" name="cvv" placeholder="CVV" maxlength="4" id="cvv">
+          </div>
+        </div>
+        <button type="submit" class="btn-profile-primary">Add Card</button>
+      </form>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById('addNewCardForm');
+      var cardNum = document.getElementById('cardNumber');
+      var previewNum = document.getElementById('previewCardNumber');
+      var expiryInput = document.getElementById('expiry');
+      var previewExpiry = document.getElementById('previewExpiry');
+
+      // Update preview as user types
+      cardNum.addEventListener('input', function () {
+        var v = this.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+        this.value = v.substring(0, 19);
+        previewNum.textContent = v || '9865 3567 4563 4235';
+      });
+
+      expiryInput.addEventListener('input', function () {
+        var v = this.value.replace(/\D/g, '');
+        if (v.length >= 2) this.value = v.slice(0, 2) + '/' + v.slice(2, 4);
+        else this.value = v;
+        previewExpiry.textContent = this.value || '12/24';
+      });
+
+      document.getElementById('cvv').addEventListener('input', function () {
+        this.value = this.value.replace(/\D/g, '').slice(0, 4);
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var holder = document.getElementById('cardHolder').value.trim();
+        var num = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        var expiry = document.getElementById('expiry').value;
+        var cvv = document.getElementById('cvv').value;
+        if (!holder || num.length < 16 || expiry.length < 5 || cvv.length < 3) {
+          alert('Please fill all card details correctly.');
+          return;
+        }
+        sessionStorage.setItem('addCardStep1', JSON.stringify({ cardHolder: holder, cardNumber: num, expiry: expiry, cvv: cvv }));
+        window.location.href = 'add-card-address.html';
+      });
+    })();
+  </script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>

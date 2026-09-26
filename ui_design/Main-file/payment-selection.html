@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Select Payment - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="payment-selection-page">
+
+    <!-- Payment Selection Screen -->
+    <div class="payment-selection-screen">
+        <!-- Header -->
+        <header class="payment-selection-header">
+            <a href="checkout.html" class="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </a>
+            <h1 class="payment-selection-title">Payment Methods</h1>
+        </header>
+
+        <!-- Content Area -->
+        <div class="payment-selection-content">
+            <a href="payment-account.html" class="payment-account-link">Payment Account</a>
+            <div class="payment-list" id="payment-list">
+                <!-- Payment items will be dynamically rendered here -->
+            </div>
+
+            <!-- Add New Payment Button -->
+            <button class="add-payment-btn" id="add-payment-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <span>Add New Card</span>
+            </button>
+        </div>
+
+        <!-- Fixed Bottom Button -->
+        <div class="payment-selection-footer">
+            <button class="btn btn-primary continue-btn" id="continue-btn">Continue</button>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Payment data - can be loaded from localStorage or use default
+        let payments = [];
+        let selectedPaymentId = null;
+
+        // Load payments from localStorage or use defaults
+        function loadPayments() {
+            const storedPayments = localStorage.getItem('userPayments');
+            const storedSelected = localStorage.getItem('selectedPaymentId');
+
+            if (storedPayments) {
+                try {
+                    payments = JSON.parse(storedPayments);
+                } catch (e) {
+                    payments = getDefaultPayments();
+                }
+            } else {
+                payments = getDefaultPayments();
+                localStorage.setItem('userPayments', JSON.stringify(payments));
+            }
+
+            if (storedSelected) {
+                selectedPaymentId = storedSelected;
+            } else if (payments.length > 0) {
+                selectedPaymentId = payments[0].id;
+            }
+        }
+
+        // Default payments
+        function getDefaultPayments() {
+            return [
+                {
+                    id: 'paypal',
+                    type: 'Home',
+                    number: '',
+                    logo: 'paypal'
+                },
+                {
+                    id: 'googlepay',
+                    type: 'Google Pay',
+                    number: '',
+                    logo: 'googlepay'
+                },
+                {
+                    id: 'applepay',
+                    type: 'Apple Pay',
+                    number: '',
+                    logo: 'applepay'
+                },
+                {
+                    id: 'mastercard',
+                    type: 'Master Card',
+                    number: '**** ****1234',
+                    logo: 'mastercard'
+                }
+            ];
+        }
+
+        // Render payment list
+        function renderPayments() {
+            const paymentList = document.getElementById('payment-list');
+            if (!paymentList) return;
+
+            paymentList.innerHTML = '';
+
+            payments.forEach(payment => {
+                const isSelected = payment.id === selectedPaymentId;
+                const paymentHTML = `
+                    <div class="payment-item ${isSelected ? 'selected' : ''}" data-payment-id="${payment.id}">
+                        <div class="payment-icon">
+                            ${getPaymentLogo(payment.logo)}
+                        </div>
+                        <div class="payment-info">
+                            <h3 class="payment-name">${payment.type}</h3>
+                            ${payment.number ? `<p class="payment-number">${payment.number}</p>` : ''}
+                        </div>
+                        <div class="payment-radio">
+                            <input type="radio" name="payment" id="payment-${payment.id}" value="${payment.id}" ${isSelected ? 'checked' : ''}>
+                            <label for="payment-${payment.id}"></label>
+                        </div>
+                    </div>
+                `;
+                paymentList.insertAdjacentHTML('beforeend', paymentHTML);
+            });
+
+            // Attach event listeners
+            attachEventListeners();
+        }
+
+        // Get payment logo SVG
+        function getPaymentLogo(type) {
+            if (type === 'mastercard') {
+                return `
+                    <div class="mastercard-logo">
+                        <div class="mc-circle mc-red"></div>
+                        <div class="mc-circle mc-orange"></div>
+                    </div>
+                `;
+            } else if (type === 'paypal') {
+                return `
+                    <div class="paypal-logo">
+                        <svg width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.5 7.5H12.5L10.5 15.5H13L13.5 13H15.5L16.5 15.5H19L17 7.5H15.5Z" fill="#0070BA"/>
+                            <path d="M18.5 7.5H15.5L17.5 15.5H20.5L18.5 7.5Z" fill="#009CDE"/>
+                        </svg>
+                    </div>
+                `;
+            } else if (type === 'googlepay') {
+                return `
+                    <div class="googlepay-logo">
+                        <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.9 16.46 0 20.12 0 24c0 3.88.89 7.54 2.55 10.78l7.98-6.19z"/>
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.55 13.22l7.98 6.19c1.9-5.69 7.21-9.91 13.47-9.91z"/>
+                        </svg>
+                    </div>
+                `;
+            } else if (type === 'applepay') {
+                return `
+                    <div class="applepay-logo">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="white"/>
+                        </svg>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="default-logo">
+                        <svg width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="40" height="24" rx="4" fill="rgba(255,255,255,0.1)"/>
+                        </svg>
+                    </div>
+                `;
+            }
+        }
+
+        // Attach event listeners
+        function attachEventListeners() {
+            // Radio button selection
+            document.querySelectorAll('.payment-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const paymentId = this.getAttribute('data-payment-id');
+                    selectPayment(paymentId);
+                });
+            });
+
+            // Radio input change
+            document.querySelectorAll('input[type="radio"][name="payment"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.checked) {
+                        selectPayment(this.value);
+                    }
+                });
+            });
+        }
+
+        // Select payment
+        function selectPayment(paymentId) {
+            selectedPaymentId = paymentId;
+
+            // Update UI
+            document.querySelectorAll('.payment-item').forEach(item => {
+                item.classList.remove('selected');
+                const radio = item.querySelector('input[type="radio"]');
+                if (radio && radio.value === paymentId) {
+                    item.classList.add('selected');
+                    radio.checked = true;
+                } else if (radio) {
+                    radio.checked = false;
+                }
+            });
+        }
+
+        // Continue button handler
+        document.getElementById('continue-btn').addEventListener('click', function () {
+            if (!selectedPaymentId) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            // Find selected payment
+            const selectedPayment = payments.find(pay => pay.id === selectedPaymentId);
+
+            if (selectedPayment) {
+                // Store selected payment
+                localStorage.setItem('selectedPaymentId', selectedPaymentId);
+                localStorage.setItem('selectedPayment', JSON.stringify(selectedPayment));
+
+                // If it's a card payment method, go to payment amount page
+                // Otherwise, go back to checkout
+                if (selectedPayment.logo === 'mastercard' || selectedPayment.logo === 'visa') {
+                    window.location.href = 'payment-amount.html';
+                } else {
+                    // For digital wallets, go directly to checkout
+                    window.location.href = 'checkout.html';
+                }
+            }
+        });
+
+        // Add new payment button
+        document.getElementById('add-payment-btn').addEventListener('click', function () {
+            // Navigate to add card page
+            window.location.href = 'add-card.html';
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            loadPayments();
+            renderPayments();
+        });
+    </script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>

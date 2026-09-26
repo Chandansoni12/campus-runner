@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Search - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body>
+    <div class="search-screen">
+
+
+        <div class="search-header">
+            <a class="back-btn" href="home.html" aria-label="Back">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </a>
+            <h1>Search</h1>
+        </div>
+
+        <div class="search-page-bar">
+            <div class="search-bar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="search-icon">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+                    <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <input type="text" placeholder="Search for Food.." class="search-input" data-live-search-input>
+                <a class="filter-link" href="filter.html" aria-label="Open filters">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M21.25 11.9999H8.895M4.534 11.9999H2.75M4.534 11.9999C4.534 11.4217 4.76368 10.8672 5.17251 10.4584C5.58134 10.0496 6.13583 9.81989 6.714 9.81989C7.29217 9.81989 7.84666 10.0496 8.25549 10.4584C8.66432 10.8672 8.894 11.4217 8.894 11.9999C8.894 12.5781 8.66432 13.1326 8.25549 13.5414C7.84666 13.9502 7.29217 14.1799 6.714 14.1799C6.13583 14.1799 5.58134 13.9502 5.17251 13.5414C4.76368 13.1326 4.534 12.5781 4.534 11.9999ZM21.25 18.6069H15.502M15.502 18.6069C15.502 19.1852 15.2718 19.7403 14.8628 20.1492C14.4539 20.5582 13.8993 20.7879 13.321 20.7879C12.7428 20.7879 12.1883 20.5572 11.7795 20.1484C11.3707 19.7396 11.141 19.1851 11.141 18.6069M15.502 18.6069C15.502 18.0286 15.2718 17.4745 14.8628 17.0655C14.4539 16.6566 13.8993 16.4269 13.321 16.4269C12.7428 16.4269 12.1883 16.6566 11.7795 17.0654C11.3707 17.4742 11.141 18.0287 11.141 18.6069M11.141 18.6069H2.75M21.25 5.39289H18.145M13.784 5.39289H2.75"
+                            stroke="#787878" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="search-content">
+            <div class="search-section-header">
+                <h2>Recent Search</h2>
+                <button class="link-btn" data-clear-recent>Clear All</button>
+            </div>
+            <div class="chip-row" data-live-chips>
+                <button class="chip">Pizza <span>×</span></button>
+                <button class="chip">Burger <span>×</span></button>
+                <button class="chip">Pastry <span>×</span></button>
+                <button class="chip">Cookies <span>×</span></button>
+                <button class="chip">Meat Church <span>×</span></button>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Hot Deals 🔥</h2>
+                <a href="home.html" class="see-all-link">See All</a>
+            </div>
+            <div class="hot-deals-list" data-live-results>
+                <div class="hot-deal-card">
+                    <img src="./assets/img/onboarding-bg.jpg" alt="Cheese Sizzling" class="hot-deal-image">
+                    <div class="hot-deal-info">
+                        <a href="menu-detail.html" class="hot-deal-title"
+                            style="text-decoration: none; color: inherit; cursor: pointer;">Cheese Sizzling</a>
+                        <div class="hot-deal-meta">15-30 min • 1.3 km</div>
+                        <div class="hot-deal-rating">4.2 (92 Reviews)</div>
+                        <div class="hot-deal-price">$15.00</div>
+                    </div>
+                    <button class="hot-deal-add" data-cart-action data-item-name="Cheese Sizzling"
+                        data-item-price="15.00">Add</button>
+                </div>
+                <div class="hot-deal-card">
+                    <img src="./assets/img/onboarding-bg.jpg" alt="Classic Burger" class="hot-deal-image">
+                    <div class="hot-deal-info">
+                        <a href="menu-detail.html" class="hot-deal-title"
+                            style="text-decoration: none; color: inherit; cursor: pointer;">Classic Burger</a>
+                        <div class="hot-deal-meta">15-30 min • 1.3 km</div>
+                        <div class="hot-deal-rating">4.2 (92 Reviews)</div>
+                        <div class="hot-deal-price">$15.00</div>
+                    </div>
+                    <button class="hot-deal-add" data-cart-action data-item-name="Classic Burger"
+                        data-item-price="15.00">Add</button>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Recommended 🔥</h2>
+                <a href="home.html" class="see-all-link">See All</a>
+            </div>
+            <div class="food-cards-scroll">
+                <div class="food-card" onclick="window.location.href='menu-detail.html'" style="cursor: pointer;">
+                    <div class="food-card-image">
+                        <img src="./assets/img/onboarding-bg.jpg" alt="Tandoori Pizza">
+                        <span class="discount-badge">10% Off</span>
+                        <button class="favorite-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"
+                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="food-card-content">
+                        <div class="food-name-price">
+                            <h3 class="food-name">Tandoori Pizza</h3>
+                            <span class="food-price">$15.00</span>
+                        </div>
+                        <div class="food-delivery-info">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <span>15-30 min</span>
+                            <span class="separator">•</span>
+                            <span>1.3 km</span>
+                        </div>
+                        <div class="food-rating">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                    fill="#FF6B35" />
+                            </svg>
+                            <span class="rating-value">4.3</span>
+                            <span class="rating-count">(27 Reviews)</span>
+                        </div>
+                        <button class="buy-now-btn" data-cart-action>Buy Now</button>
+                    </div>
+                </div>
+                <div class="food-card">
+                    <div class="food-card-image">
+                        <img src="./assets/img/onboarding-bg.jpg" alt="Chinese Fried">
+                        <span class="discount-badge">10% Off</span>
+                        <button class="favorite-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"
+                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="food-card-content">
+                        <div class="food-name-price">
+                            <h3 class="food-name">Chinese Fried</h3>
+                            <span class="food-price">$15.00</span>
+                        </div>
+                        <div class="food-delivery-info">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <span>15-30 min</span>
+                            <span class="separator">•</span>
+                            <span>1.3 km</span>
+                        </div>
+                        <div class="food-rating">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                    fill="#FF6B35" />
+                            </svg>
+                            <span class="rating-value">4.3</span>
+                            <span class="rating-count">(27 Reviews)</span>
+                        </div>
+                        <button class="buy-now-btn" data-cart-action>Buy Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/js/realtime-mock.js"></script>
+    <script>
+        // Add to cart functionality
+        document.querySelectorAll('[data-cart-action]').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                // Get cart from localStorage or initialize empty array
+                let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+                // Get item details from data attributes or parent elements
+                const itemName = this.getAttribute('data-item-name') || this.closest('.hot-deal-card, .food-card')?.querySelector('.food-name, .hot-deal-title')?.textContent.trim() || 'Item';
+                const itemPrice = this.getAttribute('data-item-price') || this.closest('.hot-deal-card, .food-card')?.querySelector('.food-price, .hot-deal-price')?.textContent.replace('$', '').trim() || '0.00';
+
+                // Create cart item
+                const cartItem = {
+                    id: Date.now(),
+                    name: itemName,
+                    price: parseFloat(itemPrice),
+                    quantity: 1
+                };
+
+                // Add to cart
+                cart.push(cartItem);
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                // Visual feedback
+                const originalText = this.textContent;
+                this.textContent = '✓ Added';
+                this.style.backgroundColor = '#28a745';
+
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.backgroundColor = '';
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+
+</html>

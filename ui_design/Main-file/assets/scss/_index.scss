@@ -1,0 +1,15 @@
+// Load all partials so their CSS is included (must come before @forward)
+@use 'base';
+@use 'onboarding';
+@use 'auth-styles';
+@use 'user-profile';
+@use 'home';
+@use 'rating';
+
+// Forward all partials (exposes variables/mixins for consumers who @use 'index')
+@forward 'base';
+@forward 'onboarding';
+@forward 'auth-styles';
+@forward 'user-profile';
+@forward 'home';
+@forward 'rating';

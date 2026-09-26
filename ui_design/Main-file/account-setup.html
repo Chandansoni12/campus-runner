@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Account Setup - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./assets/css/styles.css">
+
+    <!-- Leaflet CSS for OpenStreetMap -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body class="account-setup-page">
+    <!-- Screen 1: Select Language (Dropdown) -->
+    <div class="screen active" id="select-language">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column">
+                    <div class="back-button">
+                        <button class="btn-back" onclick="window.location.href='signin.html'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="setup-content">
+                        <h1 class="setup-title">Select your Language</h1>
+                        <p class="setup-subtitle">Select your preferred language to customize your travel experience.
+                        </p>
+
+                        <form class="setup-form">
+                            <div class="form-group">
+                                <label for="language-select" class="form-label">Language</label>
+                                <div class="select-wrapper">
+                                    <select class="form-control select-control" id="language-select">
+                                        <option value="">Select language</option>
+                                        <option value="en-us">English (US)</option>
+                                        <option value="en-uk">English (UK)</option>
+                                        <option value="zh">Mandarin</option>
+                                        <option value="hi">Hindi</option>
+                                        <option value="es">Spanish</option>
+                                        <option value="ar">Arabic</option>
+                                        <option value="bn">Bengali</option>
+                                    </select>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg" class="select-arrow">
+                                        <path d="M6 9L12 15L18 9" stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-primary btn-setup"
+                                id="continue-language">Continue</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Screen 2: Suggested Language (List with Radio) -->
+    <div class="screen" id="suggested-language">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column">
+                    <div class="back-button">
+                        <button class="btn-back" onclick="switchScreen('select-language')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="setup-content-list">
+                        <h1 class="setup-title">Select Language</h1>
+
+                        <div class="language-section">
+                            <h2 class="section-heading">Suggested</h2>
+                            <div class="language-list">
+                                <div class="language-item" data-lang="en-us">
+                                    <span class="language-name">English (US)</span>
+                                    <div class="language-radio">
+                                        <input type="radio" name="language" id="lang-en-us" value="en-us" checked>
+                                        <label for="lang-en-us"></label>
+                                    </div>
+                                </div>
+                                <div class="language-item" data-lang="en-uk">
+                                    <span class="language-name">English (UK)</span>
+                                    <div class="language-radio">
+                                        <input type="radio" name="language" id="lang-en-uk" value="en-uk">
+                                        <label for="lang-en-uk"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="language-section">
+                            <h2 class="section-heading">Others</h2>
+                            <div class="language-list">
+                                <div class="language-item" data-lang="zh">
+                                    <span class="language-name">Mandarin</span>
+                                    <div class="language-radio">
+                                        <input type="radio" name="language" id="lang-zh" value="zh">
+                                        <label for="lang-zh"></label>
+                                    </div>
+                                </div>
+                                <div class="language-item" data-lang="hi">
+                                    <span class="language-name">Hindi</span>
+                                    <div class="language-radio">
+                                        <input type="radio" name="language" id="lang-hi" value="hi">
+                                        <label for="lang-hi"></label>
+                                    </div>
+                                </div>
+                                <div class="language-item" data-lang="es">
+                                    <span class="language-name">Spanish</span>
+                                    <div class="language-radio">
+                                        <input type="radio" name="language" id="lang-es" value="es">
+                                        <label for="lang-es"></label>
+                                    </div>
+                                </div>
+                                <div class="language-item" data-lang="ar">
+                                    <span class="language-name">Arabic</span>
+                                    <div class="language-radio">
+                                        <input type="radio" name="language" id="lang-ar" value="ar">
+                                        <label for="lang-ar"></label>
+                                    </div>
+                                </div>
+                                <div class="language-item" data-lang="bn">
+                                    <span class="language-name">Bengali</span>
+                                    <div class="language-radio">
+                                        <input type="radio" name="language" id="lang-bn" value="bn">
+                                        <label for="lang-bn"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setup-footer">
+                        <button type="button" class="btn btn-primary btn-setup" id="save-language">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Screen 3: Choose Location (Redesigned) -->
+    <div class="screen" id="choose-location">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column">
+                    <div class="back-button">
+                        <button class="btn-back" onclick="switchScreen('suggested-language')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="setup-content">
+                        <h1 class="setup-title">Choose Location</h1>
+                        <p class="setup-subtitle">Let's find your unforgettable event. Choose a location below
+                            to get started.</p>
+
+                        <div class="location-search-box">
+                            <div class="search-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+                                    <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </div>
+                            <input type="text" placeholder="Search your location..">
+                        </div>
+
+                        <button class="btn-map-link" onclick="switchScreen('choose-location-map')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Set Location on Map
+                        </button>
+
+                        <div class="current-location-preview">
+                            <div class="preview-card" id="map-preview">
+                                <!-- Leaflet Preview Map -->
+                                <div class="map-pin-overlay">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z"
+                                            fill="#FD6931" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setup-footer">
+                        <button type="button" class="btn btn-primary btn-setup" id="continue-location">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Screen 4: Choose Location - Map -->
+    <div class="screen" id="choose-location-map">
+        <div class="map-container-wrapper">
+            <div class="map-header">
+                <button class="btn-back" onclick="switchScreen('choose-location')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <h1 class="map-title">Choose Location</h1>
+                <button class="btn-options-map">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="5" r="1.5" fill="white" />
+                        <circle cx="12" cy="12" r="1.5" fill="white" />
+                        <circle cx="12" cy="19" r="1.5" fill="white" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="map" class="map-container">
+            </div>
+
+            <button type="button" class="btn-current-location-map" id="recenter-map-btn" onclick="useCurrentLocation()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="#FD6931" stroke-width="2" />
+                    <circle cx="12" cy="12" r="3" fill="#FD6931" />
+                </svg>
+            </button>
+
+            <div class="location-sheet" id="location-sheet">
+                <div class="sheet-handle"></div>
+                <div class="search-wrapper">
+                    <div class="search-input-wrapper">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="search-icon">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+                            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        <input type="text" class="search-input" id="map-search-input" placeholder="Search location..">
+                        <button class="filter-icon-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 6H21M7 12H17M10 18H14" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="popular-location-section">
+                    <h2 class="section-heading">Popular Location</h2>
+                    <div class="location-list-map" id="location-list-map">
+                        <!-- Locations will be dynamically loaded -->
+                    </div>
+                </div>
+
+                <div class="map-sheet-footer">
+                    <button type="button" class="btn btn-primary btn-setup" id="continue-location-map">Continue</button>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Screen 5: Add Profile -->
+    <div class="screen" id="add-profile">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column">
+                    <div class="back-button">
+                        <button class="btn-back" onclick="switchScreen('choose-location-map')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="setup-content">
+                        <h1 class="setup-title">Add a Profile</h1>
+                        <p class="setup-subtitle">Add your profile photo to personalize your account.
+                        </p>
+
+                        <div class="profile-photo-section">
+                            <div class="profile-photo-wrapper" id="profile-photo-wrapper">
+                                <input type="file" id="profile-photo-input" accept="image/*" style="display: none;">
+                                <div class="profile-photo-placeholder" id="profile-photo-placeholder">
+                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <circle cx="12" cy="7" r="4" stroke="white" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <img id="profile-photo-preview"
+                                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                                    alt="Profile Preview"
+                                    style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <button class="camera-icon-btn" id="camera-btn">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 4H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <circle cx="12" cy="13" r="4" stroke="white" stroke-width="2" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-setup" id="continue-profile">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Screen 6: Finish -->
+    <div class="screen finish-screen" id="finish">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column">
+                    <div class="back-button">
+                        <button class="btn-back" onclick="window.location.href='home.html'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="finish-content">
+                        <div class="success-icon-wrapper-finish">
+                            <div class="success-icon-black-circle">
+                                <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                                    <path d="M20 6L9 17L4 12" stroke="#FF6B35" stroke-width="3" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="confetti-dots-finish">
+                                <span class="dot-finish"></span>
+                                <span class="dot-finish"></span>
+                                <span class="dot-finish"></span>
+                                <span class="dot-finish"></span>
+                                <span class="dot-finish"></span>
+                                <span class="dot-finish"></span>
+                                <span class="dot-finish"></span>
+                                <span class="dot-finish"></span>
+                            </div>
+                        </div>
+
+                        <h1 class="finish-title">Congrats, it's done!</h1>
+                        <p class="finish-message">Now you can choose and order food as you like, enjoy
+                            and bon appetit!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="assets/js/script.js"></script>
+    <script src="./assets/js/realtime-mock.js"></script>
+    <script src="assets/js/auth-script.js"></script>
+    <script src="./assets/js/realtime-mock.js"></script>
+    <script>
+        // Screen switching
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+
+                // Initialize map when map screen is shown
+                if (screenId === 'choose-location-map') {
+                    setTimeout(() => {
+                        initLeafletMap();
+                        // Render locations in bottom sheet
+                        renderLocations('location-list-map');
+                    }, 100);
+                }
+
+                // Reset preview map if needed
+                if (screenId === 'choose-location') {
+                    setTimeout(initPreviewMap, 100);
+                }
+            }
+        }
+
+        // Screen 1: Select Language - Continue button
+        document.getElementById('continue-language').addEventListener('click', function () {
+            const selectedLang = document.getElementById('language-select').value;
+            if (!selectedLang) {
+                alert('Please select a language');
+                return;
+            }
+            localStorage.setItem('selectedLanguage', selectedLang);
+            switchScreen('suggested-language');
+        });
+
+        // Screen 2: Suggested Language - Radio button selection
+        document.querySelectorAll('.language-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    // Uncheck all radios
+                    document.querySelectorAll('input[name="language"]').forEach(r => r.checked = false);
+                    // Check this one
+                    radio.checked = true;
+                    // Update visual state
+                    document.querySelectorAll('.language-item').forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                }
+            });
+        });
+
+        // Also handle direct radio clicks
+        document.querySelectorAll('input[name="language"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('.language-item').forEach(i => i.classList.remove('selected'));
+                const item = this.closest('.language-item');
+                if (item) {
+                    item.classList.add('selected');
+                }
+            });
+        });
+
+        // Screen 2: Save Changes button
+        document.getElementById('save-language').addEventListener('click', function () {
+            const selectedLang = document.querySelector('input[name="language"]:checked');
+            if (!selectedLang) {
+                alert('Please select a language');
+                return;
+            }
+            localStorage.setItem('selectedLanguage', selectedLang.value);
+            switchScreen('choose-location');
+        });
+
+        // Screen 3: Choose Location - Load locations
+        const locations = [
+            { name: 'Los Angeles', details: 'California, United States', distance: '3.21 KM', lat: 34.0522, lng: -118.2437 },
+            { name: 'New York', details: 'New York, United States', distance: '5.45 KM', lat: 40.7128, lng: -74.0060 },
+            { name: 'Chicago', details: 'Illinois, United States', distance: '2.18 KM', lat: 41.8781, lng: -87.6298 },
+            { name: 'San Francisco', details: 'California, United States', distance: '4.32 KM', lat: 37.7749, lng: -122.4194 }
+        ];
+
+        function renderLocations(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = '';
+            locations.forEach((location, index) => {
+                const locationHTML = `
+                    <div class="location-item" data-location-index="${index}">
+                        <div class="location-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#FF6B35"/>
+                            </svg>
+                        </div>
+                        <div class="location-info">
+                            <div class="location-name">${location.name}</div>
+                            <div class="location-details">${location.details}</div>
+                        </div>
+                        <div class="location-distance">${location.distance}</div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', locationHTML);
+            });
+
+            // Attach click handlers
+            container.querySelectorAll('.location-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const index = parseInt(this.getAttribute('data-location-index'));
+                    const location = locations[index];
+                    localStorage.setItem('selectedLocation', JSON.stringify(location));
+
+                    // Update visual state
+                    container.querySelectorAll('.location-item').forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        }
+
+        // Screen 3: Continue button
+        document.getElementById('continue-location').addEventListener('click', function () {
+            const selectedLocation = localStorage.getItem('selectedLocation');
+            if (!selectedLocation) {
+                alert('Please select a location');
+                return;
+            }
+            switchScreen('choose-location-map');
+        });
+
+        // Screen 4: Location selection from map list
+        document.addEventListener('click', function (e) {
+            const locationItem = e.target.closest('.location-item[data-location-index]');
+            if (locationItem) {
+                const index = parseInt(locationItem.getAttribute('data-location-index'));
+                const location = locations[index];
+                localStorage.setItem('selectedLocation', JSON.stringify(location));
+
+                // Update visual state
+                document.querySelectorAll('.location-item').forEach(i => i.classList.remove('selected'));
+                locationItem.classList.add('selected');
+
+                // If map is initialized, update it
+                if (map && marker) {
+                    const pos = { lat: location.lat, lng: location.lng };
+                    map.setView(pos, 15);
+                    marker.setLatLng(pos);
+                }
+            }
+        });
+
+        // Screen 4: Initialize Leaflet Map
+        let map;
+        let marker;
+        let mapInitialized = false;
+        let previewMap;
+        let previewMarker;
+
+        function initPreviewMap() {
+            if (document.getElementById('map-preview')) {
+                if (previewMap) previewMap.remove();
+
+                previewMap = L.map('map-preview', {
+                    center: [34.0522, -118.2437],
+                    zoom: 13,
+                    zoomControl: false,
+                    dragging: false,
+                    touchZoom: false,
+                    doubleClickZoom: false,
+                    scrollWheelZoom: false,
+                    boxZoom: false,
+                    keyboard: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(previewMap);
+
+                previewMarker = L.marker([34.0522, -118.2437]).addTo(previewMap);
+
+                // Sync with saved location if any
+                const saved = localStorage.getItem('selectedLocation');
+                if (saved) {
+                    const loc = JSON.parse(saved);
+                    previewMap.setView([loc.lat, loc.lng], 13);
+                    previewMarker.setLatLng([loc.lat, loc.lng]);
+                }
+            }
+        }
+
+        function initLeafletMap() {
+            if (mapInitialized || !document.getElementById('map')) return;
+
+            try {
+                // Default location (Los Angeles)
+                const defaultLocation = [34.0522, -118.2437];
+
+                map = L.map('map', {
+                    center: defaultLocation,
+                    zoom: 13,
+                    zoomControl: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(map);
+
+                // Add marker
+                marker = L.marker(defaultLocation, {
+                    draggable: true
+                }).addTo(map);
+
+                // Update marker position on map click
+                map.on('click', function (e) {
+                    marker.setLatLng(e.latlng);
+                    updateLocationFromMap(e.latlng);
+                });
+
+                // Update on drag end
+                marker.on('dragend', function (e) {
+                    updateLocationFromMap(marker.getLatLng());
+                });
+
+                mapInitialized = true;
+
+                // Sync with saved location if any
+                const saved = localStorage.getItem('selectedLocation');
+                if (saved) {
+                    const loc = JSON.parse(saved);
+                    map.setView([loc.lat, loc.lng], 15);
+                    marker.setLatLng([loc.lat, loc.lng]);
+                }
+            } catch (error) {
+                console.error('Error initializing map:', error);
+            }
+        }
+
+        function updateLocationFromMap(latlng) {
+            // Reverse geocoding placeholder (OpenStreetMap Nominatim could be used here)
+            const location = {
+                name: 'Selected Location',
+                details: `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`,
+                distance: '0.00 KM',
+                lat: latlng.lat,
+                lng: latlng.lng
+            };
+            localStorage.setItem('selectedLocation', JSON.stringify(location));
+        }
+
+        // Screen 4: Use Current Location button
+        function useCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const pos = [position.coords.latitude, position.coords.longitude];
+                    if (!map) {
+                        initLeafletMap();
+                    }
+
+                    if (map) {
+                        map.setView(pos, 15);
+                        if (marker) {
+                            marker.setLatLng(pos);
+                            updateLocationFromMap({ lat: pos[0], lng: pos[1] });
+                        }
+                    }
+                }, function (error) {
+                    alert('Unable to get your location. Please select a location manually.');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        }
+
+        // Screen 5: Profile Photo Upload
+        document.getElementById('camera-btn').addEventListener('click', function () {
+            document.getElementById('profile-photo-input').click();
+        });
+
+        document.getElementById('profile-photo-input').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('profile-photo-preview');
+                    const placeholder = document.getElementById('profile-photo-placeholder');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    localStorage.setItem('profilePhoto', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Screen 5: Continue button
+        document.getElementById('continue-profile').addEventListener('click', function () {
+            // Save account setup completion
+            localStorage.setItem('accountSetupCompleted', 'true');
+            switchScreen('finish');
+        });
+
+        // Screen 4: Use Current Location button
+        const useCurrentLocationBtn = document.getElementById('use-current-location');
+        if (useCurrentLocationBtn) {
+            useCurrentLocationBtn.addEventListener('click', useCurrentLocation);
+        }
+
+        // Screen 4: Continue from map to profile
+        const continueLocationMapBtn = document.getElementById('continue-location-map');
+        if (continueLocationMapBtn) {
+            continueLocationMapBtn.addEventListener('click', function () {
+                const selectedLocation = localStorage.getItem('selectedLocation');
+                if (!selectedLocation) {
+                    alert('Please select a location');
+                    return;
+                }
+                switchScreen('add-profile');
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Render locations for list view
+            renderLocations('location-list');
+
+            // Load saved profile photo
+            const savedPhoto = localStorage.getItem('profilePhoto');
+            if (savedPhoto) {
+                const preview = document.getElementById('profile-photo-preview');
+                const placeholder = document.getElementById('profile-photo-placeholder');
+                preview.src = savedPhoto;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+
+            // Auto-redirect to home after 3 seconds on finish screen
+            const finishScreen = document.getElementById('finish');
+            if (finishScreen && finishScreen.classList.contains('active')) {
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+
+</html>

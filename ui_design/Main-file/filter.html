@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Filter - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body>
+    <div class="filter-screen">
+
+
+        <div class="filter-sheet">
+            <div class="filter-header">
+                <a class="close-btn" href="search.html" aria-label="Close">
+                    <span>×</span>
+                </a>
+                <h1>Filter</h1>
+            </div>
+
+            <div class="filter-block">
+                <div class="filter-title">Price Range</div>
+                <div class="price-range">
+                    <span>$10</span>
+                    <span>$500+</span>
+                </div>
+                <input type="range" min="10" max="500" value="200" class="range-input" data-live-price>
+            </div>
+
+            <div class="filter-block">
+                <div class="filter-title">Popular Filters</div>
+                <div class="chip-row">
+                    <button class="chip active">Sizzling</button>
+                    <button class="chip">Pizza</button>
+                    <button class="chip">Cookies</button>
+                    <button class="chip">Pastry</button>
+                    <button class="chip">Meat Church</button>
+                </div>
+            </div>
+
+            <div class="filter-block">
+                <div class="filter-title">Payment Type</div>
+                <label class="radio-item">
+                    <input type="radio" name="payment" checked>
+                    <span class="radio-dot"></span>
+                    <span>Pay now</span>
+                </label>
+                <label class="radio-item">
+                    <input type="radio" name="payment">
+                    <span class="radio-dot"></span>
+                    <span>Pay on delivery</span>
+                </label>
+            </div>
+
+            <div class="filter-block">
+                <div class="filter-title">Star Rating</div>
+                <div class="rating-row">
+                    <button class="rating-chip">1 ★</button>
+                    <button class="rating-chip">2 ★</button>
+                    <button class="rating-chip">3 ★</button>
+                    <button class="rating-chip">4 ★</button>
+                    <button class="rating-chip">5 ★</button>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="apply-btn" data-apply-filter>Apply Filter</button>
+                <button class="clear-btn" data-clear-filter>Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>

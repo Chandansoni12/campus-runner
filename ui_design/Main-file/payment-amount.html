@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Payment - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="payment-amount-page">
+    <!-- Status Bar -->
+
+
+    <!-- Payment Amount Screen -->
+    <div class="payment-amount-screen">
+        <!-- Header -->
+        <header class="payment-amount-header">
+            <a href="payment-selection.html" class="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </a>
+            <h1 class="payment-amount-title">Checkout</h1>
+        </header>
+
+        <!-- Content Area -->
+        <div class="payment-amount-content">
+            <!-- Order Summary -->
+            <div class="order-summary-section">
+                <h2 class="section-title">Order Summary</h2>
+                <div class="summary-item">
+                    <span>Order Amount</span>
+                    <span id="order-amount">$20.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Tax</span>
+                    <span id="tax-amount">$5.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Discount</span>
+                    <span id="discount-amount">$0.00</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-total">
+                    <span>Total Payment</span>
+                    <span id="total-amount">$25.00</span>
+                </div>
+            </div>
+
+            <!-- Payment Method Display -->
+            <div class="payment-method-display">
+                <h2 class="section-title">Payment Method</h2>
+                <div class="payment-method-card" id="payment-method-display">
+                    <!-- Will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Bottom Button -->
+        <div class="payment-amount-footer">
+            <button class="btn btn-primary pay-btn" id="pay-btn">Pay Now</button>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Load order data from checkout
+        function loadOrderData() {
+            const orderData = localStorage.getItem('currentOrder');
+            if (orderData) {
+                try {
+                    const order = JSON.parse(orderData);
+                    document.getElementById('order-amount').textContent = `$${order.orderAmount.toFixed(2)}`;
+                    document.getElementById('tax-amount').textContent = `$${order.tax.toFixed(2)}`;
+                    document.getElementById('discount-amount').textContent = `$${order.discount.toFixed(2)}`;
+                    document.getElementById('total-amount').textContent = `$${order.total.toFixed(2)}`;
+                } catch (e) {
+                    console.error('Error loading order data:', e);
+                }
+            }
+        }
+
+        // Display payment method
+        function displayPaymentMethod() {
+            const paymentDisplay = document.getElementById('payment-method-display');
+            const selectedPayment = localStorage.getItem('selectedPayment');
+            const newCardData = localStorage.getItem('newCardData');
+
+            if (newCardData) {
+                // Show newly added card
+                try {
+                    const card = JSON.parse(newCardData);
+                    paymentDisplay.innerHTML = `
+                        <div class="payment-method-item">
+                            <div class="payment-icon-small">
+                                <div class="mastercard-logo">
+                                    <div class="mc-circle mc-red"></div>
+                                    <div class="mc-circle mc-orange"></div>
+                                </div>
+                            </div>
+                            <div class="payment-info-small">
+                                <span class="payment-name-small">Card ending in ${card.lastFour}</span>
+                            </div>
+                        </div>
+                    `;
+                } catch (e) {
+                    console.error('Error parsing card data:', e);
+                }
+            } else if (selectedPayment) {
+                // Show selected payment method
+                try {
+                    const payment = JSON.parse(selectedPayment);
+                    let logoHTML = '';
+                    if (payment.logo === 'mastercard') {
+                        logoHTML = `
+                            <div class="mastercard-logo">
+                                <div class="mc-circle mc-red"></div>
+                                <div class="mc-circle mc-orange"></div>
+                            </div>
+                        `;
+                    } else if (payment.logo === 'paypal') {
+                        logoHTML = '<div class="paypal-logo-small">PayPal</div>';
+                    } else if (payment.logo === 'googlepay') {
+                        logoHTML = '<div class="googlepay-logo-small">G</div>';
+                    } else if (payment.logo === 'applepay') {
+                        logoHTML = '<div class="applepay-logo-small">🍎</div>';
+                    }
+
+                    paymentDisplay.innerHTML = `
+                        <div class="payment-method-item">
+                            <div class="payment-icon-small">
+                                ${logoHTML}
+                            </div>
+                            <div class="payment-info-small">
+                                <span class="payment-name-small">${payment.type}</span>
+                                ${payment.number ? `<span class="payment-number-small">${payment.number}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } catch (e) {
+                    console.error('Error parsing payment data:', e);
+                }
+            }
+        }
+
+        // Pay button handler
+        document.getElementById('pay-btn').addEventListener('click', function () {
+            // Simulate payment processing
+            this.textContent = 'Processing...';
+            this.disabled = true;
+
+            setTimeout(() => {
+                // Navigate to order success page
+                window.location.href = 'order-success.html';
+            }, 1500);
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            loadOrderData();
+            displayPaymentMethod();
+        });
+    </script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>

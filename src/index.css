@@ -10,8 +10,8 @@
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    background-color: #FAFAFA;
-    color: #1A1A1A;
+    background-color: #0D0D0D;
+    color: #FFFFFF;
     overflow: hidden;
     height: 100dvh;
     width: 100vw;
@@ -20,265 +20,141 @@
   }
 }
 
-/* ─── Design Tokens ─── */
+/* ─── Delivo PWA Design Tokens ─── */
 :root {
-  --bg-primary: #FAFAFA;
-  --bg-card: #FFFFFF;
-  --bg-chip: #F2F2F2;
-  --text-primary: #1A1A1A;
-  --text-secondary: #6B6B6B;
-  --text-tertiary: #ACACAC;
-  --accent-green: #34A853;
-  --accent-dark: #2D2D2D;
-  --border-light: #E5E5E5;
-  --shadow-card: 0 2px 16px rgba(0,0,0,0.06);
-  --shadow-hover: 0 8px 30px rgba(0,0,0,0.1);
+  --delivo-black: #000000;
+  --delivo-bg-dark: #0D0D0D;
+  --delivo-card-bg: rgba(26, 26, 26, 0.7);
+  --delivo-orange: #FD6931;
+  --delivo-orange-hover: #e55a24;
+  --delivo-orange-glow: rgba(253, 105, 49, 0.35);
+  --delivo-text-muted: #697586;
+  --delivo-border: rgba(255, 255, 255, 0.08);
+  --delivo-green: #28A745;
 }
 
-/* ─── Hero Font ─── */
+/* ─── Display Typography ─── */
 .font-display {
   font-family: 'Playfair Display', Georgia, serif;
 }
 
-/* ─── Card System ─── */
-.card-elevated {
-  background: var(--bg-card);
+/* ─── Delivo Card System ─── */
+.delivo-card {
+  background: var(--delivo-card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--delivo-border);
   border-radius: 20px;
-  box-shadow: var(--shadow-card);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.card-elevated:hover {
-  box-shadow: var(--shadow-hover);
+.delivo-card:hover {
+  border-color: rgba(253, 105, 49, 0.4);
   transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(253, 105, 49, 0.15);
 }
 
-.card-elevated-static {
-  background: var(--bg-card);
+.delivo-card-static {
+  background: var(--delivo-card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--delivo-border);
   border-radius: 20px;
-  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 
-/* ─── Chip System ─── */
-.chip-default {
-  background: var(--bg-chip);
-  color: var(--text-primary);
+/* ─── Category Chips ─── */
+.delivo-chip {
+  background: rgba(30, 30, 30, 0.8);
+  color: #9CA3AF;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 9999px;
-  padding: 8px 16px;
+  padding: 8px 18px;
   font-weight: 600;
   font-size: 13px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
+  gap: 8px;
+  transition: all 0.25s ease;
   white-space: nowrap;
   cursor: pointer;
-  border: none;
 }
 
-.chip-default:hover {
-  background: #E8E8E8;
-}
-
-.chip-active {
-  background: var(--accent-dark);
+.delivo-chip:hover {
   color: #FFFFFF;
+  border-color: rgba(253, 105, 49, 0.3);
+}
+
+.delivo-chip.active {
+  background: #FD6931;
+  color: #FFFFFF;
+  border-color: #FD6931;
+  box-shadow: 0 4px 15px rgba(253, 105, 49, 0.4);
+}
+
+/* ─── Buttons ─── */
+.btn-delivo-orange {
+  background-color: #FD6931;
+  color: #FFFFFF;
+  font-weight: 700;
   border-radius: 9999px;
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 13px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  transition: all 0.25s ease;
   cursor: pointer;
-  border: none;
+  box-shadow: 0 4px 15px rgba(253, 105, 49, 0.3);
 }
 
-/* ─── Price Badge ─── */
-.price-badge {
-  background: var(--accent-green);
+.btn-delivo-orange:hover {
+  background-color: #e55a24;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(253, 105, 49, 0.5);
+}
+
+.btn-delivo-orange:active {
+  transform: scale(0.97);
+}
+
+/* ─── Badges ─── */
+.badge-discount {
+  background: #FD6931;
   color: #FFFFFF;
   font-weight: 700;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* ─── Add Button ─── */
-.btn-add {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--accent-dark);
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+/* ─── Delivo Bottom Navigation ─── */
+.delivo-bottom-nav {
+  background: rgba(13, 13, 13, 0.92);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.btn-add:hover {
-  background: #1A1A1A;
-  transform: scale(1.1);
-}
-
-.btn-add:active {
-  transform: scale(0.92);
-}
-
-/* ─── Quantity Stepper ─── */
-.qty-stepper {
-  display: inline-flex;
-  align-items: center;
-  border: 1.5px solid var(--border-light);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--bg-card);
-}
-
-.qty-stepper button {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 600;
-  transition: background 0.15s ease;
-}
-
-.qty-stepper button:hover {
-  background: #F5F5F5;
-}
-
-.qty-stepper button:active {
-  background: #EBEBEB;
-}
-
-.qty-stepper .qty-value {
-  width: 36px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--text-primary);
-  border-left: 1.5px solid var(--border-light);
-  border-right: 1.5px solid var(--border-light);
-  line-height: 34px;
-}
-
-/* ─── Clean Header ─── */
-.clean-header {
-  background: #FFFFFF;
-  border-bottom: 1px solid var(--border-light);
-  padding: 12px 16px;
-}
-
-/* ─── Clean Bottom Nav ─── */
-.clean-bottom-nav {
-  background: #FFFFFF;
-  border-top: 1px solid var(--border-light);
-  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-}
-
-/* ─── Floating Cart Pill (light theme) ─── */
-.cart-pill {
-  background: var(--accent-dark);
-  color: #FFFFFF;
+/* ─── Floating Cart Pill ─── */
+.delivo-cart-pill {
+  background: linear-gradient(135deg, #1F1F1F 0%, #0D0D0D 100%);
+  border: 1px solid rgba(253, 105, 49, 0.4);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: white;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(253, 105, 49, 0.25);
 }
 
-.cart-pill:hover {
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-  transform: translateY(-2px);
+/* ─── Animations ─── */
+@keyframes delivoFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.cart-pill:active {
-  transform: scale(0.98);
+.animate-delivo-fade {
+  animation: delivoFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* ─── Alert Banners (Light Theme) ─── */
-.alert-info {
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
-  border-radius: 16px;
-  color: #1E40AF;
-}
-
-.alert-warning {
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
-  border-radius: 16px;
-  color: #991B1B;
-}
-
-.alert-success {
-  background: #F0FDF4;
-  border: 1px solid #BBF7D0;
-  border-radius: 16px;
-  color: #166534;
-}
-
-/* ─── Scrollbar ─── */
-::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
+/* Scrollbar Utility */
+.hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-/* ─── Page Transition ─── */
-@keyframes fadeSlideUp {
-  0% { opacity: 0; transform: translateY(12px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-.animate-page-enter {
-  animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes gentleBounce {
-  0% { transform: scale(0.95); opacity: 0; }
-  60% { transform: scale(1.02); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.animate-bounce-in {
-  animation: gentleBounce 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ─── Utility: Line Clamp ─── */
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

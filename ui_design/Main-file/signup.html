@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Sign Up - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="auth-page">
+    <!-- Status Bar -->
+
+
+    <!-- Sign Up - Empty State -->
+    <div class="screen active" id="signup-empty">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column justify-content-center">
+                    <div class="auth-content">
+                        <h1 class="auth-title">Create Your Account</h1>
+                        <p class="auth-subtitle">Join us today and unlock endless possibilities. It's quick, easy, and
+                            just a step away!</p>
+
+                        <form class="auth-form" id="signup-form-empty">
+                            <div class="form-group">
+                                <label for="fullname" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullname" placeholder="Enter your name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <div class="phone-wrapper">
+                                    <div class="country-selector">
+                                        <svg width="20" height="15" viewBox="0 0 20 15" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <mask id="mask0_6011_10858" style="mask-type:luminance"
+                                                maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="15">
+                                                <rect width="20" height="15" fill="white" />
+                                            </mask>
+                                            <g mask="url(#mask0_6011_10858)">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H20V15H0V0Z"
+                                                    fill="#E53051" />
+                                                <path
+                                                    d="M20 13.75V15H0V13.75H20ZM20 12.5H0V11.25H20V12.5ZM20 10H0V8.75H20V10ZM20 7.5H0V6.25H20V7.5ZM20 5H0V3.75H20V5ZM20 2.5H0V1.25H20V2.5Z"
+                                                    fill="#111111" />
+                                                <rect width="11.25" height="8.75" fill="#344AB9" />
+                                                <path
+                                                    d="M9.76367 1.37549H10.4189L9.9043 1.896L10.1035 2.71729L9.46289 2.25537L8.93164 2.62549H9.16895L8.6543 3.146L8.83105 3.87549H9.2041L9.46191 3.20557L9.76367 3.87549H10.4189L9.9043 4.396L10.1035 5.21729L9.46289 4.75537L8.93164 5.12549H9.16895L8.6543 5.646L8.83105 6.37549H9.2041L9.46191 5.70557L9.76367 6.37549H10.4189L9.9043 6.896L10.1035 7.71729L9.46289 7.25537L8.7998 7.71729L9.02344 6.896L8.43555 6.37549H8.72656L8.21289 6.00537L7.68164 6.37549H7.91895L7.4043 6.896L7.60352 7.71729L6.96289 7.25537L6.2998 7.71729L6.52344 6.896L5.93555 6.37549H6.22656L5.71289 6.00537L5.18164 6.37549H5.41895L4.9043 6.896L5.10352 7.71729L4.46289 7.25537L3.7998 7.71729L4.02344 6.896L3.43555 6.37549H3.72656L3.21289 6.00537L2.68164 6.37549H2.91895L2.4043 6.896L2.60352 7.71729L1.96289 7.25537L1.2998 7.71729L1.52344 6.896L0.935547 6.37549H1.7041L1.96191 5.70557L2.26367 6.37549H2.5752L2.77344 5.646L2.18555 5.12549H2.47656L1.96289 4.75537L1.2998 5.21729L1.52344 4.396L0.935547 3.87549H1.7041L1.96191 3.20557L2.26367 3.87549H2.5752L2.77344 3.146L2.18555 2.62549H2.47656L1.96289 2.25537L1.2998 2.71729L1.52344 1.896L0.935547 1.37549H1.7041L1.96191 0.705566L2.26367 1.37549H2.91895L2.4043 1.896L2.58105 2.62549H2.9541L3.21191 1.95557L3.51367 2.62549H3.8252L4.02344 1.896L3.43555 1.37549H4.2041L4.46191 0.705566L4.76367 1.37549H5.41895L4.9043 1.896L5.08105 2.62549H5.4541L5.71191 1.95557L6.01367 2.62549H6.3252L6.52344 1.896L5.93555 1.37549H6.7041L6.96191 0.705566L7.26367 1.37549H7.91895L7.4043 1.896L7.58105 2.62549H7.9541L8.21191 1.95557L8.51367 2.62549H8.8252L9.02344 1.896L8.43555 1.37549H9.2041L9.46191 0.705566L9.76367 1.37549ZM6.43164 5.12549H6.66895L6.1543 5.646L6.33105 6.37549H6.7041L6.96191 5.70557L7.26367 6.37549H7.5752L7.77344 5.646L7.18555 5.12549H7.47656L6.96289 4.75537L6.43164 5.12549ZM3.93164 5.12549H4.16895L3.6543 5.646L3.83105 6.37549H4.2041L4.46191 5.70557L4.76367 6.37549H5.0752L5.27344 5.646L4.68555 5.12549H4.97656L4.46289 4.75537L3.93164 5.12549ZM7.68164 3.87549H7.91895L7.4043 4.396L7.58105 5.12549H7.9541L8.21191 4.45557L8.51367 5.12549H8.8252L9.02344 4.396L8.43555 3.87549H8.72656L8.21289 3.50537L7.68164 3.87549ZM2.68164 3.87549H2.91895L2.4043 4.396L2.58105 5.12549H2.9541L3.21191 4.45557L3.51367 5.12549H3.8252L4.02344 4.396L3.43555 3.87549H3.72656L3.21289 3.50537L2.68164 3.87549ZM5.18164 3.87549H5.41895L4.9043 4.396L5.08105 5.12549H5.4541L5.71191 4.45557L6.01367 5.12549H6.3252L6.52344 4.396L5.93555 3.87549H6.22656L5.71289 3.50537L5.18164 3.87549ZM3.93164 2.62549H4.16895L3.6543 3.146L3.83105 3.87549H4.2041L4.46191 3.20557L4.76367 3.87549H5.0752L5.27344 3.146L4.68555 2.62549H4.97656L4.46289 2.25537L3.93164 2.62549ZM6.43164 2.62549H6.66895L6.1543 3.146L6.33105 3.87549H6.7041L6.96191 3.20557L7.26367 3.87549H7.5752L7.77344 3.146L7.18555 2.62549H7.47656L6.96289 2.25537L6.43164 2.62549Z"
+                                                    fill="#111111" />
+                                            </g>
+                                        </svg>
+
+                                        <span class="country-code">+1</span>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg" class="dropdown-icon">
+                                            <path d="M6 9L12 15L18 9" stroke="white" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <input type="tel" class="form-control phone-input" id="phone"
+                                        placeholder="Enter your number">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email-signup" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email-signup"
+                                    placeholder="Enter your email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password-signup" class="form-label">Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" class="form-control" id="password-signup"
+                                        placeholder="Enter your password">
+                                    <span class="password-toggle">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 5C7.5 5 3.73 7.61 2 11.5C3.73 15.39 7.5 18 12 18C16.5 18 20.27 15.39 22 11.5C20.27 7.61 16.5 5 12 5ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"
+                                                fill="currentColor" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-auth">Sign Up</button>
+                        </form>
+
+                        <div class="terms-wrapper">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="terms-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="terms-text">By creating an account, you agree to our <a href="#"
+                                        class="terms-link">Terms and Conditions</a> and <a href="#"
+                                        class="terms-link">Privacy Notice</a>.</span>
+                            </label>
+                        </div>
+
+                        <p class="signin-text">Already have an account? <a href="signin.html" class="signin-link">Sign
+                                In</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Sign Up - Focus State (with keyboard) -->
+    <div class="screen" id="signup-focus">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column">
+                    <div class="auth-content-compact">
+                        <h1 class="auth-title">Create Your Account</h1>
+                        <p class="auth-subtitle">Join us today and unlock endless possibilities. It's quick, easy, and
+                            just a step away!</p>
+
+                        <form class="auth-form" id="signup-form-focus">
+                            <div class="form-group">
+                                <label for="fullname2" class="form-label">Full Name</label>
+                                <input type="text" class="form-control active" id="fullname2" value="Jenny Wilson">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone2" class="form-label">Phone Number</label>
+                                <div class="phone-wrapper">
+                                    <div class="country-selector">
+                                        <img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20640%20480'%3E%3Cpath%20fill='%23bd3d44'%20d='M0%200h640v480H0z'/%3E%3Cpath%20stroke='%23fff'%20stroke-width='37.3'%20d='M0%2055.3h640M0%20129h640M0%20203h640M0%20277h640M0%20351h640M0%20425h640'/%3E%3Cpath%20fill='%23192172'%20d='M0%200h640v277.3H0z'/%3E%3Cpath%20fill='%23fff'%20d='M260.6%200h118.8v480H260.6z'/%3E%3Cpath%20fill='%23fff'%20d='M0%20196.6h640v86.8H0z'/%3E%3Cpath%20fill='%23bd3d44'%20d='M298%200h43.9v480H298z'/%3E%3Cpath%20fill='%23bd3d44'%20d='M0%20226.6h640v26.8H0z'/%3E%3C/svg%3E"
+                                            alt="US" class="country-flag">
+                                        <span class="country-code">+1</span>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg" class="dropdown-icon">
+                                            <path d="M6 9L12 15L18 9" stroke="white" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <input type="tel" class="form-control phone-input" id="phone2"
+                                        placeholder="Enter your number">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email-signup2" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email-signup2"
+                                    placeholder="Enter your email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password-signup2" class="form-label">Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" class="form-control" id="password-signup2"
+                                        placeholder="Enter your password">
+                                    <span class="password-toggle">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 5C7.5 5 3.73 7.61 2 11.5C3.73 15.39 7.5 18 12 18C16.5 18 20.27 15.39 22 11.5C20.27 7.61 16.5 5 12 5ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"
+                                                fill="currentColor" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-auth">Sign Up</button>
+                        </form>
+
+                        <div class="terms-wrapper">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="terms-checkbox2">
+                                <span class="checkmark"></span>
+                                <span class="terms-text">By creating an account, you agree to our <a href="#"
+                                        class="terms-link">Terms and Conditions</a> and <a href="#"
+                                        class="terms-link">Privacy Notice</a>.</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Virtual Keyboard -->
+        <div class="keyboard">
+            <div class="keyboard-row">
+                <button class="key">Q</button>
+                <button class="key">W</button>
+                <button class="key">E</button>
+                <button class="key">R</button>
+                <button class="key">T</button>
+                <button class="key">Y</button>
+                <button class="key">U</button>
+                <button class="key">I</button>
+                <button class="key">O</button>
+                <button class="key">P</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key">A</button>
+                <button class="key">S</button>
+                <button class="key">D</button>
+                <button class="key">F</button>
+                <button class="key">G</button>
+                <button class="key">H</button>
+                <button class="key">J</button>
+                <button class="key">K</button>
+                <button class="key">L</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key shift">⬆</button>
+                <button class="key">Z</button>
+                <button class="key">X</button>
+                <button class="key">C</button>
+                <button class="key">V</button>
+                <button class="key">B</button>
+                <button class="key">N</button>
+                <button class="key">M</button>
+                <button class="key backspace">⌫</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key number">123</button>
+                <button class="key emoji">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none" />
+                        <circle cx="8" cy="10" r="1.5" fill="white" />
+                        <circle cx="16" cy="10" r="1.5" fill="white" />
+                        <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="white" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+                <button class="key space">space</button>
+                <button class="key mic">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z"
+                            fill="white" />
+                        <path
+                            d="M17 11C17 13.76 14.76 16 12 16C9.24 16 7 13.76 7 11H5C5 14.53 7.61 17.43 11 17.92V21H13V17.92C16.39 17.43 19 14.53 19 11H17Z"
+                            fill="white" />
+                    </svg>
+                </button>
+                <button class="key return">↵</button>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Sign Up - Filled State -->
+    <div class="screen" id="signup-filled">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 d-flex flex-column justify-content-center">
+                    <div class="auth-content">
+                        <h1 class="auth-title">Create Your Account</h1>
+                        <p class="auth-subtitle">Join us today and unlock endless possibilities. It's quick, easy, and
+                            just a step away!</p>
+
+                        <form class="auth-form" id="signup-form-filled">
+                            <div class="form-group">
+                                <label for="fullname3" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullname3" value="Jenny Wilson">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone3" class="form-label">Phone Number</label>
+                                <div class="phone-wrapper">
+                                    <div class="country-selector">
+                                        <img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20640%20480'%3E%3Cpath%20fill='%23bd3d44'%20d='M0%200h640v480H0z'/%3E%3Cpath%20stroke='%23fff'%20stroke-width='37.3'%20d='M0%2055.3h640M0%20129h640M0%20203h640M0%20277h640M0%20351h640M0%20425h640'/%3E%3Cpath%20fill='%23192172'%20d='M0%200h640v277.3H0z'/%3E%3Cpath%20fill='%23fff'%20d='M260.6%200h118.8v480H260.6z'/%3E%3Cpath%20fill='%23fff'%20d='M0%20196.6h640v86.8H0z'/%3E%3Cpath%20fill='%23bd3d44'%20d='M298%200h43.9v480H298z'/%3E%3Cpath%20fill='%23bd3d44'%20d='M0%20226.6h640v26.8H0z'/%3E%3C/svg%3E"
+                                            alt="US" class="country-flag">
+                                        <span class="country-code">+1</span>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg" class="dropdown-icon">
+                                            <path d="M6 9L12 15L18 9" stroke="white" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <input type="tel" class="form-control phone-input" id="phone3" value="308.555.0121">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email-signup3" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email-signup3" value="wilson@09gail.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password-signup3" class="form-label">Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" class="form-control" id="password-signup3"
+                                        value="password123">
+                                    <span class="password-toggle">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 5C7.5 5 3.73 7.61 2 11.5C3.73 15.39 7.5 18 12 18C16.5 18 20.27 15.39 22 11.5C20.27 7.61 16.5 5 12 5ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"
+                                                fill="currentColor" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-auth">Sign Up</button>
+                        </form>
+
+                        <div class="terms-wrapper">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="terms-checkbox3">
+                                <span class="checkmark"></span>
+                                <span class="terms-text">By creating an account, you agree to our <a href="#"
+                                        class="terms-link">Terms and Conditions</a> and <a href="#"
+                                        class="terms-link">Privacy Notice</a>.</span>
+                            </label>
+                        </div>
+
+                        <p class="signin-text">Already have an account? <a href="signin.html" class="signin-link">Sign
+                                In</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="assets/js/script.js"></script>
+    <script src="./assets/js/realtime-mock.js"></script>
+    <script src="assets/js/auth-script.js"></script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>

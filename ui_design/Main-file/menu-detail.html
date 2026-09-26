@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Menu Detail - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="menu-detail-page">
+    <!-- Menu Detail Screen -->
+    <div class="menu-detail-screen">
+        <!-- Hero Image -->
+        <div class="menu-detail-hero">
+            <img src="./assets/img/menu-details/menu-details-thumb.png" alt="Chinese Fried Noodles"
+                class="menu-detail-hero-image">
+
+            <!-- Header (Overlaid on Image) -->
+            <div class="menu-detail-header">
+                <a href="home.html" class="back-btn" aria-label="Go back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <h1 class="menu-detail-title">Menu Detail</h1>
+                <button class="favorite-header-btn" data-favorite-toggle aria-label="Add to favorites">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"
+                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Image Indicator Dots -->
+            <!-- <div class="image-indicator">
+                <div class="indicator-dot active"></div>
+                <div class="indicator-dot"></div>
+                <div class="indicator-dot"></div>
+            </div> -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="menu-detail-content">
+            <!-- Food Name & Price -->
+            <div class="menu-detail-name-price">
+                <h2 class="menu-detail-name">Chinese Fried Noodles</h2>
+                <span class="menu-detail-price">$ 15.00</span>
+            </div>
+
+            <!-- Information Badges -->
+            <div class="menu-info-badges">
+                <div class="info-badge">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M1 3H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19C19.4693 16.009 19.9268 15.8526 20.2925 15.5583C20.6581 15.264 20.9086 14.8504 21 14.39L22.6 7H6"
+                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>Free Delivery</span>
+                </div>
+                <div class="info-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" />
+                        <path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <span>15 - 30min</span>
+                </div>
+                <div class="info-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            fill="white" />
+                    </svg>
+                    <span>4.5</span>
+                </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="menu-description-section">
+                <h3 class="description-title">Description</h3>
+                <div class="menu-description-wrapper">
+                    <p class="menu-description" id="menu-description">
+                        <span class="description-bold">Noodles</span>
+                        <span class="description-text">With Meat is a typical food from our restaurant that is much in
+                            demand by many people, this is very recommended for you</span>
+                    </p>
+                    <button class="read-more-btn" id="read-more-btn">Read More...</button>
+                    <p class="menu-description-full" id="menu-description-full" style="display: none;">
+                        Noodles With Meat is a typical food from our restaurant that is much in demand by many people,
+                        this
+                        is very recommended for you. Our signature dish features perfectly cooked noodles combined with
+                        tender, marinated meat, fresh vegetables, and our special sauce blend. Each serving is prepared
+                        fresh to order, ensuring the highest quality and flavor. This dish has been a customer favorite
+                        for
+                        years and continues to be one of our bestsellers.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="menu-reviews-section">
+                <div class="reviews-header">
+                    <h3 class="reviews-title">Reviews (120)</h3>
+                    <a href="reviews.html" class="see-all-link">See All</a>
+                </div>
+
+                <div class="reviews-list">
+                    <div class="review-card">
+                        <img src="./assets/img/reviewer/user1.png" alt="Dianne Russell" class="reviewer-avatar">
+                        <div class="review-content">
+                            <div class="reviewer-info">
+                                <span class="reviewer-name">Dianne Russell</span>
+                                <div class="review-rating">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                            fill="#FF6B35" />
+                                    </svg>
+                                    <span class="rating-value">4.5</span>
+                                </div>
+                            </div>
+                            <p class="review-text">Amazing! The burger was juicier and tastier than I expected.
+                                Perfectly grilled with fresh toppings. Highly recommend!</p>
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <img src="./assets/img/reviewer/user2.png" alt="Cody Fisher" class="reviewer-avatar">
+                        <div class="review-content">
+                            <div class="reviewer-info">
+                                <span class="reviewer-name">Cody Fisher</span>
+                                <div class="review-rating">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                            fill="#FF6B35" />
+                                    </svg>
+                                    <span class="rating-value">4.4</span>
+                                </div>
+                            </div>
+                            <p class="review-text">The burger was cooked to perfection, and the flavors were spot on.
+                                Loved the special sauce—definitely coming back for more!</p>
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <img src="./assets/img/reviewer/user3.png" alt="Jacob Jones" class="reviewer-avatar">
+                        <div class="review-content">
+                            <div class="reviewer-info">
+                                <span class="reviewer-name">Jacob Jones</span>
+                                <div class="review-rating">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                            fill="#FF6B35" />
+                                    </svg>
+                                    <span class="rating-value">4.8</span>
+                                </div>
+                            </div>
+                            <p class="review-text">Incredible! The burger was even better than the pictures. The
+                                patty was so flavorful, and the bun was soft and fresh. A must-try!</p>
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <img src="./assets/img/reviewer/user4.png" alt="Esther Howard" class="reviewer-avatar">
+                        <div class="review-content">
+                            <div class="reviewer-info">
+                                <span class="reviewer-name">Esther Howard</span>
+                                <div class="review-rating">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                            fill="#FF6B35" />
+                                    </svg>
+                                    <span class="rating-value">4.4</span>
+                                </div>
+                            </div>
+                            <p class="review-text">The burger was delicious, and the portion size was just right.
+                                Loved the combination of textures and flavors. Great job!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="menu-detail-actions">
+            <div class="quantity-selector">
+                <button class="quantity-btn quantity-minus" id="decrease-qty" aria-label="Decrease quantity">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <span class="quantity-value" id="quantity-value">2</span>
+                <button class="quantity-btn quantity-plus" id="increase-qty" aria-label="Increase quantity">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            <button class="add-to-cart-btn" data-add-to-cart data-quantity="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z"
+                        fill="white" />
+                    <path
+                        d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z"
+                        fill="white" />
+                    <path
+                        d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19C19.4693 16.009 19.9268 15.8526 20.2925 15.5583C20.6581 15.264 20.9086 14.8504 21 14.39L22.6 7H6"
+                        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Add to Cart</span>
+            </button>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="./assets/js/realtime-mock.js"></script>
+    <script>
+        // Quantity Selector
+        const decreaseBtn = document.getElementById('decrease-qty');
+        const increaseBtn = document.getElementById('increase-qty');
+        const quantityValue = document.getElementById('quantity-value');
+        const addToCartBtn = document.querySelector('[data-add-to-cart]');
+
+        let quantity = 2;
+
+        const updateQuantity = (newQty) => {
+            quantity = Math.max(1, Math.min(99, newQty));
+            quantityValue.textContent = quantity;
+            if (addToCartBtn) {
+                addToCartBtn.setAttribute('data-quantity', quantity);
+            }
+        };
+
+        decreaseBtn.addEventListener('click', () => {
+            updateQuantity(quantity - 1);
+        });
+
+        increaseBtn.addEventListener('click', () => {
+            updateQuantity(quantity + 1);
+        });
+
+        // Read More Toggle
+        const readMoreBtn = document.getElementById('read-more-btn');
+        const descriptionFull = document.getElementById('menu-description-full');
+        const descriptionShort = document.getElementById('menu-description');
+
+        readMoreBtn.addEventListener('click', () => {
+            if (descriptionFull.style.display === 'none') {
+                descriptionFull.style.display = 'block';
+                descriptionShort.style.display = 'none';
+                readMoreBtn.textContent = 'Read Less...';
+            } else {
+                descriptionFull.style.display = 'none';
+                descriptionShort.style.display = 'block';
+                readMoreBtn.textContent = 'Read More...';
+            }
+        });
+
+        // Favorite Toggle
+        const favoriteBtn = document.querySelector('[data-favorite-toggle]');
+        let isFavorited = false;
+
+        favoriteBtn.addEventListener('click', () => {
+            isFavorited = !isFavorited;
+            const svgPath = favoriteBtn.querySelector('svg path');
+            if (isFavorited) {
+                svgPath.setAttribute('fill', '#FF6B35');
+                svgPath.setAttribute('stroke', '#FF6B35');
+            } else {
+                svgPath.setAttribute('fill', 'none');
+                svgPath.setAttribute('stroke', 'white');
+            }
+        });
+    </script>
+</body>
+
+</html>

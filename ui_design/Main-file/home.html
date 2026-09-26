@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Home - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body>
+    <div class="home-screen-wrapper">
+        <!-- Home Screen -->
+        <div class="home-screen">
+            <!-- Orange Header Section -->
+            <div class="home-header">
+                <!-- Header Content -->
+                <div class="header-content">
+                    <div class="header-top">
+                        <div class="profile-section" onclick="window.location.href='account-setup.html'"
+                            style="cursor: pointer;">
+                            <img src="./assets/img/profile.png" alt="Profile" class="profile-img">
+                        </div>
+                        <div class="location-section">
+                            <div class="location-label">
+                                <span>Delivery location</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 9L12 15L18 9" stroke="white" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="location-address">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M8.16667 5.6665C7.52333 5.6665 7 6.18984 7 6.83384C7 7.47717 7.52333 7.99984 8.16667 7.99984C8.81 7.99984 9.33333 7.47717 9.33333 6.83384C9.33333 6.18984 8.81 5.6665 8.16667 5.6665ZM8.16667 8.99984C6.972 8.99984 6 8.0285 6 6.83384C6 5.6385 6.972 4.6665 8.16667 4.6665C9.36133 4.6665 10.3333 5.6385 10.3333 6.83384C10.3333 8.0285 9.36133 8.99984 8.16667 8.99984Z"
+                                        fill="white" />
+                                    <mask id="mask0_8108_2629" style="mask-type:luminance" maskUnits="userSpaceOnUse"
+                                        x="2" y="1" width="12" height="14">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M2.6665 1.3335H13.6662V14.3335H2.6665V1.3335Z" fill="white" />
+                                    </mask>
+                                    <g mask="url(#mask0_8108_2629)">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M8.16602 2.3335C5.68468 2.3335 3.66602 4.3715 3.66602 6.8755C3.66602 10.0615 7.41535 13.1655 8.16602 13.3308C8.91668 13.1648 12.666 10.0608 12.666 6.8755C12.666 4.3715 10.6473 2.3335 8.16602 2.3335ZM8.16602 14.3335C6.97002 14.3335 2.66602 10.6322 2.66602 6.8755C2.66602 3.8195 5.13335 1.3335 8.16602 1.3335C11.1987 1.3335 13.666 3.8195 13.666 6.8755C13.666 10.6322 9.36202 14.3335 8.16602 14.3335Z"
+                                            fill="white" />
+                                    </g>
+                                </svg>
+
+                                <span data-live-location>44 Street Town</span>
+                            </div>
+                        </div>
+                        <div class="notification-section">
+                            <div class="notification-icon-wrapper" onclick="window.location.href='notifications.html'"
+                                style="cursor: pointer;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z"
+                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21"
+                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                <span class="notification-badge" data-live-notifications>7</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h1 class="header-title">What would you prefer to eat today?</h1>
+
+                    <!-- Search Bar (Positioned within header) -->
+                    <div class="search-section">
+                        <div class="search-bar">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg" class="search-icon">
+                                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+                                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <input type="text" placeholder="Search menu, restaurant" class="search-input"
+                                data-live-search-input onclick="window.location.href='search.html'" readonly>
+                            <a class="filter-link" href="filter.html" aria-label="Open filters">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M21.25 11.9999H8.895M4.534 11.9999H2.75M4.534 11.9999C4.534 11.4217 4.76368 10.8672 5.17251 10.4584C5.58134 10.0496 6.13583 9.81989 6.714 9.81989C7.29217 9.81989 7.84666 10.0496 8.25549 10.4584C8.66432 10.8672 8.894 11.4217 8.894 11.9999C8.894 12.5781 8.66432 13.1326 8.25549 13.5414C7.84666 13.9502 7.29217 14.1799 6.714 14.1799C6.13583 14.1799 5.58134 13.9502 5.17251 13.5414C4.76368 13.1326 4.534 12.5781 4.534 11.9999ZM21.25 18.6069H15.502M15.502 18.6069C15.502 19.1852 15.2718 19.7403 14.8628 20.1492C14.4539 20.5582 13.8993 20.7879 13.321 20.7879C12.7428 20.7879 12.1883 20.5572 11.7795 20.1484C11.3707 19.7396 11.141 19.1851 11.141 18.6069M15.502 18.6069C15.502 18.0286 15.2718 17.4745 14.8628 17.0655C14.4539 16.6566 13.8993 16.4269 13.321 16.4269C12.7428 16.4269 12.1883 16.6566 11.7795 17.0654C11.3707 17.4742 11.141 18.0287 11.141 18.6069M11.141 18.6069H2.75M21.25 5.39289H18.145M13.784 5.39289H2.75M13.784 5.39289C13.784 4.81472 14.0137 4.26023 14.4225 3.8514C14.8313 3.44257 15.3858 3.21289 15.964 3.21289C16.2503 3.21289 16.5338 3.26928 16.7983 3.37883C17.0627 3.48839 17.3031 3.64897 17.5055 3.8514C17.7079 4.05383 17.8685 4.29415 17.9781 4.55864C18.0876 4.82313 18.144 5.10661 18.144 5.39289C18.144 5.67917 18.0876 5.96265 17.9781 6.22714C17.8685 6.49163 17.7079 6.73195 17.5055 6.93438C17.3031 7.13681 17.0627 7.29739 16.7983 7.40695C16.5338 7.5165 16.2503 7.57289 15.964 7.57289C15.3858 7.57289 14.8313 7.34321 14.4225 6.93438C14.0137 6.52555 13.784 5.97106 13.784 5.39289Z"
+                                        stroke="#787878" stroke-width="1.5" stroke-miterlimit="10"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Main Content -->
+            <div class="home-content">
+
+                <!-- Categories -->
+                <div class="categories-section">
+                    <h2 class="section-title">Categories</h2>
+                    <div class="categories-scroll">
+                        <button class="category-btn active">All</button>
+                        <button class="category-btn">
+                            <img src="assets/img/home/burger.png" alt="img">
+                            <span>Burgers</span>
+                        </button>
+                        <button class="category-btn">
+                            <img src="assets/img/home/pizza.png" alt="img">
+                            <span>Pizza</span>
+                        </button>
+                        <button class="category-btn">
+                            <img src="assets/img/home/cookies.png" alt="img">
+                            <span>Cookies</span>
+                        </button>
+                        <button class="category-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <span>Noodles</span>
+                        </button>
+                        <button class="category-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span>Desserts</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Super Deals -->
+                <div class="deals-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Super Deals 🔥</h2>
+                        <a href="search.html" class="see-all-link">See All</a>
+                    </div>
+                    <div class="food-cards-scroll" data-live-results>
+                        <div class="food-card">
+                            <div class="food-card-image">
+                                <img src="./assets/img/onboarding-bg.jpg" alt="Tandoori Pizza">
+                                <span class="discount-badge">10% Off</span>
+                                <button class="favorite-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="food-card-content">
+                                <div class="food-name-price">
+                                    <h3 class="food-name">Tandoori Pizza</h3>
+                                    <span class="food-price">$15.00</span>
+                                </div>
+                                <div class="food-delivery-info">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    <span>15-30 min</span>
+                                    <span class="separator">•</span>
+                                    <span>1.3 km</span>
+                                </div>
+                                <div class="food-rating">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                            fill="#FF6B35" />
+                                    </svg>
+                                    <span class="rating-value">4.3</span>
+                                    <span class="rating-count">(27 Reviews)</span>
+                                </div>
+                                <button class="buy-now-btn" data-cart-action>Buy Now</button>
+                            </div>
+                        </div>
+
+                        <div class="food-card">
+                            <div class="food-card-image">
+                                <img src="./assets/img/onboarding-bg.jpg" alt="Burger">
+                                <span class="discount-badge">15% Off</span>
+                                <button class="favorite-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="food-card-content">
+                                <div class="food-name-price">
+                                    <h3 class="food-name">Burger Deluxe</h3>
+                                    <span class="food-price">$18.00</span>
+                                </div>
+                                <div class="food-delivery-info">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    <span>20-35 min</span>
+                                    <span class="separator">•</span>
+                                    <span>2.5 km</span>
+                                </div>
+                                <div class="food-rating">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                            fill="#FF6B35" />
+                                    </svg>
+                                    <span class="rating-value">4.7</span>
+                                    <span class="rating-count">(35 Reviews)</span>
+                                </div>
+                                <button class="buy-now-btn" data-cart-action>Buy Now</button>
+                            </div>
+                        </div>
+
+                        <div class="food-card">
+                            <div class="food-card-image">
+                                <img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='280'%20height='200'%20viewBox='0%200%20280%20200'%3E%3Cdefs%3E%3ClinearGradient%20id='noodleGrad'%20x1='0%25'%20y1='0%25'%20x2='100%25'%20y2='100%25'%3E%3Cstop%20offset='0%25'%20style='stop-color:%23FF6B35;stop-opacity:1'%20/%3E%3Cstop%20offset='100%25'%20style='stop-color:%23FF8C5A;stop-opacity:1'%20/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='280'%20height='200'%20fill='url(%23noodleGrad)'/%3E%3Cellipse%20cx='140'%20cy='100'%20rx='80'%20ry='50'%20fill='%23FFF8E1'/%3E%3Cpath%20d='M60%20100%20Q80%2090%20100%20100%20T140%20100%20T180%20100%20T220%20100'%20stroke='%23FF6B35'%20stroke-width='3'%20fill='none'/%3E%3Cpath%20d='M70%20110%20Q90%20100%20110%20110%20T150%20110%20T190%20110%20T230%20110'%20stroke='%23FF6B35'%20stroke-width='3'%20fill='none'/%3E%3Ccircle%20cx='120'%20cy='95'%20r='4'%20fill='%23FF6B35'/%3E%3Ccircle%20cx='160'%20cy='105'%20r='4'%20fill='%23FF6B35'/%3E%3Ctext%20x='140'%20y='180'%20text-anchor='middle'%20font-size='24'%20font-weight='bold'%20fill='white'%3EChinese%20Fried%3C/text%3E%3C/svg%3E"
+                                    alt="Chinese Fried">
+                                <span class="discount-badge">10% Off</span>
+                                <button class="favorite-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"
+                                            stroke="white" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="food-card-content">
+                                <div class="food-name-price">
+                                    <h3 class="food-name">Chinese Fried</h3>
+                                    <span class="food-price">$12.50</span>
+                                </div>
+                                <div class="food-delivery-info">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    <span>20-35 min</span>
+                                    <span class="separator">•</span>
+                                    <span>2.1 km</span>
+                                </div>
+                                <div class="food-rating">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                                            fill="#FF6B35" />
+                                    </svg>
+                                    <span class="rating-value">4.5</span>
+                                    <span class="rating-count">(42 Reviews)</span>
+                                </div>
+                                <button class="buy-now-btn" data-cart-action>Buy Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advertisement Banner -->
+                <div class="ad-banner">
+                    <div class="ad-content">
+                        <div class="ad-text">
+                            <h3 class="ad-title">Up To 30% Off On First Order</h3>
+                            <button class="ad-cta">Order Now</button>
+                        </div>
+                        <div class="ad-image">
+                            <img src="./assets/img/onboarding-bg.jpg" alt="Promo">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hot Deals -->
+                <div class="hot-deals-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Hot Deals 🔥</h2>
+                        <a href="search.html" class="see-all-link">See All</a>
+                    </div>
+                    <div class="hot-deals-list">
+                        <div class="hot-deal-card">
+                            <img src="./assets/img/onboarding-bg.jpg" alt="Cheese Sizzling" class="hot-deal-image">
+                            <div class="hot-deal-info">
+                                <a href="menu-detail.html" class="hot-deal-title"
+                                    style="text-decoration: none; color: inherit; cursor: pointer;">Cheese Sizzling</a>
+                                <div class="hot-deal-meta">15-30 min • 1.3 km</div>
+                                <div class="hot-deal-rating">4.2 (92 Reviews)</div>
+                                <div class="hot-deal-price">$15.00</div>
+                            </div>
+                            <button class="hot-deal-add" data-cart-action data-item-name="Cheese Sizzling"
+                                data-item-price="15.00">Add</button>
+                        </div>
+                        <div class="hot-deal-card">
+                            <img src="./assets/img/onboarding-bg.jpg" alt="Classic Burger" class="hot-deal-image">
+                            <div class="hot-deal-info">
+                                <a href="menu-detail.html" class="hot-deal-title"
+                                    style="text-decoration: none; color: inherit; cursor: pointer;">Classic Burger</a>
+                                <div class="hot-deal-meta">15-30 min • 1.3 km</div>
+                                <div class="hot-deal-rating">4.2 (92 Reviews)</div>
+                                <div class="hot-deal-price">$15.00</div>
+                            </div>
+                            <button class="hot-deal-add" data-cart-action data-item-name="Classic Burger"
+                                data-item-price="15.00">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <a href="home.html" class="nav-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+                            fill="#FF6B35" stroke="#FF6B35" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M9 22V12H15V22" stroke="#FF6B35" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Home</span>
+                </a>
+                <a href="checkout.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15M9 5C9 6.10457 9.89543 7 11 7H13C14.1046 7 15 6.10457 15 5M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>My Order</span>
+                    <span class="nav-badge" data-cart-count style="display: none;">0</span>
+                </a>
+                <a href="favorites.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7564 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7564 5.72718 21.351 5.12075 20.84 4.61Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>Favorites</span>
+                </a>
+                <a href="user-profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Profile</span>
+                </a>
+            </nav>
+            <div class="home-indicator"></div>
+        </div>
+    </div><!-- .home-screen-wrapper -->
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="assets/js/script.js"></script>
+    <script src="./assets/js/realtime-mock.js"></script>
+    <script>
+        // Simple auth check for PWA template (optional - can be removed if not needed)
+        // Check if user is authenticated
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        if (!isAuthenticated && window.location.pathname.includes('home.html')) {
+            // Optional: redirect to signin if not authenticated
+            // Uncomment the line below if you want to enforce authentication
+            // window.location.href = 'signin.html';
+        }
+    </script>
+    <script>
+        // Category selection
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Favorite button toggle
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const svg = this.querySelector('svg path');
+                if (svg.getAttribute('fill') === 'none') {
+                    svg.setAttribute('fill', '#FF6B35');
+                } else {
+                    svg.setAttribute('fill', 'none');
+                }
+            });
+        });
+
+        // Food card click to navigate to menu detail
+        document.querySelectorAll('.food-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function (e) {
+                // Don't navigate if clicking on buttons
+                if (e.target.closest('button')) {
+                    return;
+                }
+                window.location.href = 'menu-detail.html';
+            });
+        });
+
+        // Add to cart functionality
+        document.querySelectorAll('[data-cart-action]').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                // Get cart from localStorage or initialize empty array
+                let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+                // Get item details from data attributes or parent elements
+                const itemName = this.getAttribute('data-item-name') || this.closest('.hot-deal-card, .food-card')?.querySelector('.food-name, .hot-deal-title')?.textContent.trim() || 'Item';
+                const itemPrice = this.getAttribute('data-item-price') || this.closest('.hot-deal-card, .food-card')?.querySelector('.food-price, .hot-deal-price')?.textContent.replace('$', '').trim() || '0.00';
+
+                // Create cart item
+                const cartItem = {
+                    id: Date.now(),
+                    name: itemName,
+                    price: parseFloat(itemPrice),
+                    quantity: 1
+                };
+
+                // Add to cart
+                cart.push(cartItem);
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                // Update cart count badge
+                const cartBadge = document.querySelector('[data-cart-count]');
+                if (cartBadge) {
+                    cartBadge.textContent = cart.length;
+                    cartBadge.style.display = cart.length > 0 ? 'flex' : 'none';
+                }
+
+                // Visual feedback
+                const originalText = this.textContent;
+                this.textContent = '✓ Added';
+                this.style.backgroundColor = '#28a745';
+
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.backgroundColor = '';
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+
+</html>

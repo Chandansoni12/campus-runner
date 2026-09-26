@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Rating - Driver - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="rating-driver-page">
+    <!-- Status Bar -->
+
+
+    <!-- Rating Driver Screen -->
+    <div class="rating-driver-screen">
+        <header class="rating-driver-header">
+            <a href="order-arrived.html" class="back-btn-map" aria-label="Back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </a>
+            <h1 class="rating-driver-title">Rating</h1>
+        </header>
+
+        <div class="rating-driver-content">
+            <!-- Order Details -->
+            <div class="rating-order-info">
+                <h2 class="rating-order-number" id="rating-order-number">Order Number - 012345</h2>
+                <div class="rating-order-time">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <span id="rating-order-time">Today, 09:35 AM</span>
+                </div>
+            </div>
+
+            <!-- Driver Card -->
+            <div class="rating-driver-card">
+                <div class="rating-driver-avatar-wrap">
+                    <img src="./assets/img/profile.png" alt="Lucas Nathan" class="rating-driver-avatar"
+                        id="rating-driver-avatar"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="rating-driver-avatar-placeholder" style="display: none;">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="12" cy="7" r="4" stroke="white" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="rating-driver-badge">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 13L12 2L19 13H5Z" stroke="white" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M5 13V22H19V13" stroke="white" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="rating-driver-name" id="rating-driver-name">Lucas Nathan</h3>
+            </div>
+
+            <!-- Rating Prompt -->
+            <p class="rating-prompt">How much rating would you like to give?</p>
+
+            <!-- Star Rating -->
+            <div class="star-rating" id="star-rating" role="group" aria-label="Rate driver">
+                <button type="button" class="star-btn" data-value="1" aria-label="1 star">
+                    <svg class="star-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button type="button" class="star-btn" data-value="2" aria-label="2 stars">
+                    <svg class="star-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button type="button" class="star-btn" data-value="3" aria-label="3 stars">
+                    <svg class="star-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button type="button" class="star-btn" data-value="4" aria-label="4 stars">
+                    <svg class="star-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button type="button" class="star-btn" data-value="5" aria-label="5 stars">
+                    <svg class="star-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="rating-driver-footer">
+            <button type="button" class="rating-submit-btn" id="rating-submit-btn">Submit</button>
+        </div>
+
+        <div class="home-indicator"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            var orderNum = localStorage.getItem('orderNumber') || '012345';
+            document.getElementById('rating-order-number').textContent = 'Order Number - ' + orderNum;
+            var now = new Date();
+            document.getElementById('rating-order-time').textContent = 'Today, ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        })();
+
+        var selectedRating = 4;
+        var container = document.getElementById('star-rating');
+        var stars = container.querySelectorAll('.star-btn');
+
+        function updateStars() {
+            stars.forEach(function (btn) {
+                var value = parseInt(btn.getAttribute('data-value'), 10);
+                if (value <= selectedRating) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        stars.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                selectedRating = parseInt(btn.getAttribute('data-value'), 10);
+                updateStars();
+            });
+        });
+
+        document.getElementById('rating-submit-btn').addEventListener('click', function () {
+            try {
+                var driverRatings = JSON.parse(localStorage.getItem('driverRatings') || '{}');
+                driverRatings['lucas-nathan'] = (driverRatings['lucas-nathan'] || []).concat(selectedRating);
+                localStorage.setItem('driverRatings', JSON.stringify(driverRatings));
+            } catch (e) { }
+            window.location.href = 'home.html';
+        });
+
+        updateStars();
+    </script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>

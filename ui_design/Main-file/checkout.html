@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Checkout - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="checkout-page">
+    <!-- Checkout Screen -->
+    <div class="checkout-screen">
+        <!-- Header -->
+        <div class="checkout-header">
+            <a href="home.html" class="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M5 12L11 18M5 12L11 6" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+
+            </a>
+            <h1 class="checkout-page-title">Checkout</h1>
+            <div class="header-spacer"></div>
+        </div>
+
+        <!-- Checkout Content -->
+        <div class="checkout-content">
+            <!-- Ordered Items Section -->
+            <div class="checkout-section">
+                <div class="checkout-items" id="checkout-items-container">
+                    <!-- Items will be dynamically rendered here -->
+                </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="checkout-section">
+                <div class="section-header">
+                    <h2 class="section-title">Address</h2>
+                    <a href="address-selection.html" class="edit-link" id="edit-address">Edit</a>
+                </div>
+                <div class="address-card">
+                    <div class="address-map">
+                        <img src="./assets/img/onboarding-bg.jpg" alt="Map" class="map-thumbnail">
+                        <div class="map-pin">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z"
+                                    fill="#000000" />
+                            </svg>
+                        </div>
+                        <span class="address-label" id="address-label">Home</span>
+                    </div>
+                    <div class="address-text" id="address-text">
+                        <p>4517 Washington Ave.<br>Manchester, Kentucky 394</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method Section -->
+            <div class="checkout-section">
+                <div class="section-header">
+                    <h2 class="section-title">Payment Method</h2>
+                    <a href="payment-selection.html" class="edit-link" id="edit-payment">Edit</a>
+                </div>
+                <div class="payment-card">
+                    <div class="payment-logo">
+                        <div class="mastercard-logo">
+                            <div class="mc-circle mc-red"></div>
+                            <div class="mc-circle mc-orange"></div>
+                        </div>
+                    </div>
+                    <div class="payment-details">
+                        <span class="payment-name" id="payment-name">Master Card</span>
+                        <span class="payment-number" id="payment-number">**** **** 1234</span>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Voucher Code Section -->
+            <div class="checkout-section">
+                <div class="section-header">
+                    <h2 class="section-title">Voucher Code</h2>
+                    <a href="#" class="edit-link" id="edit-voucher"
+                        onclick="event.preventDefault(); document.getElementById('voucher-code').focus(); return false;">Edit</a>
+                </div>
+                <div class="voucher-input-wrapper"><svg class="voucher-icon" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.9889 14.6604L2.46891 13.1404C1.84891 12.5204 1.84891 11.5004 2.46891 10.8804L3.9889 9.36039C4.2489 9.10039 4.4589 8.59038 4.4589 8.23038V6.08036C4.4589 5.20036 5.1789 4.48038 6.0589 4.48038H8.2089C8.5689 4.48038 9.0789 4.27041 9.3389 4.01041L10.8589 2.49039C11.4789 1.87039 12.4989 1.87039 13.1189 2.49039L14.6389 4.01041C14.8989 4.27041 15.4089 4.48038 15.7689 4.48038H17.9189C18.7989 4.48038 19.5189 5.20036 19.5189 6.08036V8.23038C19.5189 8.59038 19.7289 9.10039 19.9889 9.36039L21.5089 10.8804C22.1289 11.5004 22.1289 12.5204 21.5089 13.1404L19.9889 14.6604C19.7289 14.9204 19.5189 15.4304 19.5189 15.7904V17.9403C19.5189 18.8203 18.7989 19.5404 17.9189 19.5404H15.7689C15.4089 19.5404 14.8989 19.7504 14.6389 20.0104L13.1189 21.5304C12.4989 22.1504 11.4789 22.1504 10.8589 21.5304L9.3389 20.0104C9.0789 19.7504 8.5689 19.5404 8.2089 19.5404H6.0589C5.1789 19.5404 4.4589 18.8203 4.4589 17.9403V15.7904C4.4589 15.4204 4.2489 14.9104 3.9889 14.6604Z"
+                            stroke="#CED2E6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M9 15L15 9" stroke="#CED2E6" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M14.4945 14.5H14.5035" stroke="#CED2E6" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M9.49451 9.5H9.50349" stroke="#CED2E6" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <input type="text" class="voucher-input" placeholder="Enter voucher code" id="voucher-code">
+                </div>
+            </div>
+
+            <!-- Order Summary Section -->
+            <div class="checkout-section">
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span class="summary-label">Order Amount</span>
+                        <span class="summary-value" id="order-amount">$20.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Tax</span>
+                        <span class="summary-value" id="tax-amount">$5</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Discount</span>
+                        <span class="summary-value" id="discount-amount">$0</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row summary-total">
+                        <span class="summary-label">Total Payment</span>
+                        <span class="summary-value" id="total-payment">$25.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proceed To Checkout Button -->
+        <div class="checkout-actions">
+            <button class="proceed-btn" id="proceed-checkout">Proceed To Checkout</button>
+        </div>
+
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="./assets/js/realtime-mock.js"></script>
+    <script>
+        // Load selected address from localStorage
+        function loadSelectedAddress() {
+            const storedAddress = localStorage.getItem('selectedAddress');
+            if (storedAddress) {
+                try {
+                    const address = JSON.parse(storedAddress);
+                    const addressLabel = document.getElementById('address-label');
+                    const addressText = document.getElementById('address-text');
+
+                    if (addressLabel) {
+                        addressLabel.textContent = address.name;
+                    }
+                    if (addressText) {
+                        // Format address with line break
+                        const addressParts = address.fullAddress.split(',');
+                        if (addressParts.length > 1) {
+                            addressText.innerHTML = `<p>${addressParts[0]}<br>${addressParts.slice(1).join(', ')}</p>`;
+                        } else {
+                            addressText.innerHTML = `<p>${address.fullAddress}</p>`;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing address:', e);
+                }
+            }
+        }
+
+        // Load items from localStorage or use default
+        let orderItems = [];
+        const storedItems = localStorage.getItem('cartItems');
+
+        if (storedItems) {
+            try {
+                orderItems = JSON.parse(storedItems);
+                // Clear localStorage after loading
+                localStorage.removeItem('cartItems');
+            } catch (e) {
+                console.error('Error parsing cart items:', e);
+                orderItems = [
+                    { id: 1, name: 'Cheese Sizzling', category: 'Sizzling', price: 20.00, quantity: 1, selected: true },
+                    { id: 2, name: 'Classic Burger', category: 'Burger', price: 20.00, quantity: 1, selected: false }
+                ];
+            }
+        } else {
+            // Default items if no cart data
+            orderItems = [
+                { id: 1, name: 'Cheese Sizzling', category: 'Sizzling', price: 20.00, quantity: 1, selected: true },
+                { id: 2, name: 'Classic Burger', category: 'Burger', price: 20.00, quantity: 1, selected: false }
+            ];
+        }
+
+        // Render items dynamically
+        function renderCheckoutItems() {
+            const itemsContainer = document.getElementById('checkout-items-container');
+            if (!itemsContainer) return;
+
+            itemsContainer.innerHTML = '';
+
+            orderItems.forEach((item, index) => {
+                const itemHTML = `
+                    <div class="checkout-item" data-item-id="${item.id}">
+                        <div class="item-radio">
+                            <input type="radio" name="selected-item" id="item-${item.id}" ${item.selected ? 'checked' : ''}>
+                            <label for="item-${item.id}"></label>
+                        </div>
+                        <img src="./assets/img/onboarding-bg.jpg" alt="${item.name}" class="item-image">
+                        <div class="item-details">
+                            <h3 class="item-name">${item.name}</h3>
+                            <p class="item-category">${item.category}</p>
+                            <span class="item-price" data-price="${item.price.toFixed(2)}">$${item.price.toFixed(2)}</span>
+                        </div>
+                        <div class="item-quantity">
+                            <button class="qty-btn qty-minus" data-item="${item.id}">-</button>
+                            <span class="qty-value" data-item="${item.id}">${String(item.quantity).padStart(2, '0')}</span>
+                            <button class="qty-btn qty-plus" data-item="${item.id}">+</button>
+                        </div>
+                    </div>
+                `;
+                itemsContainer.insertAdjacentHTML('beforeend', itemHTML);
+            });
+
+            // Re-attach event listeners
+            attachEventListeners();
+        }
+
+        // Load selected payment from localStorage
+        function loadSelectedPayment() {
+            const storedPayment = localStorage.getItem('selectedPayment');
+            if (storedPayment) {
+                try {
+                    const payment = JSON.parse(storedPayment);
+                    const paymentName = document.getElementById('payment-name');
+                    const paymentNumber = document.getElementById('payment-number');
+
+                    if (paymentName) {
+                        paymentName.textContent = payment.type;
+                    }
+                    if (paymentNumber) {
+                        paymentNumber.textContent = payment.number;
+                    }
+                } catch (e) {
+                    console.error('Error parsing payment:', e);
+                }
+            }
+        }
+
+        // Load address on page load
+        loadSelectedAddress();
+        loadSelectedPayment();
+
+        const taxRate = 5.00;
+        let discountAmount = 0.00;
+
+        // Attach event listeners
+        function attachEventListeners() {
+            // Quantity buttons
+            document.querySelectorAll('.qty-minus').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const itemId = parseInt(btn.getAttribute('data-item'));
+                    updateQuantity(itemId, -1);
+                });
+            });
+
+            document.querySelectorAll('.qty-plus').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const itemId = parseInt(btn.getAttribute('data-item'));
+                    updateQuantity(itemId, 1);
+                });
+            });
+
+            // Radio button selection
+            document.querySelectorAll('input[name="selected-item"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const itemId = parseInt(radio.closest('.checkout-item').getAttribute('data-item-id'));
+                    orderItems.forEach(item => {
+                        item.selected = item.id === itemId;
+                    });
+                    updateOrderSummary();
+                });
+            });
+        }
+
+        // Update quantity
+        function updateQuantity(itemId, change) {
+            const item = orderItems.find(i => i.id === itemId);
+            if (item) {
+                item.quantity = Math.max(1, Math.min(99, item.quantity + change));
+                const qtyElement = document.querySelector(`.qty-value[data-item="${itemId}"]`);
+                if (qtyElement) {
+                    qtyElement.textContent = String(item.quantity).padStart(2, '0');
+                }
+                updateOrderSummary();
+            }
+        }
+
+        // Voucher code
+        const voucherInput = document.getElementById('voucher-code');
+        voucherInput.addEventListener('input', (e) => {
+            const code = e.target.value.trim().toUpperCase();
+            if (code === 'SAVE10') {
+                discountAmount = 10.00;
+            } else if (code === 'SAVE20') {
+                discountAmount = 20.00;
+            } else {
+                discountAmount = 0.00;
+            }
+            updateOrderSummary();
+        });
+
+        // Update order summary
+        function updateOrderSummary() {
+            const selectedItems = orderItems.filter(item => item.selected);
+            let orderAmount = 0;
+
+            selectedItems.forEach(item => {
+                orderAmount += item.price * item.quantity;
+            });
+
+            const tax = taxRate;
+            const discount = discountAmount;
+            const total = orderAmount + tax - discount;
+
+            document.getElementById('order-amount').textContent = `$${orderAmount.toFixed(2)}`;
+            document.getElementById('tax-amount').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('discount-amount').textContent = `$${discount.toFixed(2)}`;
+            document.getElementById('total-payment').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Proceed to checkout
+        document.getElementById('proceed-checkout').addEventListener('click', () => {
+            const selectedItems = orderItems.filter(item => item.selected);
+            if (selectedItems.length === 0) {
+                alert('Please select at least one item');
+                return;
+            }
+
+            // Store order data
+            const orderData = {
+                items: selectedItems,
+                address: '4517 Washington Ave. Manchester, Kentucky 394',
+                payment: 'Master Card **** 1234',
+                voucher: voucherInput.value || null,
+                orderAmount: parseFloat(document.getElementById('order-amount').textContent.replace('$', '')),
+                tax: taxRate,
+                discount: discountAmount,
+                total: parseFloat(document.getElementById('total-payment').textContent.replace('$', ''))
+            };
+
+            localStorage.setItem('currentOrder', JSON.stringify(orderData));
+
+            // Navigate to payment selection page
+            window.location.href = 'payment-selection.html';
+            // window.location.href = 'order-confirmation.html';
+        });
+
+        // Edit links - Address and Payment navigate via href attribute
+        // Voucher edit is handled by onclick attribute to focus input field
+
+        // Initialize
+        renderCheckoutItems();
+        updateOrderSummary();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes" <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+    <title>Select Address - Delivo</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body class="address-selection-page">
+
+    <!-- Address Selection Screen -->
+    <div class="address-selection-screen">
+        <!-- Header -->
+        <header class="address-selection-header">
+            <a href="checkout.html" class="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </a>
+            <h1 class="address-selection-title">Address</h1>
+        </header>
+
+        <!-- Content Area -->
+        <div class="address-selection-content">
+            <div class="address-list" id="address-list">
+                <!-- Address items will be dynamically rendered here -->
+            </div>
+
+            <!-- Add New Address Button -->
+            <button class="add-address-btn" id="add-address-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <span>Add New Address</span>
+            </button>
+        </div>
+
+        <!-- Fixed Bottom Button -->
+        <div class="address-selection-footer">
+            <button class="btn btn-primary continue-btn" id="continue-btn">Continue</button>
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Address data - can be loaded from localStorage or use default
+        let addresses = [];
+        let selectedAddressId = null;
+
+        // Load addresses from localStorage or use defaults
+        function loadAddresses() {
+            const storedAddresses = localStorage.getItem('userAddresses');
+            const storedSelected = localStorage.getItem('selectedAddressId');
+
+            if (storedAddresses) {
+                try {
+                    addresses = JSON.parse(storedAddresses);
+                } catch (e) {
+                    addresses = getDefaultAddresses();
+                }
+            } else {
+                addresses = getDefaultAddresses();
+                localStorage.setItem('userAddresses', JSON.stringify(addresses));
+            }
+
+            if (storedSelected) {
+                selectedAddressId = storedSelected;
+            } else if (addresses.length > 0) {
+                selectedAddressId = addresses[0].id;
+            }
+        }
+
+        // Default addresses
+        function getDefaultAddresses() {
+            return [
+                {
+                    id: 'home',
+                    name: 'Home',
+                    address: '4517 Washington Ave.',
+                    city: 'Manchester, Kentucky 394',
+                    fullAddress: '4517 Washington Ave. Manchester, Kentucky 394'
+                },
+                {
+                    id: 'office',
+                    name: 'My Office',
+                    address: '4517 Washington Ave.',
+                    city: 'Manchester, Kentucky 394',
+                    fullAddress: '4517 Washington Ave. Manchester, Kentucky 394'
+                },
+                {
+                    id: 'apartment',
+                    name: 'My Apartment',
+                    address: '4517 Washington Ave.',
+                    city: 'Manchester, Kentucky 394',
+                    fullAddress: '4517 Washington Ave. Manchester, Kentucky 394'
+                }
+            ];
+        }
+
+        // Render address list
+        function renderAddresses() {
+            const addressList = document.getElementById('address-list');
+            if (!addressList) return;
+
+            addressList.innerHTML = '';
+
+            addresses.forEach(address => {
+                const isSelected = address.id === selectedAddressId;
+                const addressHTML = `
+                    <div class="address-item ${isSelected ? 'selected' : ''}" data-address-id="${address.id}">
+                        <div class="address-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div class="address-info">
+                            <h3 class="address-name">${address.name}</h3>
+                            <p class="address-text">${address.fullAddress}</p>
+                        </div>
+                        <div class="address-radio">
+                            <input type="radio" name="address" id="address-${address.id}" value="${address.id}" ${isSelected ? 'checked' : ''}>
+                            <label for="address-${address.id}"></label>
+                        </div>
+                    </div>
+                `;
+                addressList.insertAdjacentHTML('beforeend', addressHTML);
+            });
+
+            // Attach event listeners
+            attachEventListeners();
+        }
+
+        // Attach event listeners
+        function attachEventListeners() {
+            // Radio button selection
+            document.querySelectorAll('.address-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const addressId = this.getAttribute('data-address-id');
+                    selectAddress(addressId);
+                });
+            });
+
+            // Radio input change
+            document.querySelectorAll('input[type="radio"][name="address"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.checked) {
+                        selectAddress(this.value);
+                    }
+                });
+            });
+        }
+
+        // Select address
+        function selectAddress(addressId) {
+            selectedAddressId = addressId;
+
+            // Update UI
+            document.querySelectorAll('.address-item').forEach(item => {
+                item.classList.remove('selected');
+                const radio = item.querySelector('input[type="radio"]');
+                if (radio && radio.value === addressId) {
+                    item.classList.add('selected');
+                    radio.checked = true;
+                } else if (radio) {
+                    radio.checked = false;
+                }
+            });
+        }
+
+        // Continue button handler
+        document.getElementById('continue-btn').addEventListener('click', function () {
+            if (!selectedAddressId) {
+                alert('Please select an address');
+                return;
+            }
+
+            // Find selected address
+            const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
+
+            if (selectedAddress) {
+                // Store selected address
+                localStorage.setItem('selectedAddressId', selectedAddressId);
+                localStorage.setItem('selectedAddress', JSON.stringify(selectedAddress));
+
+                // Navigate back to checkout
+                window.location.href = 'checkout.html';
+            }
+        });
+
+        // Add new address button
+        document.getElementById('add-address-btn').addEventListener('click', function () {
+            // For now, just show an alert
+            // In a real app, this would navigate to an "Add Address" page
+            alert('Add New Address feature - Coming soon!');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAddresses();
+            renderAddresses();
+        });
+    </script>
+    <script src="./assets/js/realtime-mock.js"></script>
+</body>
+
+</html>
