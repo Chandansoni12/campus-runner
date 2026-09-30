@@ -40,6 +40,7 @@ import {
   ShieldCheck,
   Package,
   User,
+  Zap,
 } from 'lucide-react';
 
 export const StudentView: React.FC = () => {
@@ -183,93 +184,86 @@ export const StudentView: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
       
-      {/* ─── 1. SIGNATURE DELIVO ORANGE HEADER ─── */}
-      <header className="home-header">
-        <div className="header-content">
-          <div className="header-top">
-            {/* User Profile Avatar */}
-            <div className="profile-section" onClick={() => setIsEditingProfile(true)}>
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                  border: '2px solid rgba(255, 255, 255, 0.5)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  color: '#FFFFFF',
-                }}
-              >
-                {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A'}
-              </div>
-            </div>
-
-            {/* Delivery Location Selector */}
-            <div className="location-section" onClick={() => setIsEditingProfile(true)}>
-              <div className="location-label">
-                <span>Delivery Location</span>
-                <ChevronDown size={14} />
-              </div>
-              <div className="location-address">
-                <MapPin size={15} color="#FFFFFF" />
-                <span style={{ fontWeight: 600 }}>
-                  {currentUser.hostelBlock?.split(' ')[0] || 'Aryabhatta'}, Rm {currentUser.roomNumber || 'A-204'}
-                </span>
-              </div>
-            </div>
-
-            {/* Notification / Quick Cart Icon */}
-            <div className="notification-section">
-              <div
-                className="notification-icon-wrapper"
-                onClick={() => setActiveTab('cart')}
-                title="View Cart"
-              >
-                <ShoppingBag size={22} color="#FFFFFF" />
-                {totalCartQty > 0 && <span className="notification-badge">{totalCartQty}</span>}
-              </div>
+      {/* ─── 1. MODERN SLEEK HEADER (ZOMATO / BLINKIT / SWIGGY STYLE) ─── */}
+      <header className="modern-header">
+        {/* Top Row: Speed Badge, Delivery Room/Hostel, Pure Veg Toggle, Profile */}
+        <div className="modern-header-top">
+          {/* Location Chip */}
+          <div
+            className="location-chip-btn"
+            onClick={() => setIsEditingProfile(true)}
+            title="Change Hostel / Room"
+          >
+            <span className="delivery-speed-badge">
+              <Zap size={11} fill="#34D399" color="#34D399" />
+              <span>15 MINS</span>
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <span className="location-text">
+                {currentUser.hostelBlock?.split(' ')[0] || 'Aryabhatta'}, {currentUser.roomNumber || 'A-204'}
+              </span>
+              <ChevronDown size={13} color="#9CA3AF" />
             </div>
           </div>
 
-          {/* Delivo Heading */}
-          <h1 className="header-title">What would you prefer to eat today?</h1>
+          {/* Quick Veg Mode Toggle & Profile Avatar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
+              className={`veg-toggle-btn ${pureVegOnlyFilter || isHostelStrictVeg ? 'active' : ''}`}
+              title="Toggle Pure Veg Only"
+            >
+              <Leaf size={12} color={pureVegOnlyFilter || isHostelStrictVeg ? '#34D399' : '#9CA3AF'} />
+              <span>VEG</span>
+            </button>
 
-          {/* Search Bar (Inside Orange Header) */}
-          <div className="search-section">
-            <div className="search-bar">
-              <Search className="search-icon" />
-              <input
-                id="delivo-search-input"
-                type="text"
-                className="search-input"
-                placeholder="Search canteen dishes, snacks, rolls..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery ? (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}
-                >
-                  <X size={18} />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
-                  className="filter-link"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                  title="Toggle Veg Only Filter"
-                >
-                  <SlidersHorizontal size={20} color={pureVegOnlyFilter ? '#FD6931' : '#787878'} />
-                </button>
-              )}
-            </div>
+            {/* Profile Avatar */}
+            <button
+              type="button"
+              onClick={() => setIsEditingProfile(true)}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, rgba(253,105,49,0.3), rgba(255,120,60,0.15))',
+                border: '1.5px solid rgba(253,105,49,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                fontWeight: 800,
+                color: '#FD6931',
+                cursor: 'pointer',
+              }}
+              title="Student Profile & Room"
+            >
+              {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'S'}
+            </button>
+          </div>
+        </div>
+
+        {/* Search Row */}
+        <div className="modern-search-row">
+          <div className="modern-search-bar">
+            <Search size={17} color="#9CA3AF" />
+            <input
+              id="campus-search-input"
+              type="text"
+              className="modern-search-input"
+              placeholder="Search samosa, maggi, chai, rolls, thali..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', padding: 0 }}
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -974,55 +968,104 @@ export const StudentView: React.FC = () => {
         </div>
       )}
 
-      {/* ─── 4. DELIVO FIXED BOTTOM NAVIGATION ─── */}
-      <nav className="bottom-nav">
+      {/* ─── 4. QUICK COMMERCE FLOATING CART PILL (Blinkit / Swiggy Style) ─── */}
+      {cart.length > 0 && activeTab !== 'cart' && (
+        <div
+          className="floating-cart-bar"
+          onClick={() => setActiveTab('cart')}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.22)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ShoppingBag size={18} color="#FFFFFF" />
+            </div>
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                {totalCartQty} {totalCartQty === 1 ? 'item' : 'items'} • ₹{grandTotal}
+              </div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>
+                From {cart[0]?.vendorName || 'Campus Stall'}
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: '#FFFFFF',
+              color: '#FD6931',
+              padding: '6px 14px',
+              borderRadius: '9999px',
+              fontSize: '12px',
+              fontWeight: 800,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          >
+            <span>View Cart</span>
+            <ArrowRight size={14} />
+          </div>
+        </div>
+      )}
+
+      {/* ─── 5. FLOATING ISLAND GLASS DOCK WITH ACTIVE CAPSULE ─── */}
+      <nav className="floating-glass-dock">
         <button
           type="button"
           onClick={() => setActiveTab('browse')}
-          className={`nav-item ${activeTab === 'browse' ? 'active' : ''}`}
+          className={`dock-tab ${activeTab === 'browse' ? 'active' : ''}`}
         >
-          <Utensils size={24} />
-          <span>Home</span>
+          <Utensils size={20} />
+          <span className="dock-tab-label">Home</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('cart')}
-          className={`nav-item ${activeTab === 'cart' ? 'active' : ''}`}
+          className={`dock-tab ${activeTab === 'cart' ? 'active' : ''}`}
         >
-          <ShoppingBag size={24} />
-          <span>Cart</span>
-          {totalCartQty > 0 && <span className="nav-badge">{totalCartQty}</span>}
+          <ShoppingBag size={20} />
+          <span className="dock-tab-label">Cart</span>
+          {totalCartQty > 0 && <span className="dock-badge-count">{totalCartQty}</span>}
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('track')}
-          className={`nav-item ${activeTab === 'track' ? 'active' : ''}`}
+          className={`dock-tab ${activeTab === 'track' ? 'active' : ''}`}
         >
-          <Bike size={24} />
-          <span>Orders</span>
+          <Bike size={20} />
+          <span className="dock-tab-label">Orders</span>
           {trackedOrder && trackedOrder.status !== OrderStatus.DELIVERED && (
-            <span style={{ position: 'absolute', top: '4px', right: '16px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)' }} />
+            <span className="dock-live-dot" />
           )}
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('history')}
-          className={`nav-item ${activeTab === 'history' ? 'active' : ''}`}
+          className={`dock-tab ${activeTab === 'history' ? 'active' : ''}`}
         >
-          <History size={24} />
-          <span>History</span>
+          <History size={20} />
+          <span className="dock-tab-label">History</span>
         </button>
 
         <button
           type="button"
           onClick={() => setIsEditingProfile(true)}
-          className="nav-item"
+          className="dock-tab"
         >
-          <User size={24} />
-          <span>Profile</span>
+          <User size={20} />
+          <span className="dock-tab-label">Profile</span>
         </button>
       </nav>
 

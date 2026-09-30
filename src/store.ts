@@ -626,6 +626,7 @@ export const useAppStore = create<AppState>()(
     {
       name: 'campus-runner-storage',
       partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
         currentRole: state.currentRole,
         currentUser: state.currentUser,
         activeVendorId: state.activeVendorId,
