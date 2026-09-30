@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
@@ -43,8 +46,38 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
 
+      - name: Copy & Prepare APK
+        run: |
+          mkdir -p release-apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/CampusRunner-v2.0.apk
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: CampusRunner-Android-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: release-apk/CampusRunner-v2.0.apk
+          retention-days: 30
+
+      - name: Create or Update GitHub Release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.0-latest
+          name: "Campus Runner v2.0 (Android APK)"
+          body: |
+            ## 🚀 Campus Runner v2.0 — Delivo PWA Android Release
+
+            ### What's New:
+            - **Delivo UI Design System**: Dark theme (`#000000`), signature orange rounded header (`#FD6931`), search bar inside header, fluid typography.
+            - **Role-Based Portals**: Dedicated student, food stall vendor, student runner, and university admin dashboards.
+            - **Campus Delivery Features**: Real-time order tracking, OTP verification, slot scheduling, and hostel delivery fee calculations.
+
+            ### 📱 Installation Instructions:
+            1. Download `CampusRunner-v2.0.apk` below directly onto your Android device.
+            2. Tap the downloaded file to install (allow "Install Unknown Apps" from your browser/files app if prompted).
+            3. Open Campus Runner and order food!
+          files: release-apk/CampusRunner-v2.0.apk
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
