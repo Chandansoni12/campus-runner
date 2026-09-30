@@ -21,6 +21,7 @@ import {
   Navigation,
   ArrowRight,
   LogOut,
+  Zap,
 } from 'lucide-react';
 
 export const RunnerView: React.FC = () => {
@@ -99,129 +100,69 @@ export const RunnerView: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-[100dvh] bg-black text-white flex flex-col relative overflow-hidden pb-4 font-sans">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
       
-      {/* Decorative Background Map/Glow */}
-      <div className="absolute top-0 left-0 w-full h-80 bg-gradient-to-b from-indigo-900/40 via-indigo-900/10 to-black pointer-events-none" />
-      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none" />
-      
-      <div className="max-w-4xl mx-auto px-4 pt-6 pb-2 relative z-10 flex-1 flex flex-col min-h-0 w-full">
-        
-        {/* Runner Header & Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-14 h-14 rounded-full bg-indigo-600/20 flex items-center justify-center border border-indigo-500/30 backdrop-blur-sm relative z-10">
-                <Bike className="w-7 h-7 text-indigo-400" />
-              </div>
-              <div className="absolute inset-0 bg-indigo-500 rounded-full animate-ping opacity-20"></div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl font-black text-white">{activeRunner.name}</h1>
-                {activeRunner.isVerified && (
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-neutral-400 font-medium">
-                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{activeRunner.hostelBlock || 'Zone A'}</span>
-                <span>•</span>
-                <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{activeRunner.phone}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <div className="relative group bg-black/40 backdrop-blur-md rounded-full border border-white/10 pr-1 pl-3 py-1 flex items-center shadow-lg">
-              <span className="text-[10px] uppercase font-bold text-neutral-500 mr-2">Shift:</span>
+      {/* ─── 1. COMPACT MODERN RUNNER HEADER ─── */}
+      <header className="modern-header">
+        <div className="modern-header-top">
+          {/* Runner Shift Selector Chip */}
+          <div className="location-chip-btn">
+            <span className="delivery-speed-badge">
+              <Zap size={11} fill="#34D399" color="#34D399" />
+              <span>ON DUTY</span>
+            </span>
+            <div className="relative flex items-center gap-1">
               <select
                 value={activeRunner.id}
                 onChange={(e) => setActiveRunnerId(e.target.value)}
-                className="appearance-none bg-transparent text-white text-sm font-bold pr-8 py-1 focus:outline-none cursor-pointer"
+                className="appearance-none bg-transparent text-white text-xs font-bold pr-4 focus:outline-none cursor-pointer"
               >
                 {runners.map((r) => (
-                  <option key={r.id} value={r.id} className="bg-neutral-900">
+                  <option key={r.id} value={r.id} className="bg-neutral-900 text-white">
                     {r.name}
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 w-4 h-4 text-white/50 pointer-events-none" />
+              <ChevronDown size={12} color="#9CA3AF" />
+            </div>
+          </div>
+
+          {/* Shift Payout & Logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+              <span>{formatRupees(runnerEarnings)}</span>
             </div>
 
             <button
+              type="button"
               onClick={logout}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-xs transition-all backdrop-blur-md active:scale-95 shadow-sm"
+              className="w-9 h-9 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center hover:bg-rose-500/25 transition-all cursor-pointer"
               title="Log out of Runner Fleet"
             >
-              <LogOut className="w-4 h-4" />
-              <span>Log Out</span>
+              <LogOut size={16} />
             </button>
           </div>
         </div>
 
-        {/* Dashboard Metrics (Glassmorphic) */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div className="col-span-2 md:col-span-1 bg-gradient-to-br from-indigo-900/60 to-black backdrop-blur-xl border border-indigo-500/20 rounded-3xl p-5 relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
-            <div className="text-[10px] text-indigo-300 font-bold uppercase tracking-widest mb-2 flex items-center justify-between">
-              Shift Payout <TrendingUp className="w-4 h-4 text-indigo-400" />
-            </div>
-            <div className="text-4xl font-black text-white mb-2">{formatRupees(runnerEarnings)}</div>
-            <div className="text-xs text-indigo-200/60 font-medium">
-              Base: {formatRupees(baseEarnings)} <span className="mx-1">•</span> Bonus: {formatRupees(batchBonus)}
-            </div>
+        {/* Compact 3-KPI Metric Row */}
+        <div className="grid grid-cols-3 gap-2 pt-1">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Shift Payout</div>
+            <div className="text-sm font-black text-white">{formatRupees(runnerEarnings)}</div>
           </div>
-          
-          <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 flex flex-col justify-between">
-            <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-2 flex items-center justify-between">
-              Completed <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="text-4xl font-black text-white">{completedOrders.length}</div>
-            <div className="text-xs text-neutral-500 font-medium mt-2">Verified deliveries</div>
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Delivered</div>
+            <div className="text-sm font-black text-emerald-400">{completedOrders.length}</div>
           </div>
-
-          <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 flex flex-col justify-between">
-            <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-2 flex items-center justify-between">
-              Active Run <Package className="w-4 h-4 text-orange-400" />
-            </div>
-            <div className="text-4xl font-black text-orange-400">{activeBatch.length}</div>
-            <div className="text-xs text-neutral-500 font-medium mt-2">
-              {activeBatch.length >= 6 ? (
-                 <span className="text-orange-400 flex items-center gap-1">★ Bonus unlocked</span>
-              ) : (
-                `Need ${6 - activeBatch.length} more for bonus`
-              )}
-            </div>
+          <div className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-orange-400 font-bold uppercase tracking-wider">Active Run</div>
+            <div className="text-sm font-black text-orange-400">{activeBatch.length}</div>
           </div>
         </div>
+      </header>
 
-        {/* Floating Segment Control */}
-        <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/5 p-1.5 rounded-full flex mt-4 mb-2 shadow-2xl shrink-0">
-          <button
-            onClick={() => setActiveTab('mission')}
-            className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'mission'
-                ? 'bg-white text-black shadow-lg scale-[0.98]'
-                : 'text-neutral-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Navigation className="w-4 h-4" />
-            Current Mission
-          </button>
-          <button
-            onClick={() => setActiveTab('completed')}
-            className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'completed'
-                ? 'bg-white text-black shadow-lg scale-[0.98]'
-                : 'text-neutral-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            Completed Log
-          </button>
-        </div>
-
-        <div className="flex-1 min-h-0 flex flex-col">
+      {/* ─── 2. MAIN SCROLLABLE CONTENT ─── */}
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3" style={{ paddingBottom: '96px' }}>
         {/* ACTIVE DELIVERIES */}
         {activeTab === 'mission' && (
         <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -420,7 +361,42 @@ export const RunnerView: React.FC = () => {
           </div>
         )}
         </div>
-      </div>
+
+      {/* ─── 3. FLOATING ISLAND GLASS DOCK WITH ACTIVE CAPSULE ─── */}
+      <nav className="floating-glass-dock">
+        <button
+          type="button"
+          onClick={() => setActiveTab('mission')}
+          className={`dock-tab ${activeTab === 'mission' ? 'active' : ''}`}
+        >
+          <Navigation size={20} />
+          <span className="dock-tab-label">Mission</span>
+          {activeBatch.length > 0 && (
+            <span className="dock-badge-count">{activeBatch.length}</span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('completed')}
+          className={`dock-tab ${activeTab === 'completed' ? 'active' : ''}`}
+        >
+          <CheckCircle2 size={20} />
+          <span className="dock-tab-label">Completed</span>
+          {completedOrders.length > 0 && (
+            <span className="dock-badge-count" style={{ background: '#10B981' }}>{completedOrders.length}</span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={logout}
+          className="dock-tab"
+        >
+          <LogOut size={20} />
+          <span className="dock-tab-label">Logout</span>
+        </button>
+      </nav>
 
       {/* OTP MODAL */}
       {otpModalOrderId && (

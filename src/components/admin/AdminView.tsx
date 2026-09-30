@@ -19,6 +19,8 @@ import {
   ShieldCheck,
   Package,
   LogOut,
+  Zap,
+  ChevronDown,
 } from 'lucide-react';
 
 export const AdminView: React.FC = () => {
@@ -117,81 +119,91 @@ export const AdminView: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-[100dvh] bg-black text-white flex flex-col relative overflow-hidden pb-4 font-sans">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
       
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-rose-900/30 via-black to-black pointer-events-none" />
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[50%] bg-rose-600/20 blur-[150px] rounded-full pointer-events-none" />
-
-      <div className="max-w-6xl mx-auto px-4 pt-6 pb-2 relative z-10 flex-1 flex flex-col min-h-0 w-full space-y-4">
-        
-        {/* Admin Header */}
-        <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center shadow-lg shadow-rose-500/30 border border-rose-400/50">
-              <ShieldAlert className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-2xl font-black text-white tracking-tight">Command Center</h1>
-                <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">Admin</span>
-              </div>
-              <p className="text-sm text-neutral-400 font-medium">Operations, routing, and platform controls.</p>
-            </div>
+      {/* ─── 1. COMPACT MODERN ADMIN HEADER ─── */}
+      <header className="modern-header">
+        <div className="modern-header-top">
+          {/* Admin Identity Chip */}
+          <div className="location-chip-btn">
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '3px',
+                background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(225, 29, 72, 0.1))',
+                border: '1px solid rgba(251, 113, 133, 0.4)',
+                color: '#FB7185',
+                fontSize: '10px',
+                fontWeight: 800,
+                padding: '2px 7px',
+                borderRadius: '9999px',
+                letterSpacing: '0.02em',
+              }}
+            >
+              <Zap size={11} fill="#FB7185" color="#FB7185" />
+              <span>COMMAND</span>
+            </span>
+            <span className="location-text">
+              University Admin
+            </span>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="bg-black/50 backdrop-blur-md rounded-2xl border border-white/5 p-2 flex items-center gap-3">
-               <div className="px-3">
-                 <div className="text-[10px] uppercase font-bold text-neutral-500 mb-0.5">Global Ordering</div>
-                 <div className={`text-sm font-bold flex items-center gap-1.5 ${settings.globalOrderingPaused ? 'text-rose-500' : 'text-emerald-500'}`}>
-                   <div className={`w-2 h-2 rounded-full ${settings.globalOrderingPaused ? 'bg-rose-500 animate-pulse' : 'bg-emerald-500'}`} />
-                   {settings.globalOrderingPaused ? 'PAUSED' : 'ONLINE'}
-                 </div>
-               </div>
+
+          {/* Global Kill Switch Status & Logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
+              className="px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5"
+              style={{
+                backgroundColor: settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                border: `1px solid ${settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+                color: settings.globalOrderingPaused ? '#EF4444' : '#10B981',
+              }}
+            >
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: settings.globalOrderingPaused ? '#EF4444' : '#10B981',
+                }}
+              />
+              <span>{settings.globalOrderingPaused ? 'PAUSED' : 'ONLINE'}</span>
             </div>
 
             <button
+              type="button"
               onClick={logout}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-bold text-xs transition-all active:scale-95 shadow-sm"
+              className="w-9 h-9 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center hover:bg-rose-500/25 transition-all cursor-pointer"
               title="Log out of Admin Portal"
             >
-              <LogOut className="w-4 h-4" />
-              <span>Log Out</span>
+              <LogOut size={16} />
             </button>
           </div>
         </div>
 
-        {/* Floating Navigation */}
-        <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 p-1.5 rounded-full flex overflow-x-auto hide-scrollbar sticky top-4 z-40 shadow-2xl">
-          {[
-            { id: 'killswitch', label: 'Controls', icon: Power },
-            { id: 'dispatch', label: 'Dispatch', icon: Send, badge: dispatchableOrders.length },
-            { id: 'roster', label: 'Runners', icon: Bike },
-            { id: 'vendors', label: 'Vendors', icon: Store },
-            { id: 'reports', label: 'Reports', icon: FileText },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'bg-white text-black shadow-lg scale-[0.98]'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-              {tab.badge !== undefined && tab.badge > 0 && (
-                <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${activeTab === tab.id ? 'bg-black text-white' : 'bg-orange-500 text-white'}`}>
-                  {tab.badge}
-                </span>
-              )}
-            </button>
-          ))}
+        {/* Compact 4-KPI Row */}
+        <div className="grid grid-cols-4 gap-2 pt-1">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Gross</div>
+            <div className="text-sm font-black text-white">₹{totalGrossRevenue}</div>
+          </div>
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Orders</div>
+            <div className="text-sm font-black text-white">{totalOrders}</div>
+          </div>
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Dispatch</div>
+            <div className="text-sm font-black text-orange-400">{dispatchableOrders.length}</div>
+          </div>
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-emerald-400 font-bold uppercase tracking-wider">Runners</div>
+            <div className="text-sm font-black text-emerald-400">{studentRunners.length}</div>
+          </div>
         </div>
+      </header>
 
-        <div className="flex-1 min-h-0 flex flex-col">
+      {/* ─── 2. MAIN SCROLLABLE CONTENT ─── */}
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3" style={{ paddingBottom: '96px' }}>
           {/* TAB 1: EMERGENCY KILL-SWITCHES */}
           {activeTab === 'killswitch' && (
             <div className="flex-1 flex flex-col min-h-0 overflow-y-auto no-scrollbar space-y-6 animate-in fade-in slide-in-from-bottom-4">
@@ -629,7 +641,57 @@ export const AdminView: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+
+      {/* ─── 3. FLOATING ISLAND GLASS DOCK WITH ACTIVE CAPSULE ─── */}
+      <nav className="floating-glass-dock">
+        <button
+          type="button"
+          onClick={() => setActiveTab('killswitch')}
+          className={`dock-tab ${activeTab === 'killswitch' ? 'active' : ''}`}
+        >
+          <Power size={18} />
+          <span className="dock-tab-label">Controls</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('dispatch')}
+          className={`dock-tab ${activeTab === 'dispatch' ? 'active' : ''}`}
+        >
+          <Send size={18} />
+          <span className="dock-tab-label">Dispatch</span>
+          {dispatchableOrders.length > 0 && (
+            <span className="dock-badge-count">{dispatchableOrders.length}</span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('roster')}
+          className={`dock-tab ${activeTab === 'roster' ? 'active' : ''}`}
+        >
+          <Bike size={18} />
+          <span className="dock-tab-label">Runners</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('vendors')}
+          className={`dock-tab ${activeTab === 'vendors' ? 'active' : ''}`}
+        >
+          <Store size={18} />
+          <span className="dock-tab-label">Stalls</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('reports')}
+          className={`dock-tab ${activeTab === 'reports' ? 'active' : ''}`}
+        >
+          <FileText size={18} />
+          <span className="dock-tab-label">Reports</span>
+        </button>
+      </nav>
 
       {/* Add Runner Modal */}
       {showAddRunnerModal && (

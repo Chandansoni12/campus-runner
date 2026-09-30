@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   Flame,
   LogOut,
+  Zap,
 } from 'lucide-react';
 
 export const VendorView: React.FC = () => {
@@ -75,148 +76,73 @@ export const VendorView: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-full bg-black text-white flex flex-col relative overflow-hidden pb-4">
-      {/* Dynamic Header with Cover Image */}
-      <div className="relative h-48 md:h-64 w-full bg-neutral-900 shrink-0">
-        {activeVendor.coverImage ? (
-          <img
-            src={activeVendor.coverImage}
-            alt={activeVendor.name}
-            className="w-full h-full object-cover opacity-60"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-orange-900 to-black opacity-80" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-        
-        {/* Top Right Controls (Stall Switcher & Logout) */}
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-          <div className="relative group">
-            <select
-              value={activeVendorId}
-              onChange={(e) => setActiveVendorId(e.target.value)}
-              className="appearance-none bg-black/50 backdrop-blur-md border border-white/10 text-white text-sm rounded-full pl-4 pr-10 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer transition-all"
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
+      
+      {/* ─── 1. COMPACT MODERN VENDOR HEADER ─── */}
+      <header className="modern-header">
+        <div className="modern-header-top">
+          {/* Stall Selector Chip */}
+          <div className="location-chip-btn">
+            <span className="delivery-speed-badge">
+              <Zap size={11} fill="#34D399" color="#34D399" />
+              <span>KITCHEN LIVE</span>
+            </span>
+            <div className="relative flex items-center gap-1">
+              <select
+                value={activeVendorId}
+                onChange={(e) => setActiveVendorId(e.target.value)}
+                className="appearance-none bg-transparent text-white text-xs font-bold pr-4 focus:outline-none cursor-pointer"
+              >
+                {vendors.map((v) => (
+                  <option key={v.id} value={v.id} className="bg-neutral-900 text-white">
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={12} color="#9CA3AF" />
+            </div>
+          </div>
+
+          {/* Fee & Logout Chip */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="bg-white/5 border border-white/10 text-neutral-300 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+              <span>Fee: {activeVendor.commissionPct}%</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={logout}
+              className="w-9 h-9 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center hover:bg-rose-500/25 transition-all cursor-pointer"
+              title="Log out of Vendor Kitchen"
             >
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id} className="bg-neutral-900 text-white">
-                  {v.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
-          </div>
-
-          <button
-            onClick={logout}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-xs transition-all backdrop-blur-md active:scale-95 shadow-sm"
-            title="Log out of Vendor Kitchen"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Log Out</span>
-          </button>
-        </div>
-
-        {/* Vendor Info Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-5">
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                  Kitchen Live
-                </div>
-                {activeVendor.rating && (
-                  <div className="bg-black/50 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <Star className="w-3 h-3 text-orange-400 fill-orange-400" />
-                    {activeVendor.rating.toFixed(1)}
-                  </div>
-                )}
-              </div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-1">
-                {activeVendor.name}
-              </h1>
-              <div className="flex items-center gap-3 text-sm text-neutral-300 font-medium">
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-orange-500" />
-                  {activeVendor.location}
-                </span>
-                <span className="text-neutral-600">•</span>
-                <span className="text-neutral-400 text-xs">FSSAI: {activeVendor.fssaiNumber || '20822003001421'}</span>
-              </div>
-            </div>
-            
-            <div className="hidden sm:block text-right">
-              <div className="text-xs text-neutral-400 font-medium">Platform Fee</div>
-              <div className="text-lg font-bold text-white bg-black/40 backdrop-blur-md border border-white/10 px-3 py-1 rounded-xl mt-1">
-                {activeVendor.commissionPct}%
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 -mt-4 relative z-10 flex-1 flex flex-col min-h-0 space-y-4 w-full">
-        
-        {/* Glassmorphic KPI Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <div className="bg-neutral-900/80 backdrop-blur-xl border border-white/5 rounded-2xl p-4 shadow-xl">
-            <div className="text-[11px] text-neutral-400 font-medium uppercase tracking-wider mb-1">Orders Today</div>
-            <div className="text-2xl font-black text-white">{todayOrders.length}</div>
-          </div>
-          <div className="bg-neutral-900/80 backdrop-blur-xl border border-white/5 rounded-2xl p-4 shadow-xl">
-            <div className="text-[11px] text-neutral-400 font-medium uppercase tracking-wider mb-1">Gross Sales</div>
-            <div className="text-2xl font-black text-white">{formatRupees(grossSales)}</div>
-          </div>
-          <div className="bg-neutral-900/80 backdrop-blur-xl border border-white/5 rounded-2xl p-4 shadow-xl">
-            <div className="text-[11px] text-neutral-400 font-medium uppercase tracking-wider mb-1">Commission</div>
-            <div className="text-2xl font-black text-orange-400">-{formatRupees(commissionOwed)}</div>
-          </div>
-          <div className="bg-neutral-900/80 backdrop-blur-xl border border-white/5 rounded-2xl p-4 shadow-xl relative overflow-hidden">
-            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
-            <div className="text-[11px] text-neutral-400 font-medium uppercase tracking-wider mb-1">Net Earnings</div>
-            <div className="text-2xl font-black text-emerald-400">{formatRupees(netEarnings)}</div>
+              <LogOut size={16} />
+            </button>
           </div>
         </div>
 
-        {/* Floating Segment Control */}
-        <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/5 p-1.5 rounded-full flex overflow-x-auto hide-scrollbar sticky top-4 z-20 shadow-2xl">
-          <button
-            onClick={() => setActiveTab('queue')}
-            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'queue'
-                ? 'bg-white text-black shadow-lg scale-[0.98]'
-                : 'text-neutral-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <CookingPot className="w-4 h-4" />
-            Kitchen Queue ({filteredQueue.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('menu')}
-            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'menu'
-                ? 'bg-white text-black shadow-lg scale-[0.98]'
-                : 'text-neutral-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <ChefHat className="w-4 h-4" />
-            Menu Stock
-          </button>
-          <button
-            onClick={() => setActiveTab('settlement')}
-            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'settlement'
-                ? 'bg-white text-black shadow-lg scale-[0.98]'
-                : 'text-neutral-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <ReceiptText className="w-4 h-4" />
-            Ledger
-          </button>
+        {/* Compact 4-KPI Row */}
+        <div className="grid grid-cols-4 gap-2 pt-1">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Orders</div>
+            <div className="text-sm font-black text-white">{todayOrders.length}</div>
+          </div>
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Sales</div>
+            <div className="text-sm font-black text-white">₹{grossSales}</div>
+          </div>
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Fee</div>
+            <div className="text-sm font-black text-orange-400">-₹{commissionOwed}</div>
+          </div>
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-2 text-center">
+            <div className="text-[9.5px] text-emerald-400 font-bold uppercase tracking-wider">Net</div>
+            <div className="text-sm font-black text-emerald-400">₹{netEarnings}</div>
+          </div>
         </div>
+      </header>
 
-        {/* MAIN CONTENT AREA */}
-        <div className="flex-1 min-h-0 flex flex-col pt-1">
+      {/* ─── 2. MAIN SCROLLABLE CONTENT ─── */}
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3" style={{ paddingBottom: '96px' }}>
           
           {/* TAB 1: KITCHEN ORDER QUEUE */}
           {activeTab === 'queue' && (
@@ -587,7 +513,48 @@ export const VendorView: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+
+      {/* ─── 3. FLOATING ISLAND GLASS DOCK WITH ACTIVE CAPSULE ─── */}
+      <nav className="floating-glass-dock">
+        <button
+          type="button"
+          onClick={() => setActiveTab('queue')}
+          className={`dock-tab ${activeTab === 'queue' ? 'active' : ''}`}
+        >
+          <CookingPot size={20} />
+          <span className="dock-tab-label">Queue</span>
+          {filteredQueue.length > 0 && (
+            <span className="dock-badge-count">{filteredQueue.length}</span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('menu')}
+          className={`dock-tab ${activeTab === 'menu' ? 'active' : ''}`}
+        >
+          <ChefHat size={20} />
+          <span className="dock-tab-label">Menu Stock</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('settlement')}
+          className={`dock-tab ${activeTab === 'settlement' ? 'active' : ''}`}
+        >
+          <ReceiptText size={20} />
+          <span className="dock-tab-label">Ledger</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={logout}
+          className="dock-tab"
+        >
+          <LogOut size={20} />
+          <span className="dock-tab-label">Logout</span>
+        </button>
+      </nav>
     </div>
   );
 };

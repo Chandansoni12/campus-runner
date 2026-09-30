@@ -78,7 +78,7 @@ export const LoginView: React.FC = () => {
 
   return (
     <div className="auth-screen">
-      <div className="auth-content">
+      <div className="auth-content" style={{ paddingTop: 'calc(24px + var(--sat, 0px))', paddingBottom: 'calc(32px + var(--sab, 0px))' }}>
         {/* Delivo Welcome Title with Wave Animation */}
         <h1 className="auth-title">
           Welcome Back! <span className="wave-icon">👋</span>
@@ -93,89 +93,42 @@ export const LoginView: React.FC = () => {
             Select Portal
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-            <button
-              type="button"
-              onClick={() => setSelectedRole(Role.STUDENT)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 4px',
-                borderRadius: '14px',
-                background: selectedRole === Role.STUDENT ? 'var(--primary)' : 'rgba(26,26,26,0.6)',
-                border: `1px solid ${selectedRole === Role.STUDENT ? 'var(--primary)' : 'rgba(255,255,255,0.08)'}`,
-                color: '#FFFFFF',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              <User style={{ width: '18px', height: '18px', marginBottom: '4px' }} />
-              <span style={{ fontSize: '11px', fontWeight: 600 }}>Student</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setSelectedRole(Role.VENDOR)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 4px',
-                borderRadius: '14px',
-                background: selectedRole === Role.VENDOR ? 'var(--primary)' : 'rgba(26,26,26,0.6)',
-                border: `1px solid ${selectedRole === Role.VENDOR ? 'var(--primary)' : 'rgba(255,255,255,0.08)'}`,
-                color: '#FFFFFF',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              <Store style={{ width: '18px', height: '18px', marginBottom: '4px' }} />
-              <span style={{ fontSize: '11px', fontWeight: 600 }}>Vendor</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setSelectedRole(Role.RUNNER)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 4px',
-                borderRadius: '14px',
-                background: selectedRole === Role.RUNNER ? 'var(--primary)' : 'rgba(26,26,26,0.6)',
-                border: `1px solid ${selectedRole === Role.RUNNER ? 'var(--primary)' : 'rgba(255,255,255,0.08)'}`,
-                color: '#FFFFFF',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              <Bike style={{ width: '18px', height: '18px', marginBottom: '4px' }} />
-              <span style={{ fontSize: '11px', fontWeight: 600 }}>Runner</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setSelectedRole(Role.ADMIN)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 4px',
-                borderRadius: '14px',
-                background: selectedRole === Role.ADMIN ? 'var(--primary)' : 'rgba(26,26,26,0.6)',
-                border: `1px solid ${selectedRole === Role.ADMIN ? 'var(--primary)' : 'rgba(255,255,255,0.08)'}`,
-                color: '#FFFFFF',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              <ShieldCheck style={{ width: '18px', height: '18px', marginBottom: '4px' }} />
-              <span style={{ fontSize: '11px', fontWeight: 600 }}>Admin</span>
-            </button>
+            {[
+              { role: Role.STUDENT, label: 'Student', icon: User },
+              { role: Role.VENDOR, label: 'Vendor', icon: Store },
+              { role: Role.RUNNER, label: 'Runner', icon: Bike },
+              { role: Role.ADMIN, label: 'Admin', icon: ShieldCheck },
+            ].map(({ role, label, icon: Icon }) => {
+              const isSelected = selectedRole === role;
+              return (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => setSelectedRole(role)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '12px 4px',
+                    borderRadius: '20px',
+                    background: isSelected
+                      ? 'linear-gradient(135deg, rgba(253, 105, 49, 0.25), rgba(255, 120, 60, 0.1))'
+                      : 'rgba(255, 255, 255, 0.04)',
+                    border: `1px solid ${isSelected ? 'rgba(253, 105, 49, 0.5)' : 'rgba(255, 255, 255, 0.08)'}`,
+                    boxShadow: isSelected
+                      ? '0 4px 16px rgba(253, 105, 49, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2)'
+                      : 'none',
+                    color: isSelected ? '#FD6931' : '#8E8E93',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                >
+                  <Icon style={{ width: '18px', height: '18px', marginBottom: '4px', color: isSelected ? '#FD6931' : '#8E8E93' }} />
+                  <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '-0.01em' }}>{label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
