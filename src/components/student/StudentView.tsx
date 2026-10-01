@@ -184,86 +184,102 @@ export const StudentView: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
       
-      {/* ─── 1. MODERN SLEEK HEADER (ZOMATO / BLINKIT / SWIGGY STYLE) ─── */}
-      <header className="modern-header">
-        {/* Top Row: Speed Badge, Delivery Room/Hostel, Pure Veg Toggle, Profile */}
-        <div className="modern-header-top">
-          {/* Location Chip */}
-          <div
-            className="location-chip-btn"
-            onClick={() => setIsEditingProfile(true)}
-            title="Change Hostel / Room"
-          >
-            <span className="delivery-speed-badge">
-              <Zap size={11} fill="#34D399" color="#34D399" />
-              <span>15 MINS</span>
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-              <span className="location-text">
-                {currentUser.hostelBlock?.split(' ')[0] || 'Aryabhatta'}, {currentUser.roomNumber || 'A-204'}
-              </span>
-              <ChevronDown size={13} color="#9CA3AF" />
+      {/* ─── 1. SIGNATURE DELIVO COMPACT ORANGE HEADER (FROM ui_design) ─── */}
+      <header className="home-header">
+        <div className="header-content">
+          <div className="header-top">
+            {/* User Profile Avatar */}
+            <div className="profile-section" onClick={() => setIsEditingProfile(true)} title="Profile & Room">
+              <div className="profile-avatar-circle">
+                {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'S'}
+              </div>
+            </div>
+
+            {/* Delivery Location Selector */}
+            <div className="location-section" onClick={() => setIsEditingProfile(true)} title="Select Hostel / Room">
+              <div className="location-label">
+                <span>Delivery Location</span>
+                <ChevronDown size={12} color="rgba(255,255,255,0.9)" />
+              </div>
+              <div className="location-address">
+                <MapPin size={15} color="#FFFFFF" />
+                <span>
+                  {currentUser.hostelBlock?.split(' ')[0] || 'Aryabhatta'}, Rm {currentUser.roomNumber || 'A-204'}
+                </span>
+              </div>
+            </div>
+
+            {/* Notification / Cart / Veg Toggle */}
+            <div className="notification-section">
+              <button
+                type="button"
+                onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
+                style={{
+                  background: pureVegOnlyFilter || isHostelStrictVeg ? '#FFFFFF' : 'rgba(255,255,255,0.2)',
+                  color: pureVegOnlyFilter || isHostelStrictVeg ? '#10B981' : '#FFFFFF',
+                  border: '1.5px solid rgba(255,255,255,0.5)',
+                  borderRadius: '9999px',
+                  padding: '4px 10px',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                title="Toggle Veg Only"
+              >
+                <Leaf size={12} color={pureVegOnlyFilter || isHostelStrictVeg ? '#10B981' : '#FFFFFF'} />
+                <span>VEG</span>
+              </button>
+
+              <div
+                className="notification-icon-wrapper"
+                onClick={() => setActiveTab('cart')}
+                title="View Cart"
+              >
+                <ShoppingBag size={20} color="#FFFFFF" />
+                {totalCartQty > 0 && <span className="notification-badge">{totalCartQty}</span>}
+              </div>
             </div>
           </div>
 
-          {/* Quick Veg Mode Toggle & Profile Avatar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              type="button"
-              onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
-              className={`veg-toggle-btn ${pureVegOnlyFilter || isHostelStrictVeg ? 'active' : ''}`}
-              title="Toggle Pure Veg Only"
-            >
-              <Leaf size={12} color={pureVegOnlyFilter || isHostelStrictVeg ? '#34D399' : '#9CA3AF'} />
-              <span>VEG</span>
-            </button>
+          {/* Compact Delivo Headline */}
+          <h1 className="header-title-compact">What would you prefer to eat today?</h1>
 
-            {/* Profile Avatar */}
-            <button
-              type="button"
-              onClick={() => setIsEditingProfile(true)}
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, rgba(253,105,49,0.3), rgba(255,120,60,0.15))',
-                border: '1.5px solid rgba(253,105,49,0.5)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '14px',
-                fontWeight: 800,
-                color: '#FD6931',
-                cursor: 'pointer',
-              }}
-              title="Student Profile & Room"
-            >
-              {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'S'}
-            </button>
-          </div>
-        </div>
-
-        {/* Search Row */}
-        <div className="modern-search-row">
-          <div className="modern-search-bar">
-            <Search size={17} color="#9CA3AF" />
-            <input
-              id="campus-search-input"
-              type="text"
-              className="modern-search-input"
-              placeholder="Search samosa, maggi, chai, rolls, thali..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', padding: 0 }}
-              >
-                <X size={16} />
-              </button>
-            )}
+          {/* Search Bar (Signature White Pill from ui_design) */}
+          <div className="search-section">
+            <div className="search-bar">
+              <Search className="search-icon" />
+              <input
+                id="delivo-search-input"
+                type="text"
+                className="search-input"
+                placeholder="Search canteen dishes, snacks, rolls..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  style={{ background: 'none', border: 'none', color: '#8E8E93', cursor: 'pointer', padding: 0 }}
+                >
+                  <X size={18} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setPureVegOnlyFilter(!pureVegOnlyFilter)}
+                  className="filter-link"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  title="Toggle Veg Only Filter"
+                >
+                  <SlidersHorizontal size={18} color={pureVegOnlyFilter ? '#FD6931' : '#787878'} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -323,10 +339,10 @@ export const StudentView: React.FC = () => {
 
       {/* ──────── TAB 1: BROWSE / DISCOVER ──────── */}
       {activeTab === 'browse' && (
-        <main className="home-content hide-scrollbar" style={{ paddingBottom: '110px' }}>
+        <main className="home-content page-transition hide-scrollbar" style={{ paddingBottom: '110px' }}>
           
           {/* DELIVERY SLOT PICKER */}
-          <div className="slot-card" style={{ marginBottom: '24px' }}>
+          <div className="slot-card" style={{ marginBottom: '24px', borderRadius: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
               <span style={{ fontSize: 'var(--font-12)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Clock size={14} color="var(--primary)" />
@@ -357,8 +373,8 @@ export const StudentView: React.FC = () => {
                     disabled={!slotStatus.isOpen}
                     onClick={() => setSelectedSlot(slotKey)}
                     style={{
-                      padding: '8px 4px',
-                      borderRadius: '12px',
+                      padding: '10px 4px',
+                      borderRadius: '16px',
                       textAlign: 'center',
                       display: 'flex',
                       flexDirection: 'column',
@@ -653,7 +669,7 @@ export const StudentView: React.FC = () => {
 
       {/* ──────── TAB 2: CART / CHECKOUT ──────── */}
       {activeTab === 'cart' && (
-        <div className="checkout-screen" style={{ flex: 1, paddingBottom: '90px' }}>
+        <div className="checkout-screen page-transition" style={{ flex: 1, paddingBottom: '90px' }}>
           <div className="checkout-header">
             <button
               type="button"
@@ -787,7 +803,7 @@ export const StudentView: React.FC = () => {
 
       {/* ──────── TAB 3: LIVE ORDER TRACKING ──────── */}
       {activeTab === 'track' && (
-        <div style={{ flex: 1, padding: '20px', paddingBottom: '110px', overflowY: 'auto' }} className="hide-scrollbar">
+        <div style={{ flex: 1, padding: '20px', paddingBottom: '110px', overflowY: 'auto' }} className="page-transition hide-scrollbar">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>Live Order Tracker</h2>
             <button
@@ -898,7 +914,7 @@ export const StudentView: React.FC = () => {
 
       {/* ──────── TAB 4: ORDER HISTORY ──────── */}
       {activeTab === 'history' && (
-        <div style={{ flex: 1, padding: '20px', paddingBottom: '110px', overflowY: 'auto' }} className="hide-scrollbar">
+        <div style={{ flex: 1, padding: '20px', paddingBottom: '110px', overflowY: 'auto' }} className="page-transition hide-scrollbar">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>Past Campus Orders</h2>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{studentOrders.length} orders total</span>
