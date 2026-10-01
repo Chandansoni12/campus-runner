@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../../store';
-import { Role, OrderStatus, SlotWindow, MenuItem } from '../../types';
+import { Role, OrderStatus, MenuItem } from '../../types';
 import { formatRupees } from '../../business-logic';
 import { OrderStatusBadge } from '../common/OrderStatusBadge';
-import { SlotBadge } from '../common/SlotBadge';
 import {
   ShieldAlert,
   Store,
@@ -21,6 +20,9 @@ import {
   LogOut,
   Zap,
   ChevronDown,
+  Clock,
+  Building,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const AdminView: React.FC = () => {
@@ -40,6 +42,7 @@ export const AdminView: React.FC = () => {
     batchAssignOrders,
     updateVendorCommission,
   } = useAppStore();
+
   const [activeTab, setActiveTab] = useState<'killswitch' | 'dispatch' | 'roster' | 'vendors' | 'reports'>('killswitch');
   const [dispatchPage, setDispatchPage] = useState(0);
   const [rosterPage, setRosterPage] = useState(0);
@@ -58,17 +61,31 @@ export const AdminView: React.FC = () => {
   // Forms
   const [newRunnerForm, setNewRunnerForm] = useState({ name: '', phone: '', hostelBlock: 'Aryabhatta Hall' });
   const [newVendorForm, setNewVendorForm] = useState({
-    name: '', location: '', ownerPhone: '', commissionPct: 10, cuisineTag: '', prepTimeMinutes: 15,
-    itemName1: '', itemPrice1: 60, itemIsVeg1: true,
+    name: '',
+    location: '',
+    ownerPhone: '',
+    commissionPct: 10,
+    cuisineTag: '',
+    prepTimeMinutes: 15,
+    itemName1: '',
+    itemPrice1: 60,
+    itemIsVeg1: true,
   });
 
   const studentRunners = users.filter((u) => u.role === Role.RUNNER);
 
   const dispatchableOrders = orders.filter(
-    (o) => (o.status === OrderStatus.PLACED || o.status === OrderStatus.ACCEPTED || o.status === OrderStatus.PREPARING || o.status === OrderStatus.READY) && !o.runnerId
+    (o) =>
+      (o.status === OrderStatus.PLACED ||
+        o.status === OrderStatus.ACCEPTED ||
+        o.status === OrderStatus.PREPARING ||
+        o.status === OrderStatus.READY) &&
+      !o.runnerId
   );
 
-  const filteredDispatchOrders = dispatchableOrders.filter((o) => selectedHostelFilter === 'all' || o.hostelBlock.includes(selectedHostelFilter));
+  const filteredDispatchOrders = dispatchableOrders.filter(
+    (o) => selectedHostelFilter === 'all' || o.hostelBlock.includes(selectedHostelFilter)
+  );
 
   const totalOrders = orders.length;
   const completedOrders = orders.filter((o) => o.status === OrderStatus.DELIVERED);
@@ -79,11 +96,13 @@ export const AdminView: React.FC = () => {
   const refundRate = totalOrders > 0 ? Math.round((cancelledOrders.length / totalOrders) * 100) : 0;
 
   const handleSelectAllOrders = () => {
-    setSelectedOrderIds(selectedOrderIds.length === filteredDispatchOrders.length ? [] : filteredDispatchOrders.map((o) => o.id));
+    setSelectedOrderIds(
+      selectedOrderIds.length === filteredDispatchOrders.length ? [] : filteredDispatchOrders.map((o) => o.id)
+    );
   };
 
   const handleToggleOrderSelection = (id: string) => {
-    setSelectedOrderIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    setSelectedOrderIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   };
 
   const handleBatchDispatchSubmit = () => {
@@ -106,541 +125,1115 @@ export const AdminView: React.FC = () => {
     e.preventDefault();
     if (newVendorForm.name && newVendorForm.location) {
       const initialItems: MenuItem[] = [
-        { id: '', vendorId: '', name: newVendorForm.itemName1 || 'Special Snack', price: Number(newVendorForm.itemPrice1) || 50, isVeg: newVendorForm.itemIsVeg1, isAvailable: true, category: 'snacks' },
+        {
+          id: '',
+          vendorId: '',
+          name: newVendorForm.itemName1 || 'Special Snack',
+          price: Number(newVendorForm.itemPrice1) || 50,
+          isVeg: newVendorForm.itemIsVeg1,
+          isAvailable: true,
+          category: 'snacks',
+        },
       ];
       onboardVendor({
-        name: newVendorForm.name, location: newVendorForm.location, ownerPhone: newVendorForm.ownerPhone || '9870000000',
-        commissionPct: Number(newVendorForm.commissionPct) || 10, cuisineTag: newVendorForm.cuisineTag || 'Quick Bites',
-        bannerColor: 'from-orange-500/20 to-amber-500/10', prepTimeMinutes: Number(newVendorForm.prepTimeMinutes) || 15,
+        name: newVendorForm.name,
+        location: newVendorForm.location,
+        ownerPhone: newVendorForm.ownerPhone || '9870000000',
+        commissionPct: Number(newVendorForm.commissionPct) || 10,
+        cuisineTag: newVendorForm.cuisineTag || 'Quick Bites',
+        bannerColor: 'from-orange-500/20 to-amber-500/10',
+        prepTimeMinutes: Number(newVendorForm.prepTimeMinutes) || 15,
         menuItems: initialItems,
       });
       setShowAddVendorModal(false);
     }
   };
 
+  const DISPATCH_PAGE_SIZE = 4;
+  const ROSTER_PAGE_SIZE = 5;
+  const VENDOR_PAGE_SIZE = 4;
+  const REPORT_PAGE_SIZE = 5;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
       
-      {/* ─── 1. COMPACT MODERN ADMIN HEADER ─── */}
-      <header className="modern-header">
-        <div className="modern-header-top">
-          {/* Admin Identity Chip */}
-          <div className="location-chip-btn">
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '3px',
-                background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(225, 29, 72, 0.1))',
-                border: '1px solid rgba(251, 113, 133, 0.4)',
-                color: '#FB7185',
-                fontSize: '10px',
-                fontWeight: 800,
-                padding: '2px 7px',
-                borderRadius: '9999px',
-                letterSpacing: '0.02em',
-              }}
-            >
-              <Zap size={11} fill="#FB7185" color="#FB7185" />
-              <span>COMMAND</span>
-            </span>
-            <span className="location-text">
-              University Admin
-            </span>
-          </div>
-
-          {/* Global Kill Switch Status & Logout */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div
-              className="px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5"
-              style={{
-                backgroundColor: settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                border: `1px solid ${settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
-                color: settings.globalOrderingPaused ? '#EF4444' : '#10B981',
-              }}
-            >
-              <span
+      {/* ─── 1. SIGNATURE DELIVO COMPACT ORANGE HEADER ─── */}
+      <header className="home-header">
+        <div className="header-content">
+          <div className="header-top">
+            
+            {/* Admin Command Badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+              <div
                 style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  backgroundColor: settings.globalOrderingPaused ? '#EF4444' : '#10B981',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.5)',
+                  padding: '5px 12px',
+                  borderRadius: '9999px',
+                  color: '#FFFFFF',
                 }}
-              />
-              <span>{settings.globalOrderingPaused ? 'PAUSED' : 'ONLINE'}</span>
+              >
+                <ShieldCheck size={16} style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.02em' }}>
+                  University Command
+                </span>
+              </div>
+
+              {/* Global System Status Pill */}
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  background: settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.25)',
+                  border: `1px solid ${settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.6)' : 'rgba(16, 185, 129, 0.6)'}`,
+                  color: '#FFFFFF',
+                  fontSize: '10.5px',
+                  fontWeight: 900,
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                }}
+              >
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: settings.globalOrderingPaused ? '#EF4444' : '#10B981',
+                    boxShadow: settings.globalOrderingPaused ? '0 0 8px #EF4444' : '0 0 8px #10B981',
+                  }}
+                />
+                <span>{settings.globalOrderingPaused ? 'PAUSED' : 'ONLINE'}</span>
+              </div>
             </div>
 
+            {/* Logout Button */}
             <button
               type="button"
               onClick={logout}
-              className="w-9 h-9 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center hover:bg-rose-500/25 transition-all cursor-pointer"
-              title="Log out of Admin Portal"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'rgba(0, 0, 0, 0.25)',
+                border: '1.5px solid rgba(255, 255, 255, 0.35)',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                flexShrink: 0,
+              }}
+              className="active:scale-90"
+              title="Log out of Admin"
             >
               <LogOut size={16} />
             </button>
           </div>
-        </div>
 
-        {/* Compact 4-KPI Row */}
-        <div className="grid grid-cols-4 gap-2 pt-1">
-          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
-            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Gross</div>
-            <div className="text-sm font-black text-white">₹{totalGrossRevenue}</div>
-          </div>
-          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
-            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Orders</div>
-            <div className="text-sm font-black text-white">{totalOrders}</div>
-          </div>
-          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
-            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Dispatch</div>
-            <div className="text-sm font-black text-orange-400">{dispatchableOrders.length}</div>
-          </div>
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-2 text-center">
-            <div className="text-[9.5px] text-emerald-400 font-bold uppercase tracking-wider">Runners</div>
-            <div className="text-sm font-black text-emerald-400">{studentRunners.length}</div>
+          {/* Compact 4-KPI Row (Obsidian Glass Chips) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '6px' }}>
+            <div className="portal-kpi-glass">
+              <div className="portal-kpi-label">Gross Vol</div>
+              <div className="portal-kpi-val">₹{totalGrossRevenue}</div>
+            </div>
+            <div className="portal-kpi-glass">
+              <div className="portal-kpi-label">Total Orders</div>
+              <div className="portal-kpi-val">{totalOrders}</div>
+            </div>
+            <div className="portal-kpi-glass" style={{ background: 'rgba(253, 105, 49, 0.2)', borderColor: 'rgba(253, 105, 49, 0.4)' }}>
+              <div className="portal-kpi-label" style={{ color: '#FED7AA' }}>To Dispatch</div>
+              <div className="portal-kpi-val" style={{ color: '#FFFFFF' }}>{dispatchableOrders.length}</div>
+            </div>
+            <div className="portal-kpi-glass" style={{ background: 'rgba(16, 185, 129, 0.2)', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
+              <div className="portal-kpi-label" style={{ color: '#A7F3D0' }}>Runners</div>
+              <div className="portal-kpi-val" style={{ color: '#6EE7B7' }}>{studentRunners.length}</div>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* ─── 2. MAIN SCROLLABLE CONTENT ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3" style={{ paddingBottom: '96px' }}>
-          {/* TAB 1: EMERGENCY KILL-SWITCHES */}
-          {activeTab === 'killswitch' && (
-            <div className="flex-1 flex flex-col min-h-0 overflow-y-auto no-scrollbar space-y-6 animate-in fade-in slide-in-from-bottom-4">
-              
-              <div className="bg-gradient-to-br from-rose-950/40 to-neutral-900/60 backdrop-blur-xl border border-rose-900/50 rounded-3xl p-6 shadow-2xl">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div>
-                    <h2 className="text-xl font-black text-white mb-2 flex items-center gap-2">
-                      <Power className="w-5 h-5 text-rose-500" /> Master Kill-Switch
-                    </h2>
-                    <p className="text-sm text-rose-200/60 max-w-lg leading-relaxed">
-                      Instantly pause all checkouts across the entire campus. Existing active orders will remain in progress, but no new orders can be placed.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => toggleGlobalKillSwitch(!settings.globalOrderingPaused)}
-                    className={`shrink-0 px-6 py-4 rounded-2xl font-black text-sm flex items-center gap-2 transition-all shadow-xl active:scale-95 ${
-                      settings.globalOrderingPaused
-                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/50'
-                        : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-900/50'
-                    }`}
-                  >
-                    {settings.globalOrderingPaused ? (
-                      <><ToggleRight className="w-5 h-5" /> RESUME DELIVERIES</>
-                    ) : (
-                      <><ToggleLeft className="w-5 h-5" /> EMERGENCY PAUSE ALL</>
-                    )}
-                  </button>
+      {/* ─── 2. MAIN SCROLLABLE CONTENT WITH SILKY PAGE TRANSITION ─── */}
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3.5 pb-28">
+        
+        {/* TAB 1: EMERGENCY CONTROLS */}
+        {activeTab === 'killswitch' && (
+          <div className="page-transition" style={{ gap: '14px' }}>
+            
+            {/* Master Emergency Kill Switch Card */}
+            <div
+              style={{
+                background: settings.globalOrderingPaused
+                  ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(26, 26, 26, 0.85) 100%)'
+                  : 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(26, 26, 26, 0.85) 100%)',
+                border: settings.globalOrderingPaused
+                  ? '1.5px solid rgba(239, 68, 68, 0.5)'
+                  : '1.5px solid rgba(16, 185, 129, 0.35)',
+                borderRadius: '26px',
+                padding: '18px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                boxShadow: settings.globalOrderingPaused ? '0 8px 30px rgba(239, 68, 68, 0.2)' : 'none',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <h2 style={{ fontSize: '17px', fontWeight: 900, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Power size={20} color={settings.globalOrderingPaused ? '#EF4444' : '#10B981'} />
+                    <span>Campus Kill-Switch</span>
+                  </h2>
+                  <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '3px', lineHeight: 1.4 }}>
+                    Instantly halts checkout for all campus students. Existing active orders complete normally.
+                  </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-xl">
-                  <h2 className="text-lg font-black text-white mb-4">Hostel Delivery Controls</h2>
-                  <div className="space-y-3">
-                    {hostels.map((h) => {
-                      const isPaused = settings.pausedHostelBlocks.includes(h.name);
-                      return (
-                        <div key={h.id} className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${isPaused ? 'bg-rose-950/20 border-rose-800' : 'bg-black/40 border-white/5 hover:border-white/10'}`}>
-                          <div>
-                            <div className="font-bold text-white mb-0.5">{h.name}</div>
-                            <div className={`text-xs font-bold uppercase tracking-wider ${isPaused ? 'text-rose-400' : 'text-emerald-400'}`}>
-                              {isPaused ? 'Deliveries Paused' : 'Ordering Open'}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => toggleHostelKillSwitch(h.name, !isPaused)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors border ${
-                              isPaused ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-transparent text-neutral-300 hover:text-white border-white/20'
-                            }`}
-                          >
-                            {isPaused ? 'Unpause' : 'Pause'}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-xl h-fit">
-                  <h2 className="text-lg font-black text-white mb-2">Night Kitchen Cutoff</h2>
-                  <p className="text-sm text-neutral-400 mb-6">Set the time when all platform ordering naturally ceases.</p>
-                  <div className="flex items-center gap-4 bg-black/40 p-4 rounded-2xl border border-white/5">
-                    <input
-                      type="time"
-                      value={settings.cutoffTime}
-                      onChange={(e) => updateCutoffTime(e.target.value)}
-                      className="bg-neutral-900 border border-white/10 text-white px-4 py-3 rounded-xl text-lg font-mono font-black focus:border-orange-500 outline-none"
-                    />
-                    <div className="text-xs text-neutral-400 font-medium">
-                      Current Cutoff<br/><strong className="text-white">Default 9:15 PM</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: MANUAL DISPATCH */}
-          {activeTab === 'dispatch' && (
-            <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-4">
-              <div className="flex-1 min-h-0 flex flex-col bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
-                  <div>
-                    <h2 className="text-xl font-black text-white mb-1 flex items-center gap-2">
-                      <Send className="w-5 h-5 text-orange-500" /> Manual Batch Dispatcher
-                    </h2>
-                    <p className="text-sm text-neutral-400">Assign multiple pending orders to a single runner to optimize routes.</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 p-2 bg-black/40 border border-white/5 rounded-2xl">
-                    <select
-                      value={targetRunnerId}
-                      onChange={(e) => setTargetRunnerId(e.target.value)}
-                      className="bg-transparent text-white text-sm font-bold px-3 py-2 focus:outline-none"
-                    >
-                      <option value="" className="bg-neutral-900 text-neutral-400">Select Runner...</option>
-                      {studentRunners.map((r) => (
-                        <option key={r.id} value={r.id} className="bg-neutral-900 text-white">
-                          {r.name} ({r.hostelBlock?.split(' ')[0]})
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      disabled={selectedOrderIds.length === 0 || !targetRunnerId}
-                      onClick={handleBatchDispatchSubmit}
-                      className="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white font-bold text-sm transition-all"
-                    >
-                      Dispatch ({selectedOrderIds.length})
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-4 mb-4">
-                   <select
-                    value={selectedHostelFilter}
-                    onChange={(e) => setSelectedHostelFilter(e.target.value)}
-                    className="bg-black/50 border border-white/10 text-white text-xs font-bold rounded-xl px-4 py-2"
-                  >
-                    <option value="all">All Hostels</option>
-                    <option value="Aryabhatta">Aryabhatta Hall</option>
-                    <option value="Bhaskara">Bhaskara Hall</option>
-                  </select>
-                  <button onClick={handleSelectAllOrders} className="text-xs font-bold text-orange-400 hover:text-orange-300">
-                    {selectedOrderIds.length === filteredDispatchOrders.length && filteredDispatchOrders.length > 0 ? 'Deselect All' : 'Select All Filtered'}
-                  </button>
-                </div>
-
-                {filteredDispatchOrders.length === 0 ? (
-                  <div className="p-12 text-center bg-black/40 rounded-2xl border border-white/5 border-dashed">
-                    <Package className="w-10 h-10 text-neutral-700 mx-auto mb-3" />
-                    <div className="text-neutral-400 text-sm font-medium">No unassigned orders waiting for dispatch.</div>
-                  </div>
+              <button
+                type="button"
+                onClick={() => toggleGlobalKillSwitch(!settings.globalOrderingPaused)}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '9999px',
+                  background: settings.globalOrderingPaused
+                    ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                    : 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+                  color: '#FFFFFF',
+                  fontWeight: 900,
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  border: 'none',
+                  boxShadow: settings.globalOrderingPaused
+                    ? '0 4px 18px rgba(16, 185, 129, 0.4)'
+                    : '0 4px 18px rgba(239, 68, 68, 0.4)',
+                  cursor: 'pointer',
+                  letterSpacing: '0.02em',
+                }}
+                className="active:scale-95"
+              >
+                {settings.globalOrderingPaused ? (
+                  <>
+                    <ToggleRight size={20} />
+                    <span>RESUME CAMPUS ORDERING</span>
+                  </>
                 ) : (
                   <>
-                  <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar pb-2">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {filteredDispatchOrders.slice(dispatchPage * 4, (dispatchPage + 1) * 4).map((ord) => {
-                      const isChecked = selectedOrderIds.includes(ord.id);
-                      return (
-                        <div
-                          key={ord.id}
-                          onClick={() => handleToggleOrderSelection(ord.id)}
-                          className={`p-4 rounded-2xl border cursor-pointer flex items-center justify-between transition-all select-none ${
-                            isChecked ? 'bg-orange-500/10 border-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.15)]' : 'bg-black/40 border-white/5 hover:border-white/20 text-neutral-300'
-                          }`}
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className={`mt-1 w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isChecked ? 'bg-orange-500 border-orange-500 text-white' : 'border-neutral-600'}`}>
-                              {isChecked && <ShieldCheck className="w-3 h-3" />}
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-mono font-black text-white text-sm">{ord.id}</span>
-                                <OrderStatusBadge status={ord.status} size="sm" />
-                              </div>
-                              <div className="text-xs text-neutral-400 font-medium">
-                                Stall: <span className="text-white">{ord.vendorName}</span>
-                              </div>
-                              <div className="text-xs text-neutral-400 font-medium mt-0.5">
-                                Room: <span className="text-orange-400">{ord.hostelBlock.split(' ')[0]} {ord.roomNumber}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                             <div className="text-base font-black text-white">{formatRupees(ord.totalAmount)}</div>
-                             <div className="text-[10px] text-neutral-500 font-mono mt-1">{new Date(ord.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    </div>
-                  </div>
-                  
-                  {filteredDispatchOrders.length > 4 && (
-                    <div className="flex items-center justify-between pt-3 mt-auto border-t border-white/10">
-                      <button
-                        onClick={() => setDispatchPage(p => Math.max(0, p - 1))}
-                        disabled={dispatchPage === 0}
-                        className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${dispatchPage === 0 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                      >
-                        Prev
-                      </button>
-                      <div className="text-[10px] font-mono text-neutral-400">
-                        Page {dispatchPage + 1} / {Math.ceil(filteredDispatchOrders.length / 4)}
-                      </div>
-                      <button
-                        onClick={() => setDispatchPage(p => Math.min(Math.ceil(filteredDispatchOrders.length / 4) - 1, p + 1))}
-                        disabled={dispatchPage >= Math.ceil(filteredDispatchOrders.length / 4) - 1}
-                        className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${dispatchPage >= Math.ceil(filteredDispatchOrders.length / 4) - 1 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-orange-500 text-white hover:bg-orange-400'}`}
-                      >
-                        Next
-                      </button>
-                    </div>
-                  )}
+                    <ToggleLeft size={20} />
+                    <span>EMERGENCY PAUSE ALL ORDERS</span>
                   </>
                 )}
+              </button>
+            </div>
+
+            {/* Hostel Delivery Controls Card */}
+            <div
+              style={{
+                background: 'rgba(26, 26, 26, 0.72)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '26px',
+                padding: '16px',
+              }}
+            >
+              <h2 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Building size={16} color="#FD6931" />
+                <span>Per-Hostel Delivery Zones</span>
+              </h2>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {hostels.map((h) => {
+                  const isPaused = settings.pausedHostelBlocks.includes(h.name);
+                  return (
+                    <div
+                      key={h.id}
+                      style={{
+                        background: isPaused ? 'rgba(239, 68, 68, 0.1)' : 'rgba(0, 0, 0, 0.35)',
+                        border: isPaused ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255, 255, 255, 0.05)',
+                        borderRadius: '20px',
+                        padding: '12px 14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#FFFFFF' }}>{h.name}</div>
+                        <div
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            color: isPaused ? '#EF4444' : '#10B981',
+                            marginTop: '2px',
+                          }}
+                        >
+                          {isPaused ? 'Deliveries Paused' : 'Ordering Active'}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => toggleHostelKillSwitch(h.name, !isPaused)}
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: '9999px',
+                          fontSize: '12px',
+                          fontWeight: 800,
+                          background: isPaused ? '#10B981' : 'rgba(255, 255, 255, 0.08)',
+                          color: '#FFFFFF',
+                          border: isPaused ? 'none' : '1px solid rgba(255, 255, 255, 0.15)',
+                          cursor: 'pointer',
+                        }}
+                        className="active:scale-95"
+                      >
+                        {isPaused ? 'Unpause' : 'Pause Zone'}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          )}
 
-          {/* TAB 3: RUNNER ROSTER */}
-          {activeTab === 'roster' && (
-            <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-4">
-              <div className="flex-1 min-h-0 flex flex-col bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl font-black text-white mb-1">Student Runner Roster</h2>
-                    <p className="text-sm text-neutral-400">Manage enrolled delivery partners and verify their IDs.</p>
-                  </div>
-                  <button onClick={() => setShowAddRunnerModal(true)} className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm flex items-center gap-2 shadow-lg">
-                    <Plus className="w-4 h-4" /> Add Runner
-                  </button>
-                </div>
+            {/* Night Kitchen Cutoff Time Card */}
+            <div
+              style={{
+                background: 'rgba(26, 26, 26, 0.72)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '26px',
+                padding: '16px',
+              }}
+            >
+              <h2 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Clock size={16} color="#FD6931" />
+                <span>Night Kitchen Cutoff</span>
+              </h2>
+              <p style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '12px' }}>
+                Set platform cutoff hour when late night checkout ceases.
+              </p>
 
-                <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar rounded-2xl border border-white/5">
-                  <table className="w-full text-left text-sm whitespace-nowrap">
-                    <thead className="bg-black/50 sticky top-0 z-10">
-                      <tr className="text-neutral-400 uppercase tracking-wider text-[10px] font-bold border-b border-white/5">
-                        <th className="py-4 px-4">Runner Name</th>
-                        <th className="py-4 px-4">Phone</th>
-                        <th className="py-4 px-4">Hostel Base</th>
-                        <th className="py-4 px-4">Status</th>
-                        <th className="py-4 px-4 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5 bg-black/20">
-                      {studentRunners.slice(rosterPage * 4, (rosterPage + 1) * 4).map((r) => (
-                        <tr key={r.id} className="hover:bg-white/[0.02] transition-colors">
-                          <td className="py-4 px-4 font-bold text-white">{r.name}</td>
-                          <td className="py-4 px-4 font-mono text-neutral-300">{r.phone}</td>
-                          <td className="py-4 px-4 text-neutral-300">{r.hostelBlock}</td>
-                          <td className="py-4 px-4">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${r.isVerified ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                              {r.isVerified ? '✓ Verified' : 'Pending'}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4 text-right">
-                             <button onClick={() => toggleRunnerVerification(r.id)} className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
-                               {r.isVerified ? 'Revoke Access' : 'Verify ID'}
-                             </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: 'rgba(0, 0, 0, 0.35)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '20px',
+                  padding: '10px 14px',
+                }}
+              >
+                <input
+                  type="time"
+                  value={settings.cutoffTime}
+                  onChange={(e) => updateCutoffTime(e.target.value)}
+                  style={{
+                    background: '#18181D',
+                    border: '1.5px solid rgba(253, 105, 49, 0.5)',
+                    color: '#FFFFFF',
+                    padding: '8px 14px',
+                    borderRadius: '14px',
+                    fontSize: '18px',
+                    fontFamily: 'monospace',
+                    fontWeight: 900,
+                    outline: 'none',
+                  }}
+                />
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                  Current active cutoff: <strong style={{ color: '#FFFFFF' }}>{settings.cutoffTime} IST</strong>
                 </div>
-                
-                {studentRunners.length > 4 && (
-                  <div className="flex items-center justify-between pt-4 mt-auto border-t border-white/10">
-                    <button
-                      onClick={() => setRosterPage(p => Math.max(0, p - 1))}
-                      disabled={rosterPage === 0}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${rosterPage === 0 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                    >
-                      Prev
-                    </button>
-                    <div className="text-[10px] font-mono text-neutral-400">
-                      Page {rosterPage + 1} / {Math.ceil(studentRunners.length / 4)}
-                    </div>
-                    <button
-                      onClick={() => setRosterPage(p => Math.min(Math.ceil(studentRunners.length / 4) - 1, p + 1))}
-                      disabled={rosterPage >= Math.ceil(studentRunners.length / 4) - 1}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${rosterPage >= Math.ceil(studentRunners.length / 4) - 1 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-orange-500 text-white hover:bg-orange-400'}`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* TAB 4: VENDORS */}
-          {activeTab === 'vendors' && (
-            <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-4">
-              <div className="flex-1 min-h-0 flex flex-col bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl font-black text-white mb-1">Campus Vendors</h2>
-                    <p className="text-sm text-neutral-400">Manage stalls and adjust platform commission splits.</p>
-                  </div>
-                  <button onClick={() => setShowAddVendorModal(true)} className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm flex items-center gap-2 shadow-lg">
-                    <Plus className="w-4 h-4" /> Onboard Stall
-                  </button>
-                </div>
+        {/* TAB 2: MANUAL BATCH DISPATCH */}
+        {activeTab === 'dispatch' && (
+          <div className="page-transition">
+            
+            {/* Batch Action Bar Card */}
+            <div
+              style={{
+                background: 'rgba(26, 26, 26, 0.72)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '26px',
+                padding: '16px',
+                marginBottom: '14px',
+              }}
+            >
+              <div style={{ marginBottom: '12px' }}>
+                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Send size={16} color="#FD6931" />
+                  <span>Manual Batch Dispatcher</span>
+                </h2>
+                <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
+                  Assign multiple unassigned orders to one runner to bundle delivery trips.
+                </p>
+              </div>
 
-                <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-2">
-                    {vendors.slice(vendorPage * 2, (vendorPage + 1) * 2).map((v) => (
-                    <div key={v.id} className="bg-black/40 border border-white/10 hover:border-white/20 transition-colors rounded-2xl p-5 flex flex-col md:flex-row gap-5">
-                       {v.coverImage ? (
-                         <div className="w-24 h-24 shrink-0 rounded-xl bg-neutral-800 overflow-hidden">
-                           <img src={v.coverImage} className="w-full h-full object-cover" alt="" />
-                         </div>
-                       ) : (
-                         <div className="w-24 h-24 shrink-0 rounded-xl bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center text-neutral-600"><Store className="w-8 h-8"/></div>
-                       )}
-                       <div className="flex-1 flex flex-col justify-between min-w-0">
-                          <div>
-                            <div className="flex items-start justify-between gap-2">
-                              <h3 className="font-black text-white text-lg truncate">{v.name}</h3>
-                              <div className="bg-black/50 text-amber-400 font-bold text-xs px-2 py-0.5 rounded-full border border-white/5 whitespace-nowrap">★ {v.rating}</div>
-                            </div>
-                            <div className="text-xs text-neutral-400 mt-1">{v.location}</div>
-                          </div>
-                          
-                          <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
-                            <span className="text-xs font-medium text-neutral-400">Menu Items: <strong className="text-white">{v.menuItems.length}</strong></span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Commission</span>
-                              <select
-                                value={v.commissionPct}
-                                onChange={(e) => updateVendorCommission(v.id, Number(e.target.value))}
-                                className="bg-neutral-800 border border-white/10 text-orange-400 font-bold rounded-lg px-3 py-1 text-xs focus:outline-none focus:border-orange-500"
-                              >
-                                {[8, 10, 12, 15, 20].map(pct => <option key={pct} value={pct}>{pct}%</option>)}
-                              </select>
-                            </div>
-                          </div>
-                       </div>
-                    </div>
+              {/* Runner Picker & Dispatch Button */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <select
+                  value={targetRunnerId}
+                  onChange={(e) => setTargetRunnerId(e.target.value)}
+                  style={{
+                    flex: 1,
+                    minWidth: '160px',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '9999px',
+                    padding: '10px 14px',
+                    color: '#FFFFFF',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="" style={{ background: '#18181D' }}>Select Courier Runner...</option>
+                  {studentRunners.map((r) => (
+                    <option key={r.id} value={r.id} style={{ background: '#18181D' }}>
+                      {r.name} ({r.hostelBlock?.split(' ')[0]})
+                    </option>
                   ))}
-                  </div>
-                </div>
+                </select>
 
-                {vendors.length > 2 && (
-                  <div className="flex items-center justify-between pt-4 mt-auto border-t border-white/10 shrink-0">
+                <button
+                  type="button"
+                  disabled={selectedOrderIds.length === 0 || !targetRunnerId}
+                  onClick={handleBatchDispatchSubmit}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '9999px',
+                    background:
+                      selectedOrderIds.length > 0 && targetRunnerId
+                        ? 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)'
+                        : 'rgba(255, 255, 255, 0.05)',
+                    color: selectedOrderIds.length > 0 && targetRunnerId ? '#FFFFFF' : '#4B5563',
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    border: 'none',
+                    boxShadow:
+                      selectedOrderIds.length > 0 && targetRunnerId ? '0 4px 14px rgba(253, 105, 49, 0.4)' : 'none',
+                    cursor: selectedOrderIds.length > 0 && targetRunnerId ? 'pointer' : 'not-allowed',
+                    whiteSpace: 'nowrap',
+                  }}
+                  className={selectedOrderIds.length > 0 && targetRunnerId ? 'active:scale-95' : ''}
+                >
+                  🚀 Dispatch ({selectedOrderIds.length})
+                </button>
+              </div>
+
+              {/* Filter Chips Bar */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <select
+                  value={selectedHostelFilter}
+                  onChange={(e) => {
+                    setSelectedHostelFilter(e.target.value);
+                    setDispatchPage(0);
+                  }}
+                  style={{
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '9999px',
+                    padding: '5px 12px',
+                    color: '#9CA3AF',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    outline: 'none',
+                  }}
+                >
+                  <option value="all" style={{ background: '#18181D' }}>All Hostels</option>
+                  <option value="Aryabhatta" style={{ background: '#18181D' }}>Aryabhatta Hall</option>
+                  <option value="Bhaskara" style={{ background: '#18181D' }}>Bhaskara Hall</option>
+                </select>
+
+                <button
+                  type="button"
+                  onClick={handleSelectAllOrders}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#FD6931',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {selectedOrderIds.length === filteredDispatchOrders.length && filteredDispatchOrders.length > 0
+                    ? 'Deselect All'
+                    : 'Select All Filtered'}
+                </button>
+              </div>
+            </div>
+
+            {/* Orders Waiting List */}
+            {filteredDispatchOrders.length === 0 ? (
+              <div
+                style={{
+                  background: 'rgba(26, 26, 26, 0.6)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '26px',
+                  padding: '48px 24px',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    background: 'rgba(253, 105, 49, 0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FD6931',
+                    marginBottom: '16px',
+                  }}
+                >
+                  <Package size={32} />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
+                  No Pending Orders
+                </h3>
+                <p style={{ fontSize: '13px', color: '#9CA3AF', maxWidth: '280px', lineHeight: 1.5 }}>
+                  All placed orders have been assigned to couriers or completed.
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {filteredDispatchOrders
+                  .slice(dispatchPage * DISPATCH_PAGE_SIZE, (dispatchPage + 1) * DISPATCH_PAGE_SIZE)
+                  .map((ord) => {
+                    const isChecked = selectedOrderIds.includes(ord.id);
+                    return (
+                      <div
+                        key={ord.id}
+                        onClick={() => handleToggleOrderSelection(ord.id)}
+                        style={{
+                          background: isChecked ? 'rgba(253, 105, 49, 0.15)' : 'rgba(26, 26, 26, 0.72)',
+                          backdropFilter: 'blur(20px)',
+                          border: isChecked ? '1.5px solid #FD6931' : '1px solid rgba(255, 255, 255, 0.08)',
+                          borderRadius: '24px',
+                          padding: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          boxShadow: isChecked ? '0 4px 16px rgba(253, 105, 49, 0.25)' : 'none',
+                        }}
+                        className="active:scale-[0.99]"
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              borderRadius: '7px',
+                              border: isChecked ? 'none' : '1.5px solid rgba(255, 255, 255, 0.3)',
+                              background: isChecked ? '#FD6931' : 'transparent',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#FFFFFF',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {isChecked && <ShieldCheck size={16} />}
+                          </div>
+
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                              <span style={{ fontFamily: 'monospace', fontWeight: 900, color: '#FFFFFF', fontSize: '14px' }}>
+                                {ord.id}
+                              </span>
+                              <OrderStatusBadge status={ord.status} size="sm" />
+                            </div>
+                            <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                              Stall: <strong style={{ color: '#E5E7EB' }}>{ord.vendorName}</strong>
+                            </div>
+                            <div style={{ fontSize: '12px', color: '#FD6931', fontWeight: 700, marginTop: '1px' }}>
+                              Drop: {ord.hostelBlock.split(' ')[0]} • Rm {ord.roomNumber}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '16px', fontWeight: 900, color: '#FFFFFF' }}>
+                            {formatRupees(ord.totalAmount)}
+                          </div>
+                          <div style={{ fontSize: '10.5px', color: '#6B7280', fontFamily: 'monospace', marginTop: '2px' }}>
+                            {new Date(ord.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                {/* Dispatch Pagination */}
+                {filteredDispatchOrders.length > DISPATCH_PAGE_SIZE && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
                     <button
-                      onClick={() => setVendorPage(p => Math.max(0, p - 1))}
-                      disabled={vendorPage === 0}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${vendorPage === 0 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                      type="button"
+                      onClick={() => setDispatchPage((p) => Math.max(0, p - 1))}
+                      disabled={dispatchPage === 0}
+                      style={{
+                        padding: '7px 14px',
+                        borderRadius: '9999px',
+                        fontWeight: 700,
+                        fontSize: '11.5px',
+                        background: dispatchPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
+                        color: dispatchPage === 0 ? '#4B5563' : '#FFFFFF',
+                        border: 'none',
+                        cursor: dispatchPage === 0 ? 'not-allowed' : 'pointer',
+                      }}
                     >
                       Prev
                     </button>
-                    <div className="text-[10px] font-mono text-neutral-400">
-                      Page {vendorPage + 1} / {Math.ceil(vendors.length / 2)}
+                    <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#9CA3AF' }}>
+                      Page {dispatchPage + 1} / {Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE)}
                     </div>
                     <button
-                      onClick={() => setVendorPage(p => Math.min(Math.ceil(vendors.length / 2) - 1, p + 1))}
-                      disabled={vendorPage >= Math.ceil(vendors.length / 2) - 1}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${vendorPage >= Math.ceil(vendors.length / 2) - 1 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-orange-500 text-white hover:bg-orange-400'}`}
+                      type="button"
+                      onClick={() =>
+                        setDispatchPage((p) => Math.min(Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1, p + 1))
+                      }
+                      disabled={dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1}
+                      style={{
+                        padding: '7px 14px',
+                        borderRadius: '9999px',
+                        fontWeight: 700,
+                        fontSize: '11.5px',
+                        background:
+                          dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1
+                            ? 'rgba(255, 255, 255, 0.04)'
+                            : '#FD6931',
+                        color:
+                          dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
+                        border: 'none',
+                        cursor:
+                          dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
+                      }}
                     >
                       Next
                     </button>
                   </div>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
-          {/* TAB 5: REPORTS */}
-          {activeTab === 'reports' && (
-            <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-4">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pb-4 shrink-0">
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-xl">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">Gross Volume</div>
-                  <div className="text-3xl font-black text-white">{formatRupees(totalGrossRevenue)}</div>
-                  <div className="text-xs text-neutral-400 font-medium mt-1">{totalOrders} orders</div>
-                </div>
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-emerald-500/20 rounded-3xl p-5 shadow-xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-500 mb-2">Platform Comm.</div>
-                  <div className="text-3xl font-black text-emerald-400">{formatRupees(totalCommissionCollected)}</div>
-                  <div className="text-xs text-emerald-500/70 font-medium mt-1">Campus revenue</div>
-                </div>
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-orange-500/20 rounded-3xl p-5 shadow-xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-orange-500 mb-2">Runner Payouts</div>
-                  <div className="text-3xl font-black text-orange-400">{formatRupees(totalRunnerPayouts)}</div>
-                  <div className="text-xs text-orange-500/70 font-medium mt-1">₹18/deliv + bonus</div>
-                </div>
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-xl">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">Cancel Rate</div>
-                  <div className="text-3xl font-black text-white">{refundRate}%</div>
-                  <div className="text-xs text-neutral-400 font-medium mt-1">{cancelledOrders.length} cancellations</div>
-                </div>
+        {/* TAB 3: RUNNER ROSTER */}
+        {activeTab === 'roster' && (
+          <div className="page-transition">
+            {/* Header info & Add runner button */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '14px',
+              }}
+            >
+              <div>
+                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>Courier Roster</h2>
+                <p style={{ fontSize: '12px', color: '#9CA3AF' }}>Verify student IDs & onboard new runners.</p>
               </div>
 
-              <div className="flex-1 min-h-0 flex flex-col bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-                <h2 className="text-xl font-black text-white mb-4 shrink-0">Master Audit Log</h2>
-                <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar rounded-2xl border border-white/5">
-                  <table className="w-full text-left text-sm whitespace-nowrap">
-                    <thead className="bg-black/50 sticky top-0 z-10">
-                      <tr className="text-neutral-400 uppercase tracking-wider text-[10px] font-bold border-b border-white/5">
-                        <th className="py-4 px-4">Order ID</th>
-                        <th className="py-4 px-4">Stall</th>
-                        <th className="py-4 px-4">Customer</th>
-                        <th className="py-4 px-4">Runner</th>
-                        <th className="py-4 px-4 text-right">Amount</th>
-                        <th className="py-4 px-4 text-right">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5 bg-black/20">
-                      {orders.slice(reportPage * 4, (reportPage + 1) * 4).map((o) => (
-                        <tr key={o.id} className="hover:bg-white/[0.02] transition-colors text-neutral-300">
-                          <td className="py-4 px-4 font-mono font-bold text-white">{o.id}</td>
-                          <td className="py-4 px-4 font-medium">{o.vendorName}</td>
-                          <td className="py-4 px-4">
-                            <span className="font-bold text-white">{o.studentName}</span> <span className="text-xs text-neutral-500 block">{o.hostelBlock.split(' ')[0]} {o.roomNumber}</span>
+              <button
+                type="button"
+                onClick={() => setShowAddRunnerModal(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
+                  padding: '8px 14px',
+                  borderRadius: '9999px',
+                  color: '#FFFFFF',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(253, 105, 49, 0.3)',
+                }}
+                className="active:scale-95"
+              >
+                <Plus size={14} />
+                <span>Add Runner</span>
+              </button>
+            </div>
+
+            {/* Runner Roster Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {studentRunners
+                .slice(rosterPage * ROSTER_PAGE_SIZE, (rosterPage + 1) * ROSTER_PAGE_SIZE)
+                .map((r) => (
+                  <div
+                    key={r.id}
+                    style={{
+                      background: 'rgba(26, 26, 26, 0.72)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '24px',
+                      padding: '14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#FFFFFF' }}>{r.name}</span>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            fontWeight: 800,
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            background: r.isVerified ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                            color: r.isVerified ? '#34D399' : '#FBBF24',
+                            border: `1px solid ${r.isVerified ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`,
+                          }}
+                        >
+                          {r.isVerified ? '✓ Verified' : 'Pending ID'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                        {r.hostelBlock} • <span style={{ fontFamily: 'monospace' }}>{r.phone}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleRunnerVerification(r.id)}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '9999px',
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        background: r.isVerified ? 'rgba(255, 255, 255, 0.06)' : 'rgba(99, 102, 241, 0.2)',
+                        border: `1px solid ${r.isVerified ? 'rgba(255, 255, 255, 0.12)' : 'rgba(99, 102, 241, 0.4)'}`,
+                        color: r.isVerified ? '#9CA3AF' : '#818CF8',
+                        cursor: 'pointer',
+                      }}
+                      className="active:scale-95"
+                    >
+                      {r.isVerified ? 'Revoke' : 'Verify ID'}
+                    </button>
+                  </div>
+                ))}
+
+              {/* Roster Pagination */}
+              {studentRunners.length > ROSTER_PAGE_SIZE && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setRosterPage((p) => Math.max(0, p - 1))}
+                    disabled={rosterPage === 0}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '9999px',
+                      fontWeight: 700,
+                      fontSize: '11.5px',
+                      background: rosterPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
+                      color: rosterPage === 0 ? '#4B5563' : '#FFFFFF',
+                      border: 'none',
+                      cursor: rosterPage === 0 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Prev
+                  </button>
+                  <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#9CA3AF' }}>
+                    Page {rosterPage + 1} / {Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE)}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setRosterPage((p) => Math.min(Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1, p + 1))
+                    }
+                    disabled={rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '9999px',
+                      fontWeight: 700,
+                      fontSize: '11.5px',
+                      background:
+                        rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1
+                          ? 'rgba(255, 255, 255, 0.04)'
+                          : '#FD6931',
+                      color:
+                        rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
+                      border: 'none',
+                      cursor:
+                        rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: VENDORS / STALLS */}
+        {activeTab === 'vendors' && (
+          <div className="page-transition">
+            {/* Header info & Onboard stall button */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '14px',
+              }}
+            >
+              <div>
+                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>Campus Stalls</h2>
+                <p style={{ fontSize: '12px', color: '#9CA3AF' }}>Manage commissions & onboard partners.</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAddVendorModal(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
+                  padding: '8px 14px',
+                  borderRadius: '9999px',
+                  color: '#FFFFFF',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(253, 105, 49, 0.3)',
+                }}
+                className="active:scale-95"
+              >
+                <Plus size={14} />
+                <span>Onboard Stall</span>
+              </button>
+            </div>
+
+            {/* Vendor Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {vendors
+                .slice(vendorPage * VENDOR_PAGE_SIZE, (vendorPage + 1) * VENDOR_PAGE_SIZE)
+                .map((v) => (
+                  <div
+                    key={v.id}
+                    style={{
+                      background: 'rgba(26, 26, 26, 0.72)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '26px',
+                      padding: '14px',
+                      display: 'flex',
+                      gap: '12px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '72px',
+                        height: '72px',
+                        borderRadius: '20px',
+                        overflow: 'hidden',
+                        background: '#18181D',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {v.coverImage ? (
+                        <img src={v.coverImage} alt={v.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280' }}>
+                          <Store size={26} />
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                        <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {v.name}
+                        </h3>
+                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#FBBF24', background: 'rgba(245, 158, 11, 0.15)', padding: '2px 7px', borderRadius: '9999px', flexShrink: 0 }}>
+                          ★ {v.rating}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>{v.location}</div>
+                      
+                      {/* Commission split adjustment */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                        <span style={{ fontSize: '11px', color: '#6B7280' }}>{v.menuItems.length} menu items</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase' }}>Comm:</span>
+                          <select
+                            value={v.commissionPct}
+                            onChange={(e) => updateVendorCommission(v.id, Number(e.target.value))}
+                            style={{
+                              background: 'rgba(0, 0, 0, 0.4)',
+                              border: '1px solid rgba(253, 105, 49, 0.4)',
+                              borderRadius: '9999px',
+                              padding: '2px 8px',
+                              color: '#FD6931',
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              outline: 'none',
+                            }}
+                          >
+                            {[8, 10, 12, 15, 20].map((pct) => (
+                              <option key={pct} value={pct} style={{ background: '#18181D', color: '#FFFFFF' }}>
+                                {pct}%
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+              {/* Vendor Pagination */}
+              {vendors.length > VENDOR_PAGE_SIZE && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setVendorPage((p) => Math.max(0, p - 1))}
+                    disabled={vendorPage === 0}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '9999px',
+                      fontWeight: 700,
+                      fontSize: '11.5px',
+                      background: vendorPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
+                      color: vendorPage === 0 ? '#4B5563' : '#FFFFFF',
+                      border: 'none',
+                      cursor: vendorPage === 0 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Prev
+                  </button>
+                  <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#9CA3AF' }}>
+                    Page {vendorPage + 1} / {Math.ceil(vendors.length / VENDOR_PAGE_SIZE)}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVendorPage((p) => Math.min(Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1, p + 1))
+                    }
+                    disabled={vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '9999px',
+                      fontWeight: 700,
+                      fontSize: '11.5px',
+                      background:
+                        vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1
+                          ? 'rgba(255, 255, 255, 0.04)'
+                          : '#FD6931',
+                      color:
+                        vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
+                      border: 'none',
+                      cursor:
+                        vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: REPORTS & FINANCIAL AUDIT */}
+        {activeTab === 'reports' && (
+          <div className="page-transition">
+            {/* 4 Financial Metric Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px' }}>
+              <div
+                style={{
+                  background: 'rgba(26, 26, 26, 0.72)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '24px',
+                  padding: '14px',
+                }}
+              >
+                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase' }}>Gross Volume</div>
+                <div style={{ fontSize: '20px', fontWeight: 900, color: '#FFFFFF', marginTop: '2px' }}>{formatRupees(totalGrossRevenue)}</div>
+                <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>{totalOrders} campus orders</div>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '24px',
+                  padding: '14px',
+                }}
+              >
+                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#A7F3D0', textTransform: 'uppercase' }}>Platform Rev</div>
+                <div style={{ fontSize: '20px', fontWeight: 900, color: '#34D399', marginTop: '2px' }}>{formatRupees(totalCommissionCollected)}</div>
+                <div style={{ fontSize: '11px', color: '#6EE7B7', marginTop: '2px' }}>Net fee retained</div>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(253, 105, 49, 0.12)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(253, 105, 49, 0.3)',
+                  borderRadius: '24px',
+                  padding: '14px',
+                }}
+              >
+                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#FED7AA', textTransform: 'uppercase' }}>Courier Payouts</div>
+                <div style={{ fontSize: '20px', fontWeight: 900, color: '#FD6931', marginTop: '2px' }}>{formatRupees(totalRunnerPayouts)}</div>
+                <div style={{ fontSize: '11px', color: '#FDBA74', marginTop: '2px' }}>₹18/deliv + batch</div>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(26, 26, 26, 0.72)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '24px',
+                  padding: '14px',
+                }}
+              >
+                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase' }}>Cancel Rate</div>
+                <div style={{ fontSize: '20px', fontWeight: 900, color: '#FFFFFF', marginTop: '2px' }}>{refundRate}%</div>
+                <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>{cancelledOrders.length} cancelled</div>
+              </div>
+            </div>
+
+            {/* Audit Log Table Card */}
+            <div
+              style={{
+                background: 'rgba(26, 26, 26, 0.72)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '26px',
+                padding: '16px',
+              }}
+            >
+              <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FileText size={16} color="#FD6931" />
+                <span>Master Campus Audit Log</span>
+              </h3>
+
+              <div style={{ overflowX: 'auto' }} className="hide-scrollbar">
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+                  <thead>
+                    <tr style={{ color: '#6B7280', fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <th style={{ padding: '8px 4px', fontWeight: 800 }}>ID</th>
+                      <th style={{ padding: '8px 4px', fontWeight: 800 }}>Stall</th>
+                      <th style={{ padding: '8px 4px', fontWeight: 800 }}>Student</th>
+                      <th style={{ padding: '8px 4px', fontWeight: 800, textAlign: 'right' }}>Total</th>
+                      <th style={{ padding: '8px 4px', fontWeight: 800, textAlign: 'right' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders
+                      .slice(reportPage * REPORT_PAGE_SIZE, (reportPage + 1) * REPORT_PAGE_SIZE)
+                      .map((o) => (
+                        <tr key={o.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                          <td style={{ padding: '10px 4px', fontFamily: 'monospace', fontWeight: 800, color: '#FFFFFF' }}>
+                            {o.id}
                           </td>
-                          <td className="py-4 px-4 font-mono text-xs">{o.runnerName || <span className="text-neutral-600">Unassigned</span>}</td>
-                          <td className="py-4 px-4 text-right font-black text-white">{formatRupees(o.totalAmount)}</td>
-                          <td className="py-4 px-4 text-right">
-                            <div className="flex justify-end"><OrderStatusBadge status={o.status} size="sm" /></div>
+                          <td style={{ padding: '10px 4px', color: '#E5E7EB' }}>
+                            {o.vendorName}
+                          </td>
+                          <td style={{ padding: '10px 4px' }}>
+                            <div style={{ color: '#FFFFFF', fontWeight: 700 }}>{o.studentName}</div>
+                            <div style={{ fontSize: '10px', color: '#9CA3AF' }}>{o.hostelBlock.split(' ')[0]}</div>
+                          </td>
+                          <td style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 800, color: '#FFFFFF' }}>
+                            {formatRupees(o.totalAmount)}
+                          </td>
+                          <td style={{ padding: '10px 4px', textAlign: 'right' }}>
+                            <OrderStatusBadge status={o.status} size="sm" />
                           </td>
                         </tr>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {orders.length > 4 && (
-                  <div className="flex items-center justify-between pt-4 mt-auto border-t border-white/10 shrink-0">
-                    <button
-                      onClick={() => setReportPage(p => Math.max(0, p - 1))}
-                      disabled={reportPage === 0}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${reportPage === 0 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                    >
-                      Prev
-                    </button>
-                    <div className="text-[10px] font-mono text-neutral-400">
-                      Page {reportPage + 1} / {Math.ceil(orders.length / 4)}
-                    </div>
-                    <button
-                      onClick={() => setReportPage(p => Math.min(Math.ceil(orders.length / 4) - 1, p + 1))}
-                      disabled={reportPage >= Math.ceil(orders.length / 4) - 1}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${reportPage >= Math.ceil(orders.length / 4) - 1 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-orange-500 text-white hover:bg-orange-400'}`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                )}
+                  </tbody>
+                </table>
               </div>
+
+              {/* Reports Pagination */}
+              {orders.length > REPORT_PAGE_SIZE && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setReportPage((p) => Math.max(0, p - 1))}
+                    disabled={reportPage === 0}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '9999px',
+                      fontWeight: 700,
+                      fontSize: '11.5px',
+                      background: reportPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
+                      color: reportPage === 0 ? '#4B5563' : '#FFFFFF',
+                      border: 'none',
+                      cursor: reportPage === 0 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Prev
+                  </button>
+                  <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#9CA3AF' }}>
+                    Page {reportPage + 1} / {Math.ceil(orders.length / REPORT_PAGE_SIZE)}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReportPage((p) => Math.min(Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1, p + 1))
+                    }
+                    disabled={reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '9999px',
+                      fontWeight: 700,
+                      fontSize: '11.5px',
+                      background:
+                        reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1
+                          ? 'rgba(255, 255, 255, 0.04)'
+                          : '#FD6931',
+                      color:
+                        reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
+                      border: 'none',
+                      cursor:
+                        reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
       {/* ─── 3. FLOATING ISLAND GLASS DOCK WITH ACTIVE CAPSULE ─── */}
       <nav className="floating-glass-dock">
@@ -649,7 +1242,7 @@ export const AdminView: React.FC = () => {
           onClick={() => setActiveTab('killswitch')}
           className={`dock-tab ${activeTab === 'killswitch' ? 'active' : ''}`}
         >
-          <Power size={18} />
+          <Power size={19} />
           <span className="dock-tab-label">Controls</span>
         </button>
 
@@ -658,7 +1251,7 @@ export const AdminView: React.FC = () => {
           onClick={() => setActiveTab('dispatch')}
           className={`dock-tab ${activeTab === 'dispatch' ? 'active' : ''}`}
         >
-          <Send size={18} />
+          <Send size={19} />
           <span className="dock-tab-label">Dispatch</span>
           {dispatchableOrders.length > 0 && (
             <span className="dock-badge-count">{dispatchableOrders.length}</span>
@@ -670,7 +1263,7 @@ export const AdminView: React.FC = () => {
           onClick={() => setActiveTab('roster')}
           className={`dock-tab ${activeTab === 'roster' ? 'active' : ''}`}
         >
-          <Bike size={18} />
+          <Bike size={19} />
           <span className="dock-tab-label">Runners</span>
         </button>
 
@@ -679,7 +1272,7 @@ export const AdminView: React.FC = () => {
           onClick={() => setActiveTab('vendors')}
           className={`dock-tab ${activeTab === 'vendors' ? 'active' : ''}`}
         >
-          <Store size={18} />
+          <Store size={19} />
           <span className="dock-tab-label">Stalls</span>
         </button>
 
@@ -688,79 +1281,377 @@ export const AdminView: React.FC = () => {
           onClick={() => setActiveTab('reports')}
           className={`dock-tab ${activeTab === 'reports' ? 'active' : ''}`}
         >
-          <FileText size={18} />
+          <FileText size={19} />
           <span className="dock-tab-label">Reports</span>
         </button>
       </nav>
 
-      {/* Add Runner Modal */}
+      {/* ─── 4. ADD RUNNER MODAL SHEET ─── */}
       {showAddRunnerModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-neutral-900 border border-white/10 rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-black text-white">Add Runner</h3>
-              <button onClick={() => setShowAddRunnerModal(false)} className="text-neutral-400 hover:text-white bg-white/5 rounded-full p-2"><X className="w-4 h-4"/></button>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 150,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(8px)',
+            padding: '16px',
+          }}
+          className="animate-in fade-in"
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '380px',
+              background: '#141419',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: '28px',
+              padding: '24px',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)',
+            }}
+            className="animate-in zoom-in-95"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#FFFFFF' }}>Add Courier Runner</h3>
+              <button
+                type="button"
+                onClick={() => setShowAddRunnerModal(false)}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: 'none',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={16} />
+              </button>
             </div>
-            <form onSubmit={handleCreateRunner} className="space-y-4">
+
+            <form onSubmit={handleCreateRunner} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-1 block">Full Name</label>
-                <input type="text" required value={newRunnerForm.name} onChange={e => setNewRunnerForm({...newRunnerForm, name: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-orange-500 outline-none" />
+                <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
+                  Student Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Rahul Sharma"
+                  value={newRunnerForm.name}
+                  onChange={(e) => setNewRunnerForm({ ...newRunnerForm, name: e.target.value })}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '16px',
+                    padding: '12px 14px',
+                    color: '#FFFFFF',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    outline: 'none',
+                  }}
+                />
               </div>
+
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-1 block">Phone Number</label>
-                <input type="tel" required value={newRunnerForm.phone} onChange={e => setNewRunnerForm({...newRunnerForm, phone: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-mono font-bold focus:border-orange-500 outline-none" />
+                <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="e.g. 9876543210"
+                  value={newRunnerForm.phone}
+                  onChange={(e) => setNewRunnerForm({ ...newRunnerForm, phone: e.target.value })}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '16px',
+                    padding: '12px 14px',
+                    color: '#FFFFFF',
+                    fontSize: '13.5px',
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    outline: 'none',
+                  }}
+                />
               </div>
+
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-1 block">Hostel Base</label>
-                <select value={newRunnerForm.hostelBlock} onChange={e => setNewRunnerForm({...newRunnerForm, hostelBlock: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-orange-500 outline-none appearance-none">
-                  {hostels.map(h => <option key={h.id} value={h.name}>{h.name}</option>)}
+                <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
+                  Hostel Base
+                </label>
+                <select
+                  value={newRunnerForm.hostelBlock}
+                  onChange={(e) => setNewRunnerForm({ ...newRunnerForm, hostelBlock: e.target.value })}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '16px',
+                    padding: '12px 14px',
+                    color: '#FFFFFF',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    outline: 'none',
+                  }}
+                >
+                  {hostels.map((h) => (
+                    <option key={h.id} value={h.name} style={{ background: '#18181D' }}>
+                      {h.name}
+                    </option>
+                  ))}
                 </select>
               </div>
-              <button type="submit" className="w-full py-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-black shadow-lg shadow-orange-900/30 mt-4">Add To Roster</button>
+
+              <button
+                type="submit"
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '9999px',
+                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
+                  color: '#FFFFFF',
+                  fontWeight: 900,
+                  fontSize: '14px',
+                  border: 'none',
+                  boxShadow: '0 4px 16px rgba(253, 105, 49, 0.4)',
+                  cursor: 'pointer',
+                  marginTop: '10px',
+                }}
+                className="active:scale-95"
+              >
+                Enroll Runner To Roster
+              </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Add Vendor Modal */}
+      {/* ─── 5. ONBOARD STALL MODAL SHEET ─── */}
       {showAddVendorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-neutral-900 border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl animate-in zoom-in-95 max-h-[90vh] overflow-y-auto hide-scrollbar">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-black text-white">Onboard Stall</h3>
-              <button onClick={() => setShowAddVendorModal(false)} className="text-neutral-400 hover:text-white bg-white/5 rounded-full p-2"><X className="w-4 h-4"/></button>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 150,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(8px)',
+            padding: '16px',
+          }}
+          className="animate-in fade-in"
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '420px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              background: '#141419',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: '28px',
+              padding: '24px',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)',
+            }}
+            className="animate-in zoom-in-95 hide-scrollbar"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#FFFFFF' }}>Onboard Campus Stall</h3>
+              <button
+                type="button"
+                onClick={() => setShowAddVendorModal(false)}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: 'none',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={16} />
+              </button>
             </div>
-            <form onSubmit={handleCreateVendor} className="space-y-4">
+
+            <form onSubmit={handleCreateVendor} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-1 block">Stall Name</label>
-                <input type="text" required value={newVendorForm.name} onChange={e => setNewVendorForm({...newVendorForm, name: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-orange-500 outline-none" />
+                <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
+                  Stall Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Chai & Snacks Hub"
+                  value={newVendorForm.name}
+                  onChange={(e) => setNewVendorForm({ ...newVendorForm, name: e.target.value })}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '16px',
+                    padding: '12px 14px',
+                    color: '#FFFFFF',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    outline: 'none',
+                  }}
+                />
               </div>
+
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-1 block">Location</label>
-                <input type="text" required value={newVendorForm.location} onChange={e => setNewVendorForm({...newVendorForm, location: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-orange-500 outline-none" />
+                <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
+                  Location / Zone
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Student Center, Ground Floor"
+                  value={newVendorForm.location}
+                  onChange={(e) => setNewVendorForm({ ...newVendorForm, location: e.target.value })}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '16px',
+                    padding: '12px 14px',
+                    color: '#FFFFFF',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    outline: 'none',
+                  }}
+                />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-1 block">Comm. %</label>
-                  <input type="number" required value={newVendorForm.commissionPct} onChange={e => setNewVendorForm({...newVendorForm, commissionPct: Number(e.target.value)})} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-mono font-bold focus:border-orange-500 outline-none" />
+                  <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
+                    Comm. %
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={newVendorForm.commissionPct}
+                    onChange={(e) => setNewVendorForm({ ...newVendorForm, commissionPct: Number(e.target.value) })}
+                    style={{
+                      width: '100%',
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '16px',
+                      padding: '12px 14px',
+                      color: '#FFFFFF',
+                      fontSize: '13.5px',
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      outline: 'none',
+                    }}
+                  />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-1 block">Prep (mins)</label>
-                  <input type="number" required value={newVendorForm.prepTimeMinutes} onChange={e => setNewVendorForm({...newVendorForm, prepTimeMinutes: Number(e.target.value)})} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-mono font-bold focus:border-orange-500 outline-none" />
+                  <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
+                    Prep Time (min)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={newVendorForm.prepTimeMinutes}
+                    onChange={(e) => setNewVendorForm({ ...newVendorForm, prepTimeMinutes: Number(e.target.value) })}
+                    style={{
+                      width: '100%',
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '16px',
+                      padding: '12px 14px',
+                      color: '#FFFFFF',
+                      fontSize: '13.5px',
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      outline: 'none',
+                    }}
+                  />
                 </div>
               </div>
-              <div className="pt-4 border-t border-white/10 mt-2">
-                 <div className="text-xs font-bold text-white mb-3">Initial Menu Item</div>
-                 <div className="flex gap-2">
-                   <input type="text" required placeholder="Item Name" value={newVendorForm.itemName1} onChange={e => setNewVendorForm({...newVendorForm, itemName1: e.target.value})} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:border-orange-500 outline-none text-sm" />
-                   <input type="number" required placeholder="₹" value={newVendorForm.itemPrice1} onChange={e => setNewVendorForm({...newVendorForm, itemPrice1: Number(e.target.value)})} className="w-20 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white font-mono font-bold focus:border-orange-500 outline-none text-sm" />
-                 </div>
-                 <label className="flex items-center gap-2 mt-3 cursor-pointer">
-                    <input type="checkbox" checked={newVendorForm.itemIsVeg1} onChange={e => setNewVendorForm({...newVendorForm, itemIsVeg1: e.target.checked})} className="accent-emerald-500 w-4 h-4" />
-                    <span className="text-sm font-bold text-neutral-300">Pure Vegetarian</span>
-                 </label>
+
+              {/* Initial Menu Item */}
+              <div style={{ paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#FD6931', marginBottom: '6px' }}>
+                  Signature Dish
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Item Name (e.g. Masala Dosa)"
+                    value={newVendorForm.itemName1}
+                    onChange={(e) => setNewVendorForm({ ...newVendorForm, itemName1: e.target.value })}
+                    style={{
+                      flex: 1,
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '16px',
+                      padding: '10px 12px',
+                      color: '#FFFFFF',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      outline: 'none',
+                    }}
+                  />
+                  <input
+                    type="number"
+                    required
+                    placeholder="₹ Price"
+                    value={newVendorForm.itemPrice1}
+                    onChange={(e) => setNewVendorForm({ ...newVendorForm, itemPrice1: Number(e.target.value) })}
+                    style={{
+                      width: '80px',
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '16px',
+                      padding: '10px 12px',
+                      color: '#FFFFFF',
+                      fontSize: '13px',
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      outline: 'none',
+                    }}
+                  />
+                </div>
               </div>
-              <button type="submit" className="w-full py-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-black shadow-lg shadow-orange-900/30 mt-6">Onboard Stall</button>
+
+              <button
+                type="submit"
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '9999px',
+                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
+                  color: '#FFFFFF',
+                  fontWeight: 900,
+                  fontSize: '14px',
+                  border: 'none',
+                  boxShadow: '0 4px 16px rgba(253, 105, 49, 0.4)',
+                  cursor: 'pointer',
+                  marginTop: '10px',
+                }}
+                className="active:scale-95"
+              >
+                Onboard Stall & Publish
+              </button>
             </form>
           </div>
         </div>

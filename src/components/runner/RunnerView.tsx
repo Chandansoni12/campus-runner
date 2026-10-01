@@ -15,13 +15,12 @@ import {
   TrendingUp,
   AlertCircle,
   Phone,
-  ShieldCheck,
   X,
   ChevronDown,
   Navigation,
-  ArrowRight,
   LogOut,
   Zap,
+  Award,
 } from 'lucide-react';
 
 export const RunnerView: React.FC = () => {
@@ -55,7 +54,9 @@ export const RunnerView: React.FC = () => {
     (o) =>
       o.status === OrderStatus.READY ||
       o.status === OrderStatus.OUT_FOR_DELIVERY ||
-      o.status === OrderStatus.PREPARING
+      o.status === OrderStatus.PREPARING ||
+      o.status === OrderStatus.ACCEPTED ||
+      o.status === OrderStatus.PLACED
   );
 
   // Completed deliveries today
@@ -79,288 +80,711 @@ export const RunnerView: React.FC = () => {
     if (!otpModalOrderId) return;
 
     if (!enteredOtp || enteredOtp.trim().length !== 4) {
-      setOtpError('Please enter a valid 4-digit numeric OTP provided by the student.');
+      setOtpError('Please enter the 4-digit OTP provided by the student.');
       return;
     }
 
     const res = runnerDeliverOrder(otpModalOrderId, enteredOtp.trim());
     if (res.success) {
-      // Confetti celebration
       confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 },
+        particleCount: 60,
+        spread: 70,
+        origin: { y: 0.65 },
+        colors: ['#FD6931', '#10B981', '#6366F1', '#F59E0B'],
       });
       setOtpModalOrderId(null);
       setEnteredOtp('');
       setOtpError(null);
     } else {
-      setOtpError(res.error || 'Incorrect OTP code. Ask student to check active order screen.');
+      setOtpError(res.error || 'Incorrect OTP code. Ask student to check their tracking screen.');
     }
   };
+
+  const MISSION_PAGE_SIZE = 4;
+  const COMPLETED_PAGE_SIZE = 5;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
       
-      {/* ─── 1. COMPACT MODERN RUNNER HEADER ─── */}
-      <header className="modern-header">
-        <div className="modern-header-top">
-          {/* Runner Shift Selector Chip */}
-          <div className="location-chip-btn">
-            <span className="delivery-speed-badge">
-              <Zap size={11} fill="#34D399" color="#34D399" />
-              <span>ON DUTY</span>
-            </span>
-            <div className="relative flex items-center gap-1">
-              <select
-                value={activeRunner.id}
-                onChange={(e) => setActiveRunnerId(e.target.value)}
-                className="appearance-none bg-transparent text-white text-xs font-bold pr-4 focus:outline-none cursor-pointer"
+      {/* ─── 1. SIGNATURE DELIVO COMPACT ORANGE HEADER ─── */}
+      <header className="home-header">
+        <div className="header-content">
+          <div className="header-top">
+            
+            {/* Courier Profile & Switcher */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.5)',
+                  padding: '5px 10px',
+                  borderRadius: '9999px',
+                  color: '#FFFFFF',
+                  maxWidth: '75%',
+                }}
               >
-                {runners.map((r) => (
-                  <option key={r.id} value={r.id} className="bg-neutral-900 text-white">
-                    {r.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={12} color="#9CA3AF" />
+                <Bike size={15} style={{ flexShrink: 0 }} />
+                <select
+                  value={activeRunner.id}
+                  onChange={(e) => {
+                    setActiveRunnerId(e.target.value);
+                    setMissionPage(0);
+                    setCompletedPage(0);
+                  }}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#FFFFFF',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    outline: 'none',
+                    cursor: 'pointer',
+                    width: '100%',
+                  }}
+                >
+                  {runners.map((r) => (
+                    <option key={r.id} value={r.id} style={{ background: '#18181D', color: '#FFFFFF' }}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={12} style={{ flexShrink: 0, opacity: 0.8 }} />
+              </div>
+
+              <div className="portal-badge-live">
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: '#10B981',
+                    boxShadow: '0 0 8px #10B981',
+                  }}
+                />
+                <span>ON DUTY</span>
+              </div>
+            </div>
+
+            {/* Shift Payout & Logout Button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              <div
+                style={{
+                  background: 'rgba(16, 185, 129, 0.25)',
+                  border: '1px solid rgba(16, 185, 129, 0.5)',
+                  color: '#A7F3D0',
+                  fontSize: '11.5px',
+                  fontWeight: 900,
+                  padding: '4px 10px',
+                  borderRadius: '9999px',
+                }}
+              >
+                {formatRupees(runnerEarnings)}
+              </div>
+
+              <button
+                type="button"
+                onClick={logout}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  background: 'rgba(0, 0, 0, 0.25)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.35)',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                className="active:scale-90"
+                title="Log out"
+              >
+                <LogOut size={16} />
+              </button>
             </div>
           </div>
 
-          {/* Shift Payout & Logout */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-              <span>{formatRupees(runnerEarnings)}</span>
+          {/* Compact 3-KPI Row (Obsidian Glass Chips) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginTop: '6px' }}>
+            <div className="portal-kpi-glass">
+              <div className="portal-kpi-label">Shift Earnings</div>
+              <div className="portal-kpi-val" style={{ color: '#6EE7B7' }}>{formatRupees(runnerEarnings)}</div>
             </div>
-
-            <button
-              type="button"
-              onClick={logout}
-              className="w-9 h-9 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center hover:bg-rose-500/25 transition-all cursor-pointer"
-              title="Log out of Runner Fleet"
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
-        </div>
-
-        {/* Compact 3-KPI Metric Row */}
-        <div className="grid grid-cols-3 gap-2 pt-1">
-          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
-            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Shift Payout</div>
-            <div className="text-sm font-black text-white">{formatRupees(runnerEarnings)}</div>
-          </div>
-          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-2 text-center">
-            <div className="text-[9.5px] text-neutral-400 font-bold uppercase tracking-wider">Delivered</div>
-            <div className="text-sm font-black text-emerald-400">{completedOrders.length}</div>
-          </div>
-          <div className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-2 text-center">
-            <div className="text-[9.5px] text-orange-400 font-bold uppercase tracking-wider">Active Run</div>
-            <div className="text-sm font-black text-orange-400">{activeBatch.length}</div>
+            <div className="portal-kpi-glass">
+              <div className="portal-kpi-label">Delivered</div>
+              <div className="portal-kpi-val">{completedOrders.length} drops</div>
+            </div>
+            <div className="portal-kpi-glass" style={{ background: 'rgba(253, 105, 49, 0.25)', borderColor: 'rgba(253, 105, 49, 0.45)' }}>
+              <div className="portal-kpi-label" style={{ color: '#FED7AA' }}>Active Run</div>
+              <div className="portal-kpi-val" style={{ color: '#FFFFFF' }}>{activeBatch.length} missions</div>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* ─── 2. MAIN SCROLLABLE CONTENT ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3" style={{ paddingBottom: '96px' }}>
-        {/* ACTIVE DELIVERIES */}
+      {/* ─── 2. MAIN SCROLLABLE CONTENT WITH SILKY PAGE TRANSITION ─── */}
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3.5 pb-28">
+        
+        {/* TAB 1: ACTIVE MISSIONS */}
         {activeTab === 'mission' && (
-        <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-            <div>
-              <h2 className="text-lg font-black text-white flex items-center gap-2">
-                <Navigation className="w-5 h-5 text-indigo-400" />
-                Current Mission
-              </h2>
-              <p className="text-sm text-neutral-400">Assigned pick-ups and drop-offs for this run.</p>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-xs font-bold text-neutral-300">
-              Rate: ₹18/drop
-            </div>
-          </div>
-
-          {activeBatch.length === 0 ? (
-            <div className="bg-neutral-900/40 border border-dashed border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-full bg-neutral-800/50 flex items-center justify-center mb-4 text-neutral-500">
-                <Package className="w-8 h-8" />
+          <div className="page-transition">
+            {/* Top Mission Briefing Banner */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(26, 26, 26, 0.8) 100%)',
+                border: '1px solid rgba(99, 102, 241, 0.35)',
+                borderRadius: '26px',
+                padding: '16px',
+                marginBottom: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Navigation size={17} color="#818CF8" />
+                  <span>Courier Missions</span>
+                </h2>
+                <p style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                  Stall pickups and student hostel drop-offs.
+                </p>
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">No Active Deliveries</h3>
-              <p className="text-sm text-neutral-400 max-w-sm">You're currently idle. Orders will appear here once dispatched by the admin.</p>
-            </div>
-          ) : (
-            <>
-            <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar space-y-4">
-              {activeBatch.slice(missionPage * 2, (missionPage + 1) * 2).map((order) => {
-                const isReadyForPickup = order.status === OrderStatus.READY;
-                const isOutForDelivery = order.status === OrderStatus.OUT_FOR_DELIVERY;
-                const isKitchenCooking = order.status === OrderStatus.PREPARING || order.status === OrderStatus.PLACED;
 
-                return (
-                  <div key={order.id} className="bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-1.5 overflow-hidden shadow-xl transition-all">
-                    <div className="p-4">
-                      {/* Card Top: Status & ID */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono text-base font-black text-white">{order.id}</span>
-                          <OrderStatusBadge status={order.status} size="sm" />
-                        </div>
-                        <SlotBadge slot={order.slot} size="sm" />
-                      </div>
-
-                      {/* Timeline / Route Visualization */}
-                      <div className="relative pl-6 py-2 space-y-6 before:absolute before:inset-y-4 before:left-2.5 before:w-0.5 before:bg-white/10">
-                        
-                        {/* Step 1: Pickup */}
-                        <div className="relative">
-                          <div className={`absolute left-[-22px] top-1 w-3 h-3 rounded-full border-2 border-black z-10 ${isReadyForPickup || isOutForDelivery ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.8)]' : 'bg-neutral-600'}`} />
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">Pick up from</div>
-                          <div className="text-base font-bold text-white leading-tight mb-1">{order.vendorName}</div>
-                          <div className="text-xs text-neutral-400">
-                            {order.items.reduce((acc, i) => acc + i.quantity, 0)} items • {order.items.map(i => i.name).join(', ')}
-                          </div>
-                        </div>
-
-                        {/* Step 2: Dropoff */}
-                        <div className="relative">
-                          <div className={`absolute left-[-22px] top-1 w-3 h-3 rounded-full border-2 border-black z-10 ${isOutForDelivery ? 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]' : 'bg-neutral-600'}`} />
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">Deliver to</div>
-                          <div className="flex items-center justify-between">
-                            <div className="text-base font-bold text-white leading-tight">
-                              {order.hostelBlock} <span className="text-indigo-400 mx-1">•</span> Room {order.roomNumber}
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                             <div className="text-xs text-neutral-400 font-medium">Customer: {order.studentName}</div>
-                             <a href={`tel:${order.studentPhone}`} className="bg-white/10 hover:bg-white/20 transition-colors rounded-full p-2 flex items-center justify-center text-white">
-                               <Phone className="w-3.5 h-3.5" />
-                             </a>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-
-                    {/* Actions Area */}
-                    <div className="bg-black/30 p-2 rounded-2xl">
-                      {isKitchenCooking && (
-                        <div className="py-3 px-4 text-center text-sm font-bold text-neutral-500 flex items-center justify-center gap-2">
-                           <Clock className="w-4 h-4 animate-spin-slow" /> Kitchen is preparing items...
-                        </div>
-                      )}
-
-                      {isReadyForPickup && (
-                        <button
-                          onClick={() => runnerPickUpOrder(order.id)}
-                          className="w-full py-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-900/30 transition-all active:scale-[0.98]"
-                        >
-                          <Package className="w-5 h-5" />
-                          Confirm Pickup From Vendor
-                        </button>
-                      )}
-
-                      {isOutForDelivery && (
-                        <button
-                          onClick={() => handleOpenOtpModal(order.id)}
-                          className="w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/30 transition-all active:scale-[0.98]"
-                        >
-                          <KeyRound className="w-5 h-5" />
-                          Handover & Enter OTP
-                        </button>
-                      )}
-                    </div>
+              <div style={{ textAlign: 'right' }}>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    padding: '4px 10px',
+                    borderRadius: '9999px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    fontSize: '11.5px',
+                    fontWeight: 800,
+                    color: '#818CF8',
+                  }}
+                >
+                  Rate: ₹18 / drop
+                </div>
+                {totalDeliveriesCount < 6 ? (
+                  <div style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '3px' }}>
+                    {6 - totalDeliveriesCount} more for ₹25 bonus
                   </div>
-                );
-              })}
-            </div>
-            
-            {/* Pagination Controls */}
-            {activeBatch.length > 2 && (
-              <div className="flex items-center justify-between pt-3 mt-auto border-t border-white/5">
-                <button
-                  onClick={() => setMissionPage(p => Math.max(0, p - 1))}
-                  disabled={missionPage === 0}
-                  className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${missionPage === 0 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                >
-                  Prev
-                </button>
-                <div className="text-[10px] font-mono text-neutral-400">
-                  Page {missionPage + 1} / {Math.ceil(activeBatch.length / 2)}
-                </div>
-                <button
-                  onClick={() => setMissionPage(p => Math.min(Math.ceil(activeBatch.length / 2) - 1, p + 1))}
-                  disabled={missionPage >= Math.ceil(activeBatch.length / 2) - 1}
-                  className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${missionPage >= Math.ceil(activeBatch.length / 2) - 1 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-indigo-500 text-white hover:bg-indigo-400'}`}
-                >
-                  Next
-                </button>
+                ) : (
+                  <div style={{ fontSize: '10px', color: '#34D399', fontWeight: 800, marginTop: '3px' }}>
+                    ★ ₹25 Bonus Unlocked!
+                  </div>
+                )}
               </div>
-            )}
-            </>
-          )}
-        </div>
-        )}
+            </div>
 
-        {/* COMPLETED LOG */}
-        {activeTab === 'completed' && (
-          <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-300">
-            {completedOrders.length === 0 ? (
-              <div className="bg-neutral-900/40 border border-dashed border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 rounded-full bg-neutral-800/50 flex items-center justify-center mb-4 text-neutral-500">
-                  <CheckCircle2 className="w-8 h-8" />
+            {/* Empty State or Missions List */}
+            {activeBatch.length === 0 ? (
+              <div
+                style={{
+                  background: 'rgba(26, 26, 26, 0.6)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '26px',
+                  padding: '48px 24px',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    background: 'rgba(99, 102, 241, 0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#818CF8',
+                    marginBottom: '16px',
+                  }}
+                >
+                  <Package size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">No Completed Drops</h3>
-                <p className="text-sm text-neutral-400 max-w-sm">Complete some deliveries to see your history here.</p>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
+                  No Active Deliveries
+                </h3>
+                <p style={{ fontSize: '13px', color: '#9CA3AF', maxWidth: '280px', lineHeight: 1.5 }}>
+                  You're currently idle and ready. When the admin or system dispatches batch orders to you, they'll appear here.
+                </p>
               </div>
             ) : (
-              <>
-                <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar space-y-3">
-                  {completedOrders.slice(completedPage * 4, (completedPage + 1) * 4).map((ord) => (
-                    <div key={ord.id} className="bg-neutral-900/60 backdrop-blur-sm border border-emerald-500/10 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-neutral-900/80 transition-colors">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-mono font-bold text-white">{ord.id}</span>
-                          <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">OTP Verified ✓</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {activeBatch
+                  .slice(missionPage * MISSION_PAGE_SIZE, (missionPage + 1) * MISSION_PAGE_SIZE)
+                  .map((order) => {
+                    const isReadyForPickup = order.status === OrderStatus.READY;
+                    const isOutForDelivery = order.status === OrderStatus.OUT_FOR_DELIVERY;
+                    const isKitchenCooking =
+                      order.status === OrderStatus.PREPARING ||
+                      order.status === OrderStatus.PLACED ||
+                      order.status === OrderStatus.ACCEPTED;
+
+                    return (
+                      <div
+                        key={order.id}
+                        style={{
+                          background: 'rgba(26, 26, 26, 0.72)',
+                          backdropFilter: 'blur(20px)',
+                          borderRadius: '26px',
+                          border: isReadyForPickup
+                            ? '1.5px solid rgba(253, 105, 49, 0.6)'
+                            : isOutForDelivery
+                            ? '1.5px solid rgba(99, 102, 241, 0.6)'
+                            : '1px solid rgba(255, 255, 255, 0.08)',
+                          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                          padding: '16px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '14px',
+                        }}
+                      >
+                        {/* Top: Order ID & Slot */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontFamily: 'monospace', fontSize: '16px', fontWeight: 900, color: '#FFFFFF' }}>
+                              {order.id}
+                            </span>
+                            <OrderStatusBadge status={order.status} size="sm" />
+                          </div>
+                          <SlotBadge slot={order.slot} size="sm" />
                         </div>
-                        <div className="text-xs text-neutral-400">
-                          {ord.hostelBlock} • Rm {ord.roomNumber}
+
+                        {/* Route Timeline */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '4px' }}>
+                          
+                          {/* Step 1: Pickup Point */}
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                            <div
+                              style={{
+                                width: '22px',
+                                height: '22px',
+                                borderRadius: '50%',
+                                background: isReadyForPickup || isOutForDelivery ? '#FD6931' : '#374151',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#FFFFFF',
+                                fontSize: '11px',
+                                fontWeight: 900,
+                                flexShrink: 0,
+                                marginTop: '2px',
+                                boxShadow: isReadyForPickup ? '0 0 10px rgba(253, 105, 49, 0.6)' : 'none',
+                              }}
+                            >
+                              1
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                Pickup From Stall
+                              </div>
+                              <div style={{ fontSize: '14px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
+                                {order.vendorName}
+                              </div>
+                              <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
+                                {order.items.reduce((acc, i) => acc + i.quantity, 0)} items ({order.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')})
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Connector Line */}
+                          <div style={{ width: '2px', height: '14px', background: 'rgba(255, 255, 255, 0.12)', marginLeft: '10px' }} />
+
+                          {/* Step 2: Dropoff Point */}
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                            <div
+                              style={{
+                                width: '22px',
+                                height: '22px',
+                                borderRadius: '50%',
+                                background: isOutForDelivery ? '#6366F1' : '#374151',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#FFFFFF',
+                                fontSize: '11px',
+                                fontWeight: 900,
+                                flexShrink: 0,
+                                marginTop: '2px',
+                                boxShadow: isOutForDelivery ? '0 0 10px rgba(99, 102, 241, 0.6)' : 'none',
+                              }}
+                            >
+                              2
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                Deliver To Student
+                              </div>
+                              <div style={{ fontSize: '14px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
+                                {order.hostelBlock} • <span style={{ color: '#FD6931' }}>Room {order.roomNumber}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                                <span style={{ fontSize: '12px', color: '#E5E7EB', fontWeight: 600 }}>
+                                  {order.studentName}
+                                </span>
+                                {order.studentPhone && (
+                                  <a
+                                    href={`tel:${order.studentPhone}`}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '5px',
+                                      background: 'rgba(255, 255, 255, 0.1)',
+                                      padding: '3px 10px',
+                                      borderRadius: '9999px',
+                                      fontSize: '11px',
+                                      fontWeight: 700,
+                                      color: '#FFFFFF',
+                                      textDecoration: 'none',
+                                    }}
+                                    className="active:scale-95"
+                                  >
+                                    <Phone size={11} />
+                                    <span>Call</span>
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+
+                        {/* Action Buttons (Full Pill Buttons) */}
+                        <div style={{ paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                          {isKitchenCooking && (
+                            <div
+                              style={{
+                                width: '100%',
+                                padding: '11px',
+                                borderRadius: '9999px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                color: '#9CA3AF',
+                                fontSize: '12.5px',
+                                fontWeight: 700,
+                                textAlign: 'center',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                              }}
+                            >
+                              <Clock size={15} />
+                              <span>Kitchen is preparing items...</span>
+                            </div>
+                          )}
+
+                          {isReadyForPickup && (
+                            <button
+                              type="button"
+                              onClick={() => runnerPickUpOrder(order.id)}
+                              style={{
+                                width: '100%',
+                                padding: '12px 20px',
+                                borderRadius: '9999px',
+                                background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
+                                color: '#FFFFFF',
+                                fontWeight: 800,
+                                fontSize: '13.5px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                border: 'none',
+                                boxShadow: '0 4px 16px rgba(253, 105, 49, 0.4)',
+                                cursor: 'pointer',
+                              }}
+                              className="active:scale-95"
+                            >
+                              <Package size={17} />
+                              <span>Confirm Stall Pickup</span>
+                            </button>
+                          )}
+
+                          {isOutForDelivery && (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenOtpModal(order.id)}
+                              style={{
+                                width: '100%',
+                                padding: '12px 20px',
+                                borderRadius: '9999px',
+                                background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+                                color: '#FFFFFF',
+                                fontWeight: 800,
+                                fontSize: '13.5px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                border: 'none',
+                                boxShadow: '0 4px 16px rgba(99, 102, 241, 0.4)',
+                                cursor: 'pointer',
+                              }}
+                              className="active:scale-95"
+                            >
+                              <KeyRound size={17} />
+                              <span>Enter Student OTP</span>
+                            </button>
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center sm:items-end justify-between sm:flex-col sm:text-right w-full sm:w-auto border-t sm:border-0 border-white/5 pt-2 sm:pt-0 mt-1 sm:mt-0">
-                        <div className="font-mono text-base font-black text-emerald-400">+₹18</div>
-                        <div className="text-[10px] text-neutral-500 font-medium">
-                          {ord.deliveredAt ? new Date(ord.deliveredAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Delivered'}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {completedOrders.length > 4 && (
-                  <div className="flex items-center justify-between pt-3 mt-auto border-t border-white/5">
+                    );
+                  })}
+
+                {/* Pagination Controls */}
+                {activeBatch.length > MISSION_PAGE_SIZE && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px' }}>
                     <button
-                      onClick={() => setCompletedPage(p => Math.max(0, p - 1))}
-                      disabled={completedPage === 0}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${completedPage === 0 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                      type="button"
+                      onClick={() => setMissionPage((p) => Math.max(0, p - 1))}
+                      disabled={missionPage === 0}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '9999px',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        background: missionPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
+                        color: missionPage === 0 ? '#4B5563' : '#FFFFFF',
+                        border: 'none',
+                        cursor: missionPage === 0 ? 'not-allowed' : 'pointer',
+                      }}
                     >
                       Prev
                     </button>
-                    <div className="text-[10px] font-mono text-neutral-400">
-                      Page {completedPage + 1} / {Math.ceil(completedOrders.length / 4)}
+                    <div style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9CA3AF' }}>
+                      Page {missionPage + 1} / {Math.ceil(activeBatch.length / MISSION_PAGE_SIZE)}
                     </div>
                     <button
-                      onClick={() => setCompletedPage(p => Math.min(Math.ceil(completedOrders.length / 4) - 1, p + 1))}
-                      disabled={completedPage >= Math.ceil(completedOrders.length / 4) - 1}
-                      className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 ${completedPage >= Math.ceil(completedOrders.length / 4) - 1 ? 'opacity-30 cursor-not-allowed text-neutral-500' : 'bg-emerald-500 text-white hover:bg-emerald-400'}`}
+                      type="button"
+                      onClick={() =>
+                        setMissionPage((p) => Math.min(Math.ceil(activeBatch.length / MISSION_PAGE_SIZE) - 1, p + 1))
+                      }
+                      disabled={missionPage >= Math.ceil(activeBatch.length / MISSION_PAGE_SIZE) - 1}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '9999px',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        background:
+                          missionPage >= Math.ceil(activeBatch.length / MISSION_PAGE_SIZE) - 1
+                            ? 'rgba(255, 255, 255, 0.04)'
+                            : '#6366F1',
+                        color:
+                          missionPage >= Math.ceil(activeBatch.length / MISSION_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
+                        border: 'none',
+                        cursor:
+                          missionPage >= Math.ceil(activeBatch.length / MISSION_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
+                      }}
                     >
                       Next
                     </button>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         )}
-        </div>
+
+        {/* TAB 2: COMPLETED DROPS LOG */}
+        {activeTab === 'completed' && (
+          <div className="page-transition">
+            {/* Shift Earnings Breakdown Card */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(26, 26, 26, 0.8) 100%)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                borderRadius: '26px',
+                padding: '18px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#A7F3D0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Total Completed Earnings
+                </div>
+                <div style={{ fontSize: '26px', fontWeight: 900, color: '#34D399', lineHeight: 1.1, marginTop: '2px' }}>
+                  {formatRupees(runnerEarnings)}
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#9CA3AF', marginTop: '4px' }}>
+                  Base: ₹{baseEarnings} {batchBonus > 0 && `+ Batch Bonus: ₹${batchBonus}`}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  padding: '8px 14px',
+                  borderRadius: '18px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  textAlign: 'center',
+                }}
+              >
+                <div style={{ fontSize: '18px', fontWeight: 900, color: '#FFFFFF' }}>{completedOrders.length}</div>
+                <div style={{ fontSize: '9px', fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase' }}>Drops Done</div>
+              </div>
+            </div>
+
+            {/* Completed Orders List */}
+            {completedOrders.length === 0 ? (
+              <div
+                style={{
+                  background: 'rgba(26, 26, 26, 0.6)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '26px',
+                  padding: '48px 24px',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    background: 'rgba(16, 185, 129, 0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#34D399',
+                    marginBottom: '16px',
+                  }}
+                >
+                  <CheckCircle2 size={32} />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
+                  No Completed Drops Yet
+                </h3>
+                <p style={{ fontSize: '13px', color: '#9CA3AF', maxWidth: '280px', lineHeight: 1.5 }}>
+                  Deliver your active orders and verify student OTPs to populate your earnings log.
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {completedOrders
+                  .slice(completedPage * COMPLETED_PAGE_SIZE, (completedPage + 1) * COMPLETED_PAGE_SIZE)
+                  .map((ord) => (
+                    <div
+                      key={ord.id}
+                      style={{
+                        background: 'rgba(26, 26, 26, 0.72)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        borderRadius: '22px',
+                        padding: '12px 16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                          <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#FFFFFF', fontSize: '14px' }}>
+                            {ord.id}
+                          </span>
+                          <span
+                            style={{
+                              background: 'rgba(16, 185, 129, 0.2)',
+                              color: '#34D399',
+                              fontSize: '10px',
+                              fontWeight: 800,
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
+                              border: '1px solid rgba(16, 185, 129, 0.4)',
+                            }}
+                          >
+                            OTP Verified ✓
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                          {ord.hostelBlock.split(' ')[0]} • Room {ord.roomNumber}
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '16px', fontWeight: 900, color: '#34D399' }}>+₹18.00</div>
+                        <div style={{ fontSize: '10px', color: '#6B7280' }}>
+                          {ord.deliveredAt ? new Date(ord.deliveredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Delivered'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                {/* Pagination */}
+                {completedOrders.length > COMPLETED_PAGE_SIZE && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setCompletedPage((p) => Math.max(0, p - 1))}
+                      disabled={completedPage === 0}
+                      style={{
+                        padding: '7px 14px',
+                        borderRadius: '9999px',
+                        fontWeight: 700,
+                        fontSize: '11.5px',
+                        background: completedPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
+                        color: completedPage === 0 ? '#4B5563' : '#FFFFFF',
+                        border: 'none',
+                        cursor: completedPage === 0 ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      Prev
+                    </button>
+                    <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#9CA3AF' }}>
+                      Page {completedPage + 1} / {Math.ceil(completedOrders.length / COMPLETED_PAGE_SIZE)}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCompletedPage((p) => Math.min(Math.ceil(completedOrders.length / COMPLETED_PAGE_SIZE) - 1, p + 1))
+                      }
+                      disabled={completedPage >= Math.ceil(completedOrders.length / COMPLETED_PAGE_SIZE) - 1}
+                      style={{
+                        padding: '7px 14px',
+                        borderRadius: '9999px',
+                        fontWeight: 700,
+                        fontSize: '11.5px',
+                        background:
+                          completedPage >= Math.ceil(completedOrders.length / COMPLETED_PAGE_SIZE) - 1
+                            ? 'rgba(255, 255, 255, 0.04)'
+                            : '#10B981',
+                        color:
+                          completedPage >= Math.ceil(completedOrders.length / COMPLETED_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
+                        border: 'none',
+                        cursor:
+                          completedPage >= Math.ceil(completedOrders.length / COMPLETED_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ─── 3. FLOATING ISLAND GLASS DOCK WITH ACTIVE CAPSULE ─── */}
       <nav className="floating-glass-dock">
@@ -370,7 +794,7 @@ export const RunnerView: React.FC = () => {
           className={`dock-tab ${activeTab === 'mission' ? 'active' : ''}`}
         >
           <Navigation size={20} />
-          <span className="dock-tab-label">Mission</span>
+          <span className="dock-tab-label">Missions</span>
           {activeBatch.length > 0 && (
             <span className="dock-badge-count">{activeBatch.length}</span>
           )}
@@ -398,23 +822,67 @@ export const RunnerView: React.FC = () => {
         </button>
       </nav>
 
-      {/* OTP MODAL */}
+      {/* ─── 4. STUDENT HANDOVER OTP MODAL SHEET ─── */}
       {otpModalOrderId && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-0 sm:p-4">
-          <div className="bg-neutral-900 border border-white/10 sm:rounded-3xl rounded-t-3xl p-6 w-full max-w-sm shadow-2xl animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300">
-            
-            <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-6 sm:hidden" />
-            
-            <div className="flex flex-col items-center text-center mb-6">
-              <div className="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center border border-indigo-500/30 mb-4">
-                <KeyRound className="w-8 h-8 text-indigo-400" />
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 150,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(8px)',
+            padding: 0,
+          }}
+          className="animate-in fade-in duration-200"
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '480px',
+              background: '#141419',
+              borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+              borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '28px 28px 0 0',
+              padding: '24px 20px',
+              paddingBottom: 'calc(24px + var(--sab, 0px))',
+              boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.8)',
+            }}
+            className="animate-in slide-in-from-bottom duration-300"
+          >
+            {/* Drag Pill */}
+            <div style={{ width: '44px', height: '4px', background: 'rgba(255, 255, 255, 0.25)', borderRadius: '9999px', margin: '0 auto 18px auto' }} />
+
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <div
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: 'rgba(99, 102, 241, 0.15)',
+                  border: '1px solid rgba(99, 102, 241, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#818CF8',
+                  margin: '0 auto 12px auto',
+                }}
+              >
+                <KeyRound size={28} />
               </div>
-              <h2 className="text-xl font-black text-white mb-2">Student Handover OTP</h2>
-              <p className="text-sm text-neutral-400 px-2">Ask the student for the 4-digit code shown on their tracking screen to complete delivery.</p>
+              <h2 style={{ fontSize: '19px', fontWeight: 900, color: '#FFFFFF', marginBottom: '4px' }}>
+                Verify Student OTP
+              </h2>
+              <p style={{ fontSize: '13px', color: '#9CA3AF', lineHeight: 1.4 }}>
+                Ask student for the 4-digit code shown on their order tracking screen.
+              </p>
             </div>
 
             <form onSubmit={handleVerifyOtpSubmit}>
-              <div className="mb-6">
+              <div style={{ marginBottom: '16px' }}>
                 <input
                   type="text"
                   maxLength={4}
@@ -422,31 +890,85 @@ export const RunnerView: React.FC = () => {
                   placeholder="----"
                   value={enteredOtp}
                   onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, ''))}
-                  className="w-full bg-black/50 border-2 border-neutral-800 focus:border-indigo-500 rounded-2xl py-4 text-center text-4xl font-mono tracking-[0.5em] text-white outline-none font-black transition-colors"
-                  style={{ letterSpacing: '0.7em', paddingLeft: '0.7em' }}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    border: '2px solid rgba(99, 102, 241, 0.4)',
+                    borderRadius: '20px',
+                    padding: '16px',
+                    textAlign: 'center',
+                    fontSize: '32px',
+                    fontFamily: 'monospace',
+                    letterSpacing: '0.6em',
+                    paddingLeft: '0.6em',
+                    color: '#FFFFFF',
+                    fontWeight: 900,
+                    outline: 'none',
+                  }}
                 />
               </div>
 
               {otpError && (
-                <div className="mb-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 shrink-0" />
+                <div
+                  style={{
+                    marginBottom: '16px',
+                    padding: '10px 14px',
+                    borderRadius: '16px',
+                    background: 'rgba(239, 68, 68, 0.12)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    color: '#F87171',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <AlertCircle size={16} style={{ flexShrink: 0 }} />
                   <span>{otpError}</span>
                 </div>
               )}
 
-              <div className="flex flex-col gap-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <button
                   type="submit"
                   disabled={enteredOtp.length !== 4}
-                  className="w-full py-4 rounded-xl bg-indigo-600 disabled:bg-neutral-800 hover:bg-indigo-500 disabled:text-neutral-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg disabled:shadow-none transition-all active:scale-[0.98]"
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '9999px',
+                    background: enteredOtp.length === 4 ? 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)' : '#27272A',
+                    color: enteredOtp.length === 4 ? '#FFFFFF' : '#71717A',
+                    fontWeight: 800,
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    border: 'none',
+                    boxShadow: enteredOtp.length === 4 ? '0 4px 18px rgba(99, 102, 241, 0.4)' : 'none',
+                    cursor: enteredOtp.length === 4 ? 'pointer' : 'not-allowed',
+                  }}
+                  className={enteredOtp.length === 4 ? 'active:scale-95' : ''}
                 >
-                  <CheckCircle2 className="w-5 h-5" />
-                  Verify & Complete Delivery
+                  <CheckCircle2 size={18} />
+                  <span>Confirm Handover (+₹18)</span>
                 </button>
+
                 <button
                   type="button"
                   onClick={() => setOtpModalOrderId(null)}
-                  className="w-full py-3 rounded-xl bg-transparent hover:bg-white/5 text-neutral-400 hover:text-white font-bold text-sm transition-colors"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '9999px',
+                    background: 'transparent',
+                    color: '#9CA3AF',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   Cancel
                 </button>
