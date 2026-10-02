@@ -16,6 +16,7 @@ import {
   Flame,
   LogOut,
   Search,
+  Sparkles,
 } from 'lucide-react';
 
 export const VendorView: React.FC = () => {
@@ -99,10 +100,11 @@ export const VendorView: React.FC = () => {
                   gap: '6px',
                   background: 'rgba(255, 255, 255, 0.22)',
                   border: '1.5px solid rgba(255, 255, 255, 0.5)',
-                  padding: '5px 10px',
+                  padding: '6px 12px',
                   borderRadius: '9999px',
                   color: '#FFFFFF',
                   maxWidth: '75%',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
                 }}
               >
                 <Store size={15} style={{ flexShrink: 0 }} />
@@ -118,7 +120,7 @@ export const VendorView: React.FC = () => {
                     border: 'none',
                     color: '#FFFFFF',
                     fontWeight: 800,
-                    fontSize: '12px',
+                    fontSize: '12.5px',
                     outline: 'none',
                     cursor: 'pointer',
                     width: '100%',
@@ -140,8 +142,9 @@ export const VendorView: React.FC = () => {
                     height: '6px',
                     borderRadius: '50%',
                     backgroundColor: '#10B981',
-                    boxShadow: '0 0 8px #10B981',
+                    boxShadow: '0 0 10px #10B981',
                   }}
+                  className="animate-pulse"
                 />
                 <span>LIVE</span>
               </div>
@@ -151,13 +154,14 @@ export const VendorView: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
               <div
                 style={{
-                  background: 'rgba(0, 0, 0, 0.25)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(0, 0, 0, 0.28)',
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
                   color: '#FFFFFF',
                   fontSize: '11px',
                   fontWeight: 800,
-                  padding: '4px 9px',
+                  padding: '5px 10px',
                   borderRadius: '9999px',
+                  backdropFilter: 'blur(10px)',
                 }}
               >
                 Fee: {activeVendor.commissionPct}%
@@ -167,17 +171,18 @@ export const VendorView: React.FC = () => {
                 type="button"
                 onClick={logout}
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: '38px',
+                  height: '38px',
                   borderRadius: '50%',
-                  background: 'rgba(0, 0, 0, 0.25)',
+                  background: 'rgba(0, 0, 0, 0.28)',
                   border: '1.5px solid rgba(255, 255, 255, 0.35)',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
                 }}
                 className="active:scale-90"
                 title="Log out"
@@ -188,7 +193,7 @@ export const VendorView: React.FC = () => {
           </div>
 
           {/* Compact 4-KPI Row (Obsidian Glass Chips) */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '6px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginTop: '8px' }}>
             <div className="portal-kpi-glass">
               <div className="portal-kpi-label">Orders</div>
               <div className="portal-kpi-val">{todayOrders.length}</div>
@@ -201,7 +206,7 @@ export const VendorView: React.FC = () => {
               <div className="portal-kpi-label">Fee ({activeVendor.commissionPct}%)</div>
               <div className="portal-kpi-val" style={{ color: '#FED7AA' }}>-₹{commissionOwed}</div>
             </div>
-            <div className="portal-kpi-glass" style={{ background: 'rgba(16, 185, 129, 0.2)', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
+            <div className="portal-kpi-glass" style={{ background: 'rgba(16, 185, 129, 0.22)', borderColor: 'rgba(16, 185, 129, 0.45)' }}>
               <div className="portal-kpi-label" style={{ color: '#A7F3D0' }}>Net Payable</div>
               <div className="portal-kpi-val" style={{ color: '#6EE7B7' }}>₹{netEarnings}</div>
             </div>
@@ -210,13 +215,13 @@ export const VendorView: React.FC = () => {
       </header>
 
       {/* ─── 2. MAIN SCROLLABLE CONTENT WITH SILKY PAGE TRANSITION ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3.5 pb-28">
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-28">
         
         {/* TAB 1: KITCHEN ORDER QUEUE */}
         {activeTab === 'queue' && (
           <div className="page-transition">
             {/* Filter Pills */}
-            <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-3">
+            <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-3.5">
               {[
                 { id: 'active', label: 'Action Needed', icon: Flame },
                 { id: 'ready', label: 'Ready for Runner', icon: PackageCheck },
@@ -233,27 +238,31 @@ export const VendorView: React.FC = () => {
                     }}
                     style={{
                       borderRadius: '9999px',
-                      padding: '7px 14px',
+                      padding: '8px 16px',
                       fontSize: '12px',
-                      fontWeight: 700,
+                      fontWeight: 800,
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
                       whiteSpace: 'nowrap',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
                       background: isSelected
-                        ? 'linear-gradient(135deg, rgba(253, 105, 49, 0.28), rgba(255, 120, 60, 0.12))'
-                        : 'rgba(26, 26, 26, 0.7)',
+                        ? 'linear-gradient(135deg, rgba(253, 105, 49, 0.32), rgba(255, 120, 60, 0.15))'
+                        : 'rgba(255, 255, 255, 0.06)',
+                      backdropFilter: 'blur(16px)',
                       color: isSelected ? '#FD6931' : '#9CA3AF',
                       border: isSelected
-                        ? '1px solid rgba(253, 105, 49, 0.6)'
-                        : '1px solid rgba(255, 255, 255, 0.08)',
-                      boxShadow: isSelected ? '0 4px 12px rgba(253, 105, 49, 0.2)' : 'none',
+                        ? '1px solid rgba(253, 105, 49, 0.65)'
+                        : '1px solid rgba(255, 255, 255, 0.1)',
+                      borderTop: isSelected ? '1px solid rgba(255, 180, 150, 0.8)' : '1px solid rgba(255, 255, 255, 0.18)',
+                      boxShadow: isSelected
+                        ? '0 6px 16px rgba(253, 105, 49, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.3)'
+                        : '0 2px 8px rgba(0, 0, 0, 0.2)',
                     }}
                     className="active:scale-95"
                   >
-                    <f.icon size={13} />
+                    <f.icon size={14} />
                     <span>{f.label}</span>
                   </button>
                 );
@@ -262,12 +271,9 @@ export const VendorView: React.FC = () => {
 
             {filteredQueue.length === 0 ? (
               <div
+                className="delivo-card-glass"
                 style={{
-                  background: 'rgba(26, 26, 26, 0.6)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '26px',
-                  padding: '48px 24px',
+                  padding: '52px 24px',
                   textAlign: 'center',
                   display: 'flex',
                   flexDirection: 'column',
@@ -277,28 +283,30 @@ export const VendorView: React.FC = () => {
               >
                 <div
                   style={{
-                    width: '64px',
-                    height: '64px',
+                    width: '68px',
+                    height: '68px',
                     borderRadius: '50%',
-                    background: 'rgba(253, 105, 49, 0.12)',
+                    background: 'rgba(253, 105, 49, 0.15)',
+                    border: '1px solid rgba(253, 105, 49, 0.35)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#FD6931',
                     marginBottom: '16px',
+                    boxShadow: '0 0 24px rgba(253, 105, 49, 0.2)',
                   }}
                 >
-                  <CookingPot size={32} />
+                  <CookingPot size={34} />
                 </div>
                 <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
                   Queue is Clear!
                 </h3>
                 <p style={{ fontSize: '13px', color: '#9CA3AF', maxWidth: '280px', lineHeight: 1.5 }}>
-                  No orders in this status right now. New student orders will instantly show up here.
+                  No orders matching this filter right now. Incoming student orders will appear automatically.
                 </p>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {filteredQueue
                   .slice(queuePage * QUEUE_PAGE_SIZE, (queuePage + 1) * QUEUE_PAGE_SIZE)
                   .map((order) => {
@@ -310,22 +318,22 @@ export const VendorView: React.FC = () => {
                     return (
                       <div
                         key={order.id}
+                        className="delivo-card-glass"
                         style={{
-                          background: 'rgba(26, 26, 26, 0.72)',
-                          backdropFilter: 'blur(20px)',
-                          borderRadius: '26px',
-                          border: isIncoming
-                            ? '1.5px solid rgba(253, 105, 49, 0.65)'
-                            : isCooking
-                            ? '1px solid rgba(99, 102, 241, 0.45)'
-                            : '1px solid rgba(255, 255, 255, 0.08)',
-                          boxShadow: isIncoming
-                            ? '0 8px 24px rgba(253, 105, 49, 0.2)'
-                            : '0 8px 20px rgba(0, 0, 0, 0.4)',
-                          padding: '16px',
+                          padding: '18px',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '12px',
+                          gap: '14px',
+                          border: isIncoming
+                            ? '1.5px solid rgba(253, 105, 49, 0.7)'
+                            : isCooking
+                            ? '1.5px solid rgba(99, 102, 241, 0.55)'
+                            : '1px solid rgba(255, 255, 255, 0.12)',
+                          boxShadow: isIncoming
+                            ? '0 12px 32px rgba(253, 105, 49, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25)'
+                            : isCooking
+                            ? '0 12px 32px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                            : '0 12px 30px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.16)',
                         }}
                       >
                         {/* Order Header */}
@@ -345,7 +353,7 @@ export const VendorView: React.FC = () => {
                             </div>
                           </div>
 
-                          <div style={{ fontSize: '19px', fontWeight: 900, color: '#FFFFFF' }}>
+                          <div style={{ fontSize: '20px', fontWeight: 900, color: '#FFFFFF' }}>
                             {formatRupees(order.subtotalAmount)}
                           </div>
                         </div>
@@ -353,20 +361,21 @@ export const VendorView: React.FC = () => {
                         {/* Customer & Location Box */}
                         <div
                           style={{
-                            background: 'rgba(0, 0, 0, 0.35)',
-                            borderRadius: '18px',
-                            padding: '10px 14px',
+                            background: 'rgba(0, 0, 0, 0.4)',
+                            borderRadius: '20px',
+                            padding: '12px 16px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            border: '1px solid rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.4)',
                           }}
                         >
                           <div>
                             <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                               Customer
                             </div>
-                            <div style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
+                            <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
                               {order.studentName}
                             </div>
                           </div>
@@ -375,15 +384,15 @@ export const VendorView: React.FC = () => {
                             <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                               Hostel Drop
                             </div>
-                            <div style={{ fontSize: '13px', fontWeight: 800, color: '#FD6931', marginTop: '1px' }}>
+                            <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#FD6931', marginTop: '1px' }}>
                               {order.hostelBlock.split(' ')[0]} • Rm {order.roomNumber}
                             </div>
                           </div>
                         </div>
 
                         {/* Items Checklist */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ fontSize: '10px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Items To Cook
                           </div>
                           {order.items.map((it) => (
@@ -428,49 +437,25 @@ export const VendorView: React.FC = () => {
                           ))}
                         </div>
 
-                        {/* Action Buttons (Extra Rounded Pills) */}
-                        <div style={{ paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                        {/* Action Buttons (Ergonomic 48px Height) */}
+                        <div style={{ paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
                           {isIncoming && (
-                            <div style={{ display: 'flex', gap: '8px' }}>
+                            <div style={{ display: 'flex', gap: '10px' }}>
                               <button
                                 type="button"
                                 onClick={() => rejectOrder(order.id)}
-                                style={{
-                                  padding: '11px 18px',
-                                  borderRadius: '9999px',
-                                  background: 'rgba(255, 255, 255, 0.08)',
-                                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                                  color: '#FFFFFF',
-                                  fontWeight: 700,
-                                  fontSize: '13px',
-                                  cursor: 'pointer',
-                                }}
-                                className="active:scale-95"
+                                className="delivo-btn-glass"
+                                style={{ minHeight: '48px', padding: '12px 20px' }}
                               >
                                 Reject
                               </button>
                               <button
                                 type="button"
                                 onClick={() => acceptOrder(order.id)}
-                                style={{
-                                  flex: 1,
-                                  padding: '11px 20px',
-                                  borderRadius: '9999px',
-                                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
-                                  color: '#FFFFFF',
-                                  fontWeight: 800,
-                                  fontSize: '13px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: '8px',
-                                  border: 'none',
-                                  boxShadow: '0 4px 16px rgba(253, 105, 49, 0.4)',
-                                  cursor: 'pointer',
-                                }}
-                                className="active:scale-95"
+                                className="delivo-btn-primary"
+                                style={{ flex: 1, minHeight: '48px', fontSize: '14px' }}
                               >
-                                <CookingPot size={16} />
+                                <CookingPot size={18} />
                                 <span>Accept & Cook</span>
                               </button>
                             </div>
@@ -480,25 +465,10 @@ export const VendorView: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => markOrderReady(order.id)}
-                              style={{
-                                width: '100%',
-                                padding: '12px 20px',
-                                borderRadius: '9999px',
-                                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                                color: '#FFFFFF',
-                                fontWeight: 800,
-                                fontSize: '13.5px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                border: 'none',
-                                boxShadow: '0 4px 16px rgba(16, 185, 129, 0.35)',
-                                cursor: 'pointer',
-                              }}
-                              className="active:scale-95"
+                              className="delivo-btn-success"
+                              style={{ width: '100%', minHeight: '48px', fontSize: '14px' }}
                             >
-                              <PackageCheck size={18} />
+                              <PackageCheck size={19} />
                               <span>Mark Ready for Pickup</span>
                             </button>
                           )}
@@ -507,12 +477,13 @@ export const VendorView: React.FC = () => {
                             <div
                               style={{
                                 width: '100%',
-                                padding: '11px',
+                                minHeight: '46px',
+                                padding: '12px',
                                 borderRadius: '9999px',
-                                background: 'rgba(99, 102, 241, 0.15)',
-                                border: '1px solid rgba(99, 102, 241, 0.3)',
+                                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0.08) 100%)',
+                                border: '1px solid rgba(99, 102, 241, 0.45)',
                                 color: '#A5B4FC',
-                                fontSize: '13px',
+                                fontSize: '13.5px',
                                 fontWeight: 700,
                                 textAlign: 'center',
                                 display: 'flex',
@@ -530,16 +501,22 @@ export const VendorView: React.FC = () => {
                             <div
                               style={{
                                 width: '100%',
-                                padding: '11px',
+                                minHeight: '46px',
+                                padding: '12px',
                                 borderRadius: '9999px',
-                                background: 'rgba(0, 0, 0, 0.4)',
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                background: 'rgba(0, 0, 0, 0.45)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
                                 color: '#D1D5DB',
                                 fontSize: '13px',
                                 textAlign: 'center',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '6px',
                               }}
                             >
-                              Out with runner <strong style={{ color: '#FFFFFF' }}>{order.runnerName}</strong>
+                              <span>Out with runner</span>
+                              <strong style={{ color: '#FFFFFF' }}>{order.runnerName}</strong>
                             </div>
                           )}
 
@@ -547,7 +524,7 @@ export const VendorView: React.FC = () => {
                             <div
                               style={{
                                 width: '100%',
-                                padding: '10px',
+                                minHeight: '44px',
                                 color: '#34D399',
                                 fontSize: '13px',
                                 fontWeight: 800,
@@ -569,19 +546,17 @@ export const VendorView: React.FC = () => {
 
                 {/* Pagination Controls */}
                 {filteredQueue.length > QUEUE_PAGE_SIZE && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
                     <button
                       type="button"
                       onClick={() => setQueuePage((p) => Math.max(0, p - 1))}
                       disabled={queuePage === 0}
+                      className="delivo-btn-glass"
                       style={{
-                        padding: '8px 16px',
-                        borderRadius: '9999px',
-                        fontWeight: 700,
+                        padding: '8px 18px',
                         fontSize: '12px',
-                        background: queuePage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
-                        color: queuePage === 0 ? '#4B5563' : '#FFFFFF',
-                        border: 'none',
+                        minHeight: '38px',
+                        opacity: queuePage === 0 ? 0.35 : 1,
                         cursor: queuePage === 0 ? 'not-allowed' : 'pointer',
                       }}
                     >
@@ -596,22 +571,14 @@ export const VendorView: React.FC = () => {
                         setQueuePage((p) => Math.min(Math.ceil(filteredQueue.length / QUEUE_PAGE_SIZE) - 1, p + 1))
                       }
                       disabled={queuePage >= Math.ceil(filteredQueue.length / QUEUE_PAGE_SIZE) - 1}
+                      className="delivo-btn-primary"
                       style={{
-                        padding: '8px 16px',
-                        borderRadius: '9999px',
-                        fontWeight: 700,
+                        padding: '8px 18px',
                         fontSize: '12px',
-                        background:
-                          queuePage >= Math.ceil(filteredQueue.length / QUEUE_PAGE_SIZE) - 1
-                            ? 'rgba(255, 255, 255, 0.04)'
-                            : '#FD6931',
-                        color:
-                          queuePage >= Math.ceil(filteredQueue.length / QUEUE_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
-                        border: 'none',
+                        minHeight: '38px',
+                        opacity: queuePage >= Math.ceil(filteredQueue.length / QUEUE_PAGE_SIZE) - 1 ? 0.35 : 1,
                         cursor:
-                          queuePage >= Math.ceil(filteredQueue.length / QUEUE_PAGE_SIZE) - 1
-                            ? 'not-allowed'
-                            : 'pointer',
+                          queuePage >= Math.ceil(filteredQueue.length / QUEUE_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
                       }}
                     >
                       Next
@@ -628,31 +595,30 @@ export const VendorView: React.FC = () => {
           <div className="page-transition">
             {/* Header info banner */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: 'linear-gradient(135deg, rgba(253, 105, 49, 0.16) 0%, rgba(26, 26, 26, 0.8) 100%)',
-                border: '1px solid rgba(253, 105, 49, 0.3)',
-                borderRadius: '26px',
-                padding: '16px',
-                marginBottom: '14px',
+                padding: '18px',
+                marginBottom: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}
             >
               <div>
-                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', marginBottom: '2px' }}>
-                  Live Stock POS
+                <h2 style={{ fontSize: '16.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkles size={16} color="#FD6931" />
+                  <span>Live Menu Stock POS</span>
                 </h2>
                 <p style={{ fontSize: '12px', color: '#9CA3AF' }}>
-                  Items toggled off instantly disappear from student app.
+                  Toggled items instantly update in the student app.
                 </p>
               </div>
               <div
                 style={{
-                  background: 'rgba(0, 0, 0, 0.4)',
-                  padding: '6px 12px',
+                  background: 'rgba(253, 105, 49, 0.15)',
+                  padding: '6px 14px',
                   borderRadius: '9999px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(253, 105, 49, 0.4)',
                   fontSize: '12px',
                   fontWeight: 800,
                   color: '#FD6931',
@@ -671,12 +637,15 @@ export const VendorView: React.FC = () => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                background: 'rgba(26, 26, 26, 0.7)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.06)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255, 255, 255, 0.14)',
+                borderTop: '1px solid rgba(255, 255, 255, 0.25)',
                 borderRadius: '9999px',
-                padding: '8px 14px',
-                gap: '8px',
-                marginBottom: '14px',
+                padding: '10px 16px',
+                gap: '10px',
+                marginBottom: '16px',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
               }}
             >
               <Search size={16} color="#9CA3AF" />
@@ -692,42 +661,40 @@ export const VendorView: React.FC = () => {
                   background: 'transparent',
                   border: 'none',
                   color: '#FFFFFF',
-                  fontSize: '13px',
+                  fontSize: '13.5px',
                   width: '100%',
                   outline: 'none',
                 }}
               />
             </div>
 
-            {/* Menu Items Grid */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Menu Items List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {filteredMenuItems
                 .slice(menuPage * MENU_PAGE_SIZE, (menuPage + 1) * MENU_PAGE_SIZE)
                 .map((item) => (
                   <div
                     key={item.id}
+                    className="delivo-card-glass"
                     style={{
-                      background: 'rgba(26, 26, 26, 0.72)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '24px',
-                      padding: '12px 14px',
+                      padding: '14px 16px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '12px',
+                      gap: '14px',
                     }}
                   >
                     {/* Item Thumbnail */}
                     <div
                       style={{
-                        width: '64px',
-                        height: '64px',
-                        borderRadius: '18px',
+                        width: '70px',
+                        height: '70px',
+                        borderRadius: '20px',
                         overflow: 'hidden',
                         position: 'relative',
                         background: '#18181D',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
                         flexShrink: 0,
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                       }}
                     >
                       {item.image ? (
@@ -745,7 +712,7 @@ export const VendorView: React.FC = () => {
                         />
                       ) : (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280' }}>
-                          <ChefHat size={24} />
+                          <ChefHat size={26} />
                         </div>
                       )}
                       {/* Veg indicator badge */}
@@ -754,10 +721,10 @@ export const VendorView: React.FC = () => {
                           position: 'absolute',
                           bottom: '4px',
                           right: '4px',
-                          width: '12px',
-                          height: '12px',
-                          borderRadius: '2px',
-                          background: 'rgba(0, 0, 0, 0.75)',
+                          width: '13px',
+                          height: '13px',
+                          borderRadius: '3px',
+                          background: 'rgba(0, 0, 0, 0.8)',
                           border: `1.5px solid ${item.isVeg ? '#10B981' : '#EF4444'}`,
                           display: 'flex',
                           alignItems: 'center',
@@ -766,8 +733,8 @@ export const VendorView: React.FC = () => {
                       >
                         <div
                           style={{
-                            width: '4px',
-                            height: '4px',
+                            width: '5px',
+                            height: '5px',
                             borderRadius: '50%',
                             backgroundColor: item.isVeg ? '#10B981' : '#EF4444',
                           }}
@@ -779,7 +746,7 @@ export const VendorView: React.FC = () => {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h3
                         style={{
-                          fontSize: '14px',
+                          fontSize: '14.5px',
                           fontWeight: 800,
                           color: item.isAvailable ? '#FFFFFF' : '#6B7280',
                           textDecoration: item.isAvailable ? 'none' : 'line-through',
@@ -790,7 +757,7 @@ export const VendorView: React.FC = () => {
                       >
                         {item.name}
                       </h3>
-                      <div style={{ fontSize: '13px', fontWeight: 800, color: '#FD6931', marginTop: '2px' }}>
+                      <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#FD6931', marginTop: '2px' }}>
                         {formatRupees(item.price)}
                       </div>
                       <div
@@ -800,7 +767,7 @@ export const VendorView: React.FC = () => {
                           fontWeight: 700,
                           textTransform: 'capitalize',
                           color: '#9CA3AF',
-                          background: 'rgba(255, 255, 255, 0.06)',
+                          background: 'rgba(255, 255, 255, 0.08)',
                           padding: '2px 8px',
                           borderRadius: '9999px',
                           marginTop: '3px',
@@ -817,14 +784,14 @@ export const VendorView: React.FC = () => {
                         onClick={() => toggleMenuItemStock(activeVendor.id, item.id)}
                         style={{
                           position: 'relative',
-                          width: '48px',
+                          width: '50px',
                           height: '28px',
                           borderRadius: '9999px',
                           background: item.isAvailable ? '#10B981' : '#374151',
                           border: 'none',
                           cursor: 'pointer',
                           transition: 'background-color 0.3s ease',
-                          boxShadow: item.isAvailable ? '0 0 12px rgba(16, 185, 129, 0.5)' : 'none',
+                          boxShadow: item.isAvailable ? '0 0 14px rgba(16, 185, 129, 0.6)' : 'none',
                         }}
                         className="active:scale-95"
                       >
@@ -832,12 +799,12 @@ export const VendorView: React.FC = () => {
                           style={{
                             position: 'absolute',
                             top: '3px',
-                            left: item.isAvailable ? '23px' : '3px',
+                            left: item.isAvailable ? '24px' : '3px',
                             width: '22px',
                             height: '22px',
                             borderRadius: '50%',
                             backgroundColor: '#FFFFFF',
-                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.35)',
                             transition: 'left 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                           }}
                         />
@@ -860,19 +827,17 @@ export const VendorView: React.FC = () => {
 
             {/* Menu Pagination */}
             {filteredMenuItems.length > MENU_PAGE_SIZE && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '14px' }}>
                 <button
                   type="button"
                   onClick={() => setMenuPage((p) => Math.max(0, p - 1))}
                   disabled={menuPage === 0}
+                  className="delivo-btn-glass"
                   style={{
-                    padding: '8px 16px',
-                    borderRadius: '9999px',
-                    fontWeight: 700,
+                    padding: '8px 18px',
                     fontSize: '12px',
-                    background: menuPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
-                    color: menuPage === 0 ? '#4B5563' : '#FFFFFF',
-                    border: 'none',
+                    minHeight: '38px',
+                    opacity: menuPage === 0 ? 0.35 : 1,
                     cursor: menuPage === 0 ? 'not-allowed' : 'pointer',
                   }}
                 >
@@ -887,18 +852,12 @@ export const VendorView: React.FC = () => {
                     setMenuPage((p) => Math.min(Math.ceil(filteredMenuItems.length / MENU_PAGE_SIZE) - 1, p + 1))
                   }
                   disabled={menuPage >= Math.ceil(filteredMenuItems.length / MENU_PAGE_SIZE) - 1}
+                  className="delivo-btn-primary"
                   style={{
-                    padding: '8px 16px',
-                    borderRadius: '9999px',
-                    fontWeight: 700,
+                    padding: '8px 18px',
                     fontSize: '12px',
-                    background:
-                      menuPage >= Math.ceil(filteredMenuItems.length / MENU_PAGE_SIZE) - 1
-                        ? 'rgba(255, 255, 255, 0.04)'
-                        : '#FD6931',
-                    color:
-                      menuPage >= Math.ceil(filteredMenuItems.length / MENU_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
-                    border: 'none',
+                    minHeight: '38px',
+                    opacity: menuPage >= Math.ceil(filteredMenuItems.length / MENU_PAGE_SIZE) - 1 ? 0.35 : 1,
                     cursor:
                       menuPage >= Math.ceil(filteredMenuItems.length / MENU_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
                   }}
@@ -915,22 +874,24 @@ export const VendorView: React.FC = () => {
           <div className="page-transition">
             {/* Top Settlement Summary Card */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(26, 26, 26, 0.8) 100%)',
-                border: '1px solid rgba(16, 185, 129, 0.35)',
-                borderRadius: '26px',
-                padding: '18px',
+                padding: '20px',
                 marginBottom: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(20, 21, 28, 0.8) 100%)',
+                borderColor: 'rgba(16, 185, 129, 0.4)',
+                borderTopColor: 'rgba(167, 243, 208, 0.6)',
+                boxShadow: '0 16px 36px rgba(16, 185, 129, 0.15)',
               }}
             >
               <div>
                 <div style={{ fontSize: '10px', fontWeight: 800, color: '#A7F3D0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Today's Net Payout
                 </div>
-                <div style={{ fontSize: '26px', fontWeight: 900, color: '#34D399', lineHeight: 1.1, marginTop: '2px' }}>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#34D399', lineHeight: 1.1, marginTop: '2px' }}>
                   {formatRupees(netEarnings)}
                 </div>
                 <div style={{ fontSize: '11.5px', color: '#9CA3AF', marginTop: '4px' }}>
@@ -939,31 +900,28 @@ export const VendorView: React.FC = () => {
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Gross: <strong style={{ color: '#FFFFFF' }}>₹{grossSales}</strong></div>
-                <div style={{ fontSize: '11px', color: '#FD6931', marginTop: '2px' }}>Fee: <strong>-₹{commissionOwed}</strong></div>
+                <div style={{ fontSize: '11.5px', color: '#9CA3AF' }}>Gross: <strong style={{ color: '#FFFFFF' }}>₹{grossSales}</strong></div>
+                <div style={{ fontSize: '11.5px', color: '#FD6931', marginTop: '3px' }}>Fee: <strong>-₹{commissionOwed}</strong></div>
               </div>
             </div>
 
             {/* Ledger Records Table Card */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: 'rgba(26, 26, 26, 0.72)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '26px',
-                padding: '16px',
+                padding: '18px',
                 overflow: 'hidden',
               }}
             >
-              <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ReceiptText size={16} color="#34D399" />
+              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ReceiptText size={17} color="#34D399" />
                 <span>Orders Settlement Log</span>
               </h3>
 
               <div style={{ overflowX: 'auto' }} className="hide-scrollbar">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12.5px' }}>
                   <thead>
-                    <tr style={{ color: '#6B7280', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                    <tr style={{ color: '#6B7280', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
                       <th style={{ padding: '8px 4px', fontWeight: 800 }}>Order</th>
                       <th style={{ padding: '8px 4px', fontWeight: 800 }}>Customer</th>
                       <th style={{ padding: '8px 4px', fontWeight: 800, textAlign: 'right' }}>Gross</th>
@@ -978,24 +936,24 @@ export const VendorView: React.FC = () => {
                         const comm = calculateCommission(ord.subtotalAmount, activeVendor.commissionPct);
                         const net = ord.subtotalAmount - comm;
                         return (
-                          <tr key={ord.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                            <td style={{ padding: '10px 4px' }}>
+                          <tr key={ord.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                            <td style={{ padding: '12px 4px' }}>
                               <div style={{ fontFamily: 'monospace', fontWeight: 800, color: '#FFFFFF' }}>{ord.id}</div>
                               <div style={{ fontSize: '10px', color: '#6B7280' }}>
                                 {new Date(ord.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </div>
                             </td>
-                            <td style={{ padding: '10px 4px' }}>
+                            <td style={{ padding: '12px 4px' }}>
                               <div style={{ fontWeight: 700, color: '#E5E7EB' }}>{ord.studentName}</div>
                               <div style={{ fontSize: '10px', color: '#9CA3AF' }}>{ord.hostelBlock.split(' ')[0]}</div>
                             </td>
-                            <td style={{ padding: '10px 4px', textAlign: 'right', color: '#E5E7EB', fontWeight: 700 }}>
+                            <td style={{ padding: '12px 4px', textAlign: 'right', color: '#E5E7EB', fontWeight: 700 }}>
                               {formatRupees(ord.subtotalAmount)}
                             </td>
-                            <td style={{ padding: '10px 4px', textAlign: 'right', color: '#FD6931', fontWeight: 700 }}>
+                            <td style={{ padding: '12px 4px', textAlign: 'right', color: '#FD6931', fontWeight: 700 }}>
                               -{formatRupees(comm)}
                             </td>
-                            <td style={{ padding: '10px 4px', textAlign: 'right', color: '#34D399', fontWeight: 800 }}>
+                            <td style={{ padding: '12px 4px', textAlign: 'right', color: '#34D399', fontWeight: 800 }}>
                               {formatRupees(net)}
                             </td>
                           </tr>
@@ -1003,7 +961,7 @@ export const VendorView: React.FC = () => {
                       })}
                     {todayOrders.length === 0 && (
                       <tr>
-                        <td colSpan={5} style={{ padding: '32px 0', textAlign: 'center', color: '#6B7280', fontSize: '13px' }}>
+                        <td colSpan={5} style={{ padding: '36px 0', textAlign: 'center', color: '#6B7280', fontSize: '13px' }}>
                           No completed orders today yet.
                         </td>
                       </tr>
@@ -1014,19 +972,17 @@ export const VendorView: React.FC = () => {
 
               {/* Ledger Pagination */}
               {todayOrders.length > LEDGER_PAGE_SIZE && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '14px' }}>
                   <button
                     type="button"
                     onClick={() => setLedgerPage((p) => Math.max(0, p - 1))}
                     disabled={ledgerPage === 0}
+                    className="delivo-btn-glass"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background: ledgerPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
-                      color: ledgerPage === 0 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity: ledgerPage === 0 ? 0.35 : 1,
                       cursor: ledgerPage === 0 ? 'not-allowed' : 'pointer',
                     }}
                   >
@@ -1041,18 +997,13 @@ export const VendorView: React.FC = () => {
                       setLedgerPage((p) => Math.min(Math.ceil(todayOrders.length / LEDGER_PAGE_SIZE) - 1, p + 1))
                     }
                     disabled={ledgerPage >= Math.ceil(todayOrders.length / LEDGER_PAGE_SIZE) - 1}
+                    className="delivo-btn-success"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background:
-                        ledgerPage >= Math.ceil(todayOrders.length / LEDGER_PAGE_SIZE) - 1
-                          ? 'rgba(255, 255, 255, 0.04)'
-                          : '#10B981',
-                      color:
-                        ledgerPage >= Math.ceil(todayOrders.length / LEDGER_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity:
+                        ledgerPage >= Math.ceil(todayOrders.length / LEDGER_PAGE_SIZE) - 1 ? 0.35 : 1,
                       cursor:
                         ledgerPage >= Math.ceil(todayOrders.length / LEDGER_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
                     }}

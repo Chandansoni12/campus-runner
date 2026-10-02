@@ -343,17 +343,17 @@ export const StudentView: React.FC = () => {
           
           {/* DELIVERY SLOT PICKER */}
           <div className="slot-card" style={{ marginBottom: '24px', borderRadius: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: 'var(--font-12)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={14} color="var(--primary)" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <span style={{ fontSize: 'var(--font-12)', fontWeight: 800, color: 'rgba(255, 255, 255, 0.75)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Clock size={15} color="#FD6931" />
                 <span>Select Delivery Slot</span>
               </span>
-              <span style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 700 }}>
+              <span style={{ fontSize: '11px', color: '#FD6931', fontWeight: 800, background: 'rgba(253, 105, 49, 0.12)', border: '1px solid rgba(253, 105, 49, 0.25)', padding: '2px 8px', borderRadius: '8px' }}>
                 Cutoff: {settings.cutoffTime}
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
               {Object.values(SlotWindow).map((slotKey) => {
                 const isSelected = selectedSlot === slotKey;
                 const slotConfig = SLOT_TIMINGS[slotKey];
@@ -373,25 +373,29 @@ export const StudentView: React.FC = () => {
                     disabled={!slotStatus.isOpen}
                     onClick={() => setSelectedSlot(slotKey)}
                     style={{
-                      padding: '10px 4px',
-                      borderRadius: '16px',
+                      padding: '12px 6px',
+                      borderRadius: '18px',
                       textAlign: 'center',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      transition: 'all 0.3s ease',
-                      border: isSelected ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.06)',
-                      background: isSelected ? 'var(--primary)' : slotStatus.isOpen ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
-                      color: isSelected ? '#FFFFFF' : slotStatus.isOpen ? 'var(--text-primary)' : 'rgba(255,255,255,0.3)',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      border: isSelected ? '1.5px solid #FD6931' : '1px solid rgba(255,255,255,0.08)',
+                      background: isSelected
+                        ? 'linear-gradient(135deg, rgba(253, 105, 49, 0.3) 0%, rgba(253, 105, 49, 0.12) 100%)'
+                        : slotStatus.isOpen ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.015)',
+                      color: isSelected ? '#FFFFFF' : slotStatus.isOpen ? 'var(--text-primary)' : 'rgba(255,255,255,0.25)',
+                      boxShadow: isSelected ? '0 0 18px rgba(253, 105, 49, 0.35)' : 'none',
                       cursor: slotStatus.isOpen ? 'pointer' : 'not-allowed',
+                      transform: isSelected ? 'scale(1.02)' : 'none',
                     }}
                   >
-                    <span style={{ fontSize: '18px' }}>{iconMap[slotKey]}</span>
-                    <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'capitalize', marginTop: '2px' }}>
+                    <span style={{ fontSize: '20px' }}>{iconMap[slotKey]}</span>
+                    <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'capitalize', marginTop: '4px', letterSpacing: '0.02em' }}>
                       {slotKey.toLowerCase()}
                     </span>
-                    <span style={{ fontSize: '9px', opacity: 0.8, marginTop: '2px' }}>
+                    <span style={{ fontSize: '9px', fontWeight: 600, opacity: 0.85, marginTop: '2px', color: isSelected ? '#FD6931' : 'inherit' }}>
                       {slotStatus.isOpen ? slotConfig.label.split('(')[1]?.replace(')', '') : 'Closed'}
                     </span>
                   </button>
@@ -714,12 +718,12 @@ export const StudentView: React.FC = () => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {/* Stall Source Info */}
-                <div style={{ backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '12px 16px', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(253, 105, 49, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                <div className="delivo-card-glass" style={{ borderRadius: '20px', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'linear-gradient(135deg, rgba(253, 105, 49, 0.25) 0%, rgba(253, 105, 49, 0.1) 100%)', border: '1px solid rgba(253, 105, 49, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
                     🍳
                   </div>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF' }}>{cart[0]?.vendorName}</div>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>{cart[0]?.vendorName}</div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Fast campus stall preparation</div>
                   </div>
                 </div>
@@ -738,24 +742,24 @@ export const StudentView: React.FC = () => {
                       />
                       <div className="item-details">
                         <h4 className="item-name">{item.menuItem.name}</h4>
-                        <div className="item-price">₹{item.menuItem.price}</div>
+                        <div className="item-price" style={{ color: '#FD6931', fontWeight: 800 }}>₹{item.menuItem.price}</div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.45)', padding: '6px 12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
                         <button
                           type="button"
                           onClick={() => updateCartQuantity(item.menuItem.id, item.quantity - 1)}
-                          style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+                          style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                         >
-                          <Minus size={14} />
+                          <Minus size={15} />
                         </button>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>{item.quantity}</span>
+                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#fff', minWidth: '18px', textAlign: 'center' }}>{item.quantity}</span>
                         <button
                           type="button"
                           onClick={() => updateCartQuantity(item.menuItem.id, item.quantity + 1)}
-                          style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' }}
+                          style={{ background: 'none', border: 'none', color: '#FD6931', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                         >
-                          <Plus size={14} />
+                          <Plus size={15} />
                         </button>
                       </div>
                     </div>
@@ -763,25 +767,25 @@ export const StudentView: React.FC = () => {
                 </div>
 
                 {/* Bill Summary */}
-                <div style={{ backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '16px', border: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
-                  <div style={{ fontWeight: 700, color: '#FFFFFF', paddingBottom: '8px', borderBottom: '1px solid var(--border-subtle)' }}>
+                <div className="delivo-card-glass" style={{ borderRadius: '22px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                  <div style={{ fontWeight: 800, color: '#FFFFFF', paddingBottom: '10px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '15px', letterSpacing: '-0.01em' }}>
                     Payment Summary
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                     <span>Items Subtotal</span>
-                    <span style={{ color: '#FFFFFF', fontWeight: 600 }}>₹{subtotal}</span>
+                    <span style={{ color: '#FFFFFF', fontWeight: 700 }}>₹{subtotal}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                     <span>Hostel Runner Fee</span>
-                    <span style={{ color: '#FFFFFF', fontWeight: 600 }}>₹{deliveryFee}</span>
+                    <span style={{ color: '#FFFFFF', fontWeight: 700 }}>₹{deliveryFee}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                     <span>Platform Commission</span>
-                    <span style={{ color: '#10B981', fontWeight: 600 }}>FREE</span>
+                    <span style={{ color: '#10B981', fontWeight: 700, background: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>FREE</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid var(--border-subtle)', fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.1)', fontSize: '17px', fontWeight: 800, color: '#FFFFFF' }}>
                     <span>To Pay</span>
-                    <span style={{ color: 'var(--primary)' }}>₹{grandTotal}</span>
+                    <span style={{ color: '#FD6931' }}>₹{grandTotal}</span>
                   </div>
                 </div>
 
@@ -790,8 +794,8 @@ export const StudentView: React.FC = () => {
                   type="button"
                   disabled={isBlocked}
                   onClick={() => setShowUpiModal(true)}
-                  className="btn btn-primary"
-                  style={{ marginTop: '8px' }}
+                  className="delivo-btn-primary"
+                  style={{ marginTop: '8px', height: '52px', fontSize: '15px' }}
                 >
                   Pay ₹{grandTotal} via Campus UPI
                 </button>
@@ -816,16 +820,16 @@ export const StudentView: React.FC = () => {
           </div>
 
           {!trackedOrder ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ fontSize: '36px', marginBottom: '12px' }}>📦</div>
-              <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>No Active Orders</h3>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '16px' }}>
-                Your placed orders and live delivery runner will show up right here.
+            <div className="delivo-card-glass" style={{ textAlign: 'center', padding: '60px 24px', borderRadius: '24px' }}>
+              <div style={{ fontSize: '42px', marginBottom: '14px' }}>📦</div>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>No Active Orders</h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '20px', maxWidth: '300px', margin: '0 auto 20px auto', lineHeight: 1.5 }}>
+                Your placed orders and live student runner dispatch will track right here in real time.
               </p>
               <button
                 type="button"
-                className="btn btn-primary"
-                style={{ width: 'auto', padding: '0 24px', height: '44px' }}
+                className="delivo-btn-primary"
+                style={{ width: 'auto', padding: '0 28px', height: '46px', display: 'inline-flex', margin: '0 auto' }}
                 onClick={() => setActiveTab('browse')}
               >
                 Start Ordering
@@ -834,12 +838,12 @@ export const StudentView: React.FC = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {/* Order Status Hero Card */}
-              <div style={{ backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border-subtle)', position: 'relative', overflow: 'hidden' }}>
+              <div className="delivo-card-glass" style={{ borderRadius: '24px', padding: '20px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                   <div>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Order #{trackedOrder.id.slice(-6)}</span>
-                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF' }}>
-                      {trackedOrder.status === OrderStatus.DELIVERED ? 'Order Delivered!' : 'Delivery in Progress'}
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Order #{trackedOrder.id.slice(-6)}</span>
+                    <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px', letterSpacing: '-0.02em' }}>
+                      {trackedOrder.status === OrderStatus.DELIVERED ? '🎉 Order Delivered!' : '⚡ Delivery in Progress'}
                     </h3>
                   </div>
                   <OrderStatusBadge status={trackedOrder.status} />
@@ -847,63 +851,75 @@ export const StudentView: React.FC = () => {
 
                 {/* OTP Verification Pill */}
                 {trackedOrder.status !== OrderStatus.DELIVERED && (
-                  <div style={{ background: 'rgba(253, 105, 49, 0.15)', border: '1px solid rgba(253, 105, 49, 0.4)', borderRadius: '12px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <ShieldCheck size={20} color="var(--primary)" />
+                  <div style={{ background: 'linear-gradient(135deg, rgba(253, 105, 49, 0.2) 0%, rgba(253, 105, 49, 0.08) 100%)', border: '1px solid rgba(253, 105, 49, 0.45)', borderRadius: '16px', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', boxShadow: '0 4px 20px rgba(253, 105, 49, 0.15)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(253, 105, 49, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <ShieldCheck size={22} color="#FD6931" />
+                      </div>
                       <div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Share with Runner on Delivery</div>
-                        <div style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF' }}>Delivery OTP: <span style={{ color: 'var(--primary)' }}>{trackedOrder.otpCode || '4421'}</span></div>
+                        <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.75)', fontWeight: 600 }}>Share with Runner on Delivery</div>
+                        <div style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.04em' }}>Delivery OTP: <span style={{ color: '#FD6931', fontSize: '18px' }}>{trackedOrder.otpCode || '4421'}</span></div>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Timeline Steps */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px', paddingLeft: '8px' }}>
+                {/* Timeline Steps with connected glowing bar */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative', paddingLeft: '6px' }}>
                   {[
-                    { label: 'Order Placed & Confirmed', done: true },
-                    { label: 'Kitchen Preparing Your Food', done: trackedOrder.status !== OrderStatus.PLACED },
-                    { label: 'Student Runner Picked Up', done: trackedOrder.status === OrderStatus.OUT_FOR_DELIVERY || trackedOrder.status === OrderStatus.DELIVERED },
-                    { label: 'Delivered to Your Hostel Room', done: trackedOrder.status === OrderStatus.DELIVERED },
+                    { label: 'Order Placed & Confirmed', done: true, sub: 'Kitchen received token' },
+                    { label: 'Kitchen Preparing Your Food', done: trackedOrder.status !== OrderStatus.PLACED, sub: 'Fresh cooking on campus' },
+                    { label: 'Student Runner Picked Up', done: trackedOrder.status === OrderStatus.OUT_FOR_DELIVERY || trackedOrder.status === OrderStatus.DELIVERED, sub: 'En route to your hostel' },
+                    { label: 'Delivered to Your Hostel Room', done: trackedOrder.status === OrderStatus.DELIVERED, sub: 'Safe handover with OTP' },
                   ].map((step, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', position: 'relative' }}>
                       <div
                         style={{
-                          width: '20px',
-                          height: '20px',
+                          width: '26px',
+                          height: '26px',
                           borderRadius: '50%',
-                          backgroundColor: step.done ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+                          backgroundColor: step.done ? '#FD6931' : 'rgba(255,255,255,0.08)',
+                          border: step.done ? '2px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255,255,255,0.15)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '11px',
+                          fontSize: '12px',
                           color: '#fff',
-                          fontWeight: 700,
+                          fontWeight: 800,
+                          flexShrink: 0,
+                          boxShadow: step.done ? '0 0 14px rgba(253, 105, 49, 0.6)' : 'none',
+                          zIndex: 2,
+                          marginTop: '2px',
                         }}
                       >
                         {step.done ? '✓' : idx + 1}
                       </div>
-                      <span style={{ fontSize: '13px', color: step.done ? '#FFFFFF' : 'var(--text-muted)', fontWeight: step.done ? 600 : 400 }}>
-                        {step.label}
-                      </span>
+                      <div>
+                        <span style={{ fontSize: '14px', color: step.done ? '#FFFFFF' : 'var(--text-muted)', fontWeight: step.done ? 700 : 500, display: 'block' }}>
+                          {step.label}
+                        </span>
+                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '1px', display: 'block' }}>
+                          {step.sub}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Order Items Details */}
-              <div style={{ backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '16px', border: '1px solid var(--border-subtle)' }}>
-                <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF', marginBottom: '12px' }}>Order Summary</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="delivo-card-glass" style={{ borderRadius: '24px', padding: '18px' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginBottom: '14px', letterSpacing: '-0.01em' }}>Order Summary</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {trackedOrder.items.map((it, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: '#FFFFFF' }}>{it.quantity}x {it.name}</span>
+                      <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{it.quantity}x {it.name}</span>
                       <span style={{ color: 'var(--text-muted)' }}>₹{it.priceEach * it.quantity}</span>
                     </div>
                   ))}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid var(--border-subtle)', fontWeight: 700, fontSize: '14px', color: 'var(--primary)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontWeight: 800, fontSize: '16px', color: '#FFFFFF' }}>
                     <span>Total Amount</span>
-                    <span>₹{trackedOrder.totalAmount}</span>
+                    <span style={{ color: '#FD6931' }}>₹{trackedOrder.totalAmount}</span>
                   </div>
                 </div>
               </div>
@@ -921,57 +937,55 @@ export const StudentView: React.FC = () => {
           </div>
 
           {studentOrders.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ fontSize: '36px', marginBottom: '12px' }}>📜</div>
-              <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>No Past Orders Found</h3>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                Your completed orders will be archived here for easy reordering.
+            <div className="delivo-card-glass" style={{ textAlign: 'center', padding: '60px 24px', borderRadius: '24px' }}>
+              <div style={{ fontSize: '42px', marginBottom: '14px' }}>📜</div>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>No Past Orders Found</h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)', maxWidth: '300px', margin: '0 auto', lineHeight: 1.5 }}>
+                Your completed orders will be archived here for one-tap repeat orders and receipts.
               </p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {studentOrders.map((ord) => (
                 <div
                   key={ord.id}
+                  className="delivo-card-glass"
                   style={{
-                    backgroundColor: 'var(--bg-card)',
-                    borderRadius: '16px',
-                    padding: '16px',
-                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '22px',
+                    padding: '18px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '10px',
+                    gap: '12px',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                     <div>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>
                         {new Date(ord.createdAt).toLocaleDateString()} • {new Date(ord.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
-                      <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF', marginTop: '2px' }}>
+                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginTop: '4px', letterSpacing: '-0.01em' }}>
                         {ord.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')}
                       </h4>
                     </div>
                     <OrderStatusBadge status={ord.status} />
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 800, color: 'var(--primary)' }}>₹{ord.totalAmount}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#FD6931' }}>₹{ord.totalAmount}</span>
                     <button
                       type="button"
                       onClick={() => {
                         setActiveStudentOrderId(ord.id);
                         setActiveTab('track');
                       }}
+                      className="delivo-btn-glass"
                       style={{
-                        padding: '6px 14px',
-                        borderRadius: '20px',
-                        background: 'rgba(253, 105, 49, 0.15)',
-                        border: '1px solid rgba(253, 105, 49, 0.3)',
-                        color: 'var(--primary)',
+                        padding: '6px 16px',
                         fontSize: '12px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
+                        fontWeight: 700,
+                        color: '#FD6931',
+                        border: '1px solid rgba(253, 105, 49, 0.4)',
+                        background: 'rgba(253, 105, 49, 0.12)',
                       }}
                     >
                       Track Order
@@ -1087,51 +1101,54 @@ export const StudentView: React.FC = () => {
 
       {/* ─── 5. USER PROFILE & SETTINGS MODAL ─── */}
       {isEditingProfile && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
-          <div style={{ backgroundColor: '#141414', border: '1px solid var(--border-subtle)', borderRadius: '24px', padding: '24px', width: '100%', maxWidth: '380px', boxShadow: '0 20px 40px rgba(0,0,0,0.8)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--border-subtle)' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#FFFFFF' }}>Student Profile & Room</h3>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', backgroundColor: 'rgba(0,0,0,0.82)', backdropFilter: 'blur(16px)' }}>
+          <div className="delivo-card-glass" style={{ borderRadius: '28px', padding: '24px', width: '100%', maxWidth: '390px', boxShadow: '0 24px 60px rgba(0,0,0,0.85)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '14px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>Student Profile & Room</h3>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Configure your campus delivery drop</span>
+              </div>
               <button
                 type="button"
                 onClick={() => setIsEditingProfile(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleProfileSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">Student Name</label>
+                <label className="form-label" style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.75)' }}>Student Name</label>
                 <input
                   type="text"
                   required
                   value={profileForm.name}
                   onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                   className="form-control"
-                  style={{ height: '46px' }}
+                  style={{ height: '48px', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)' }}
                 />
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">Phone Number</label>
+                <label className="form-label" style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.75)' }}>Phone Number</label>
                 <input
                   type="tel"
                   required
                   value={profileForm.phone}
                   onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
                   className="form-control"
-                  style={{ height: '46px' }}
+                  style={{ height: '48px', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)' }}
                 />
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">Hostel Residence</label>
+                <label className="form-label" style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.75)' }}>Hostel Residence</label>
                 <select
                   value={profileForm.hostelBlock}
                   onChange={(e) => setProfileForm({ ...profileForm, hostelBlock: e.target.value })}
                   className="form-control"
-                  style={{ height: '46px' }}
+                  style={{ height: '48px', borderRadius: '14px', background: '#121218', border: '1px solid rgba(255, 255, 255, 0.12)' }}
                 >
                   {hostels.map((h) => (
                     <option key={h.id} value={h.name} style={{ background: '#1A1A1A' }}>
@@ -1142,36 +1159,37 @@ export const StudentView: React.FC = () => {
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">Room Number</label>
+                <label className="form-label" style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.75)' }}>Room Number</label>
                 <input
                   type="text"
                   required
                   value={profileForm.roomNumber}
                   onChange={(e) => setProfileForm({ ...profileForm, roomNumber: e.target.value })}
                   className="form-control"
-                  style={{ height: '46px' }}
+                  style={{ height: '48px', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <button
                   type="button"
                   onClick={() => setIsEditingProfile(false)}
-                  style={{ flex: 1, height: '44px', borderRadius: '9999px', background: 'rgba(255,255,255,0.06)', border: 'none', color: 'var(--text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                  className="delivo-btn-glass"
+                  style={{ flex: 1, height: '48px', fontSize: '14px' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
-                  style={{ flex: 1, height: '44px', fontSize: '13px' }}
+                  className="delivo-btn-primary"
+                  style={{ flex: 1, height: '48px', fontSize: '14px' }}
                 >
                   Save Changes
                 </button>
               </div>
             </form>
 
-            <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid var(--border-subtle)' }}>
+            <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <button
                 type="button"
                 onClick={() => {
@@ -1180,18 +1198,19 @@ export const StudentView: React.FC = () => {
                 }}
                 style={{
                   width: '100%',
-                  padding: '10px',
+                  height: '44px',
                   borderRadius: '9999px',
-                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  backgroundColor: 'rgba(239, 68, 68, 0.12)',
                   border: '1px solid rgba(239, 68, 68, 0.3)',
                   color: '#EF4444',
                   fontSize: '13px',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '6px',
+                  gap: '8px',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
               >
                 <LogOut size={16} />

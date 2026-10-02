@@ -12,17 +12,15 @@ import {
   Plus,
   Send,
   Bike,
-  TrendingUp,
   X,
   Power,
   ShieldCheck,
   Package,
   LogOut,
-  Zap,
-  ChevronDown,
   Clock,
   Building,
   CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 
 export const AdminView: React.FC = () => {
@@ -171,13 +169,14 @@ export const AdminView: React.FC = () => {
                   gap: '6px',
                   background: 'rgba(255, 255, 255, 0.22)',
                   border: '1.5px solid rgba(255, 255, 255, 0.5)',
-                  padding: '5px 12px',
+                  padding: '6px 14px',
                   borderRadius: '9999px',
                   color: '#FFFFFF',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
                 }}
               >
                 <ShieldCheck size={16} style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.02em' }}>
+                <span style={{ fontSize: '12.5px', fontWeight: 800, letterSpacing: '0.02em' }}>
                   University Command
                 </span>
               </div>
@@ -188,13 +187,14 @@ export const AdminView: React.FC = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '5px',
-                  background: settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.25)',
+                  background: settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.28)',
                   border: `1px solid ${settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.6)' : 'rgba(16, 185, 129, 0.6)'}`,
                   color: '#FFFFFF',
                   fontSize: '10.5px',
                   fontWeight: 900,
-                  padding: '3px 10px',
+                  padding: '4px 11px',
                   borderRadius: '9999px',
+                  boxShadow: settings.globalOrderingPaused ? '0 0 12px rgba(239, 68, 68, 0.4)' : '0 0 12px rgba(16, 185, 129, 0.3)',
                 }}
               >
                 <span
@@ -205,6 +205,7 @@ export const AdminView: React.FC = () => {
                     backgroundColor: settings.globalOrderingPaused ? '#EF4444' : '#10B981',
                     boxShadow: settings.globalOrderingPaused ? '0 0 8px #EF4444' : '0 0 8px #10B981',
                   }}
+                  className="animate-pulse"
                 />
                 <span>{settings.globalOrderingPaused ? 'PAUSED' : 'ONLINE'}</span>
               </div>
@@ -215,18 +216,19 @@ export const AdminView: React.FC = () => {
               type="button"
               onClick={logout}
               style={{
-                width: '36px',
-                height: '36px',
+                width: '38px',
+                height: '38px',
                 borderRadius: '50%',
-                background: 'rgba(0, 0, 0, 0.25)',
+                background: 'rgba(0, 0, 0, 0.28)',
                 border: '1.5px solid rgba(255, 255, 255, 0.35)',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease',
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                 flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
               }}
               className="active:scale-90"
               title="Log out of Admin"
@@ -236,7 +238,7 @@ export const AdminView: React.FC = () => {
           </div>
 
           {/* Compact 4-KPI Row (Obsidian Glass Chips) */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '6px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginTop: '8px' }}>
             <div className="portal-kpi-glass">
               <div className="portal-kpi-label">Gross Vol</div>
               <div className="portal-kpi-val">₹{totalGrossRevenue}</div>
@@ -245,11 +247,11 @@ export const AdminView: React.FC = () => {
               <div className="portal-kpi-label">Total Orders</div>
               <div className="portal-kpi-val">{totalOrders}</div>
             </div>
-            <div className="portal-kpi-glass" style={{ background: 'rgba(253, 105, 49, 0.2)', borderColor: 'rgba(253, 105, 49, 0.4)' }}>
+            <div className="portal-kpi-glass" style={{ background: 'rgba(253, 105, 49, 0.25)', borderColor: 'rgba(253, 105, 49, 0.45)' }}>
               <div className="portal-kpi-label" style={{ color: '#FED7AA' }}>To Dispatch</div>
               <div className="portal-kpi-val" style={{ color: '#FFFFFF' }}>{dispatchableOrders.length}</div>
             </div>
-            <div className="portal-kpi-glass" style={{ background: 'rgba(16, 185, 129, 0.2)', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
+            <div className="portal-kpi-glass" style={{ background: 'rgba(16, 185, 129, 0.22)', borderColor: 'rgba(16, 185, 129, 0.45)' }}>
               <div className="portal-kpi-label" style={{ color: '#A7F3D0' }}>Runners</div>
               <div className="portal-kpi-val" style={{ color: '#6EE7B7' }}>{studentRunners.length}</div>
             </div>
@@ -258,39 +260,36 @@ export const AdminView: React.FC = () => {
       </header>
 
       {/* ─── 2. MAIN SCROLLABLE CONTENT WITH SILKY PAGE TRANSITION ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-3.5 pb-28">
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-28">
         
         {/* TAB 1: EMERGENCY CONTROLS */}
         {activeTab === 'killswitch' && (
-          <div className="page-transition" style={{ gap: '14px' }}>
+          <div className="page-transition" style={{ gap: '16px' }}>
             
             {/* Master Emergency Kill Switch Card */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: settings.globalOrderingPaused
-                  ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(26, 26, 26, 0.85) 100%)'
-                  : 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(26, 26, 26, 0.85) 100%)',
-                border: settings.globalOrderingPaused
-                  ? '1.5px solid rgba(239, 68, 68, 0.5)'
-                  : '1.5px solid rgba(16, 185, 129, 0.35)',
-                borderRadius: '26px',
-                padding: '18px',
+                padding: '20px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '12px',
-                boxShadow: settings.globalOrderingPaused ? '0 8px 30px rgba(239, 68, 68, 0.2)' : 'none',
+                gap: '14px',
+                background: settings.globalOrderingPaused
+                  ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(20, 21, 28, 0.85) 100%)'
+                  : 'linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(20, 21, 28, 0.85) 100%)',
+                borderColor: settings.globalOrderingPaused ? 'rgba(239, 68, 68, 0.55)' : 'rgba(16, 185, 129, 0.4)',
+                borderTopColor: settings.globalOrderingPaused ? 'rgba(252, 165, 165, 0.7)' : 'rgba(167, 243, 208, 0.7)',
+                boxShadow: settings.globalOrderingPaused ? '0 16px 40px rgba(239, 68, 68, 0.25)' : 'none',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <h2 style={{ fontSize: '17px', fontWeight: 900, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Power size={20} color={settings.globalOrderingPaused ? '#EF4444' : '#10B981'} />
-                    <span>Campus Kill-Switch</span>
-                  </h2>
-                  <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '3px', lineHeight: 1.4 }}>
-                    Instantly halts checkout for all campus students. Existing active orders complete normally.
-                  </p>
-                </div>
+              <div>
+                <h2 style={{ fontSize: '18px', fontWeight: 900, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Power size={20} color={settings.globalOrderingPaused ? '#EF4444' : '#10B981'} />
+                  <span>Campus Kill-Switch</span>
+                </h2>
+                <p style={{ fontSize: '12.5px', color: '#9CA3AF', marginTop: '4px', lineHeight: 1.4 }}>
+                  Instantly halts checkout for all campus students. Existing active orders will complete normally.
+                </p>
               </div>
 
               <button
@@ -298,6 +297,7 @@ export const AdminView: React.FC = () => {
                 onClick={() => toggleGlobalKillSwitch(!settings.globalOrderingPaused)}
                 style={{
                   width: '100%',
+                  minHeight: '52px',
                   padding: '14px',
                   borderRadius: '9999px',
                   background: settings.globalOrderingPaused
@@ -305,28 +305,29 @@ export const AdminView: React.FC = () => {
                     : 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
                   color: '#FFFFFF',
                   fontWeight: 900,
-                  fontSize: '14px',
+                  fontSize: '14.5px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
                   border: 'none',
                   boxShadow: settings.globalOrderingPaused
-                    ? '0 4px 18px rgba(16, 185, 129, 0.4)'
-                    : '0 4px 18px rgba(239, 68, 68, 0.4)',
+                    ? '0 6px 20px rgba(16, 185, 129, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4)'
+                    : '0 6px 20px rgba(239, 68, 68, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
                   cursor: 'pointer',
                   letterSpacing: '0.02em',
+                  transition: 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
                 className="active:scale-95"
               >
                 {settings.globalOrderingPaused ? (
                   <>
-                    <ToggleRight size={20} />
+                    <ToggleRight size={22} />
                     <span>RESUME CAMPUS ORDERING</span>
                   </>
                 ) : (
                   <>
-                    <ToggleLeft size={20} />
+                    <ToggleLeft size={22} />
                     <span>EMERGENCY PAUSE ALL ORDERS</span>
                   </>
                 )}
@@ -335,37 +336,34 @@ export const AdminView: React.FC = () => {
 
             {/* Hostel Delivery Controls Card */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: 'rgba(26, 26, 26, 0.72)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '26px',
-                padding: '16px',
+                padding: '18px',
               }}
             >
-              <h2 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Building size={16} color="#FD6931" />
+              <h2 style={{ fontSize: '15.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Building size={17} color="#FD6931" />
                 <span>Per-Hostel Delivery Zones</span>
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {hostels.map((h) => {
                   const isPaused = settings.pausedHostelBlocks.includes(h.name);
                   return (
                     <div
                       key={h.id}
                       style={{
-                        background: isPaused ? 'rgba(239, 68, 68, 0.1)' : 'rgba(0, 0, 0, 0.35)',
-                        border: isPaused ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255, 255, 255, 0.05)',
+                        background: isPaused ? 'rgba(239, 68, 68, 0.12)' : 'rgba(0, 0, 0, 0.4)',
+                        border: isPaused ? '1px solid rgba(239, 68, 68, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '20px',
-                        padding: '12px 14px',
+                        padding: '12px 16px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                       }}
                     >
                       <div>
-                        <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#FFFFFF' }}>{h.name}</div>
+                        <div style={{ fontSize: '14px', fontWeight: 800, color: '#FFFFFF' }}>{h.name}</div>
                         <div
                           style={{
                             fontSize: '11px',
@@ -381,17 +379,12 @@ export const AdminView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => toggleHostelKillSwitch(h.name, !isPaused)}
+                        className={isPaused ? 'delivo-btn-success' : 'delivo-btn-glass'}
                         style={{
-                          padding: '6px 14px',
-                          borderRadius: '9999px',
+                          padding: '6px 16px',
+                          minHeight: '34px',
                           fontSize: '12px',
-                          fontWeight: 800,
-                          background: isPaused ? '#10B981' : 'rgba(255, 255, 255, 0.08)',
-                          color: '#FFFFFF',
-                          border: isPaused ? 'none' : '1px solid rgba(255, 255, 255, 0.15)',
-                          cursor: 'pointer',
                         }}
-                        className="active:scale-95"
                       >
                         {isPaused ? 'Unpause' : 'Pause Zone'}
                       </button>
@@ -403,19 +396,16 @@ export const AdminView: React.FC = () => {
 
             {/* Night Kitchen Cutoff Time Card */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: 'rgba(26, 26, 26, 0.72)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '26px',
-                padding: '16px',
+                padding: '18px',
               }}
             >
-              <h2 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={16} color="#FD6931" />
+              <h2 style={{ fontSize: '15.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Clock size={17} color="#FD6931" />
                 <span>Night Kitchen Cutoff</span>
               </h2>
-              <p style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '12px' }}>
+              <p style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '14px' }}>
                 Set platform cutoff hour when late night checkout ceases.
               </p>
 
@@ -423,11 +413,11 @@ export const AdminView: React.FC = () => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  background: 'rgba(0, 0, 0, 0.35)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '20px',
-                  padding: '10px 14px',
+                  gap: '14px',
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '22px',
+                  padding: '12px 16px',
                 }}
               >
                 <input
@@ -436,7 +426,7 @@ export const AdminView: React.FC = () => {
                   onChange={(e) => updateCutoffTime(e.target.value)}
                   style={{
                     background: '#18181D',
-                    border: '1.5px solid rgba(253, 105, 49, 0.5)',
+                    border: '1.5px solid rgba(253, 105, 49, 0.55)',
                     color: '#FFFFFF',
                     padding: '8px 14px',
                     borderRadius: '14px',
@@ -444,9 +434,10 @@ export const AdminView: React.FC = () => {
                     fontFamily: 'monospace',
                     fontWeight: 900,
                     outline: 'none',
+                    boxShadow: '0 0 12px rgba(253, 105, 49, 0.2)',
                   }}
                 />
-                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                <div style={{ fontSize: '12.5px', color: '#9CA3AF' }}>
                   Current active cutoff: <strong style={{ color: '#FFFFFF' }}>{settings.cutoffTime} IST</strong>
                 </div>
               </div>
@@ -460,18 +451,15 @@ export const AdminView: React.FC = () => {
             
             {/* Batch Action Bar Card */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: 'rgba(26, 26, 26, 0.72)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '26px',
-                padding: '16px',
-                marginBottom: '14px',
+                padding: '18px',
+                marginBottom: '16px',
               }}
             >
-              <div style={{ marginBottom: '12px' }}>
-                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Send size={16} color="#FD6931" />
+              <div style={{ marginBottom: '14px' }}>
+                <h2 style={{ fontSize: '16.5px', fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Send size={17} color="#FD6931" />
                   <span>Manual Batch Dispatcher</span>
                 </h2>
                 <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
@@ -480,17 +468,17 @@ export const AdminView: React.FC = () => {
               </div>
 
               {/* Runner Picker & Dispatch Button */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 <select
                   value={targetRunnerId}
                   onChange={(e) => setTargetRunnerId(e.target.value)}
                   style={{
                     flex: 1,
                     minWidth: '160px',
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.16)',
                     borderRadius: '9999px',
-                    padding: '10px 14px',
+                    padding: '12px 16px',
                     color: '#FFFFFF',
                     fontSize: '13px',
                     fontWeight: 700,
@@ -510,30 +498,20 @@ export const AdminView: React.FC = () => {
                   type="button"
                   disabled={selectedOrderIds.length === 0 || !targetRunnerId}
                   onClick={handleBatchDispatchSubmit}
+                  className="delivo-btn-primary"
                   style={{
-                    padding: '10px 20px',
-                    borderRadius: '9999px',
-                    background:
-                      selectedOrderIds.length > 0 && targetRunnerId
-                        ? 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)'
-                        : 'rgba(255, 255, 255, 0.05)',
-                    color: selectedOrderIds.length > 0 && targetRunnerId ? '#FFFFFF' : '#4B5563',
-                    fontSize: '13px',
-                    fontWeight: 800,
-                    border: 'none',
-                    boxShadow:
-                      selectedOrderIds.length > 0 && targetRunnerId ? '0 4px 14px rgba(253, 105, 49, 0.4)' : 'none',
+                    minHeight: '46px',
+                    opacity: selectedOrderIds.length > 0 && targetRunnerId ? 1 : 0.4,
                     cursor: selectedOrderIds.length > 0 && targetRunnerId ? 'pointer' : 'not-allowed',
                     whiteSpace: 'nowrap',
                   }}
-                  className={selectedOrderIds.length > 0 && targetRunnerId ? 'active:scale-95' : ''}
                 >
                   🚀 Dispatch ({selectedOrderIds.length})
                 </button>
               </div>
 
               {/* Filter Chips Bar */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
                 <select
                   value={selectedHostelFilter}
                   onChange={(e) => {
@@ -541,10 +519,10 @@ export const AdminView: React.FC = () => {
                     setDispatchPage(0);
                   }}
                   style={{
-                    background: 'rgba(0, 0, 0, 0.3)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
                     borderRadius: '9999px',
-                    padding: '5px 12px',
+                    padding: '6px 14px',
                     color: '#9CA3AF',
                     fontSize: '12px',
                     fontWeight: 700,
@@ -578,12 +556,9 @@ export const AdminView: React.FC = () => {
             {/* Orders Waiting List */}
             {filteredDispatchOrders.length === 0 ? (
               <div
+                className="delivo-card-glass"
                 style={{
-                  background: 'rgba(26, 26, 26, 0.6)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '26px',
-                  padding: '48px 24px',
+                  padding: '52px 24px',
                   textAlign: 'center',
                   display: 'flex',
                   flexDirection: 'column',
@@ -593,10 +568,10 @@ export const AdminView: React.FC = () => {
               >
                 <div
                   style={{
-                    width: '64px',
-                    height: '64px',
+                    width: '68px',
+                    height: '68px',
                     borderRadius: '50%',
-                    background: 'rgba(253, 105, 49, 0.12)',
+                    background: 'rgba(253, 105, 49, 0.15)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -604,7 +579,7 @@ export const AdminView: React.FC = () => {
                     marginBottom: '16px',
                   }}
                 >
-                  <Package size={32} />
+                  <Package size={34} />
                 </div>
                 <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
                   No Pending Orders
@@ -614,7 +589,7 @@ export const AdminView: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {filteredDispatchOrders
                   .slice(dispatchPage * DISPATCH_PAGE_SIZE, (dispatchPage + 1) * DISPATCH_PAGE_SIZE)
                   .map((ord) => {
@@ -623,27 +598,26 @@ export const AdminView: React.FC = () => {
                       <div
                         key={ord.id}
                         onClick={() => handleToggleOrderSelection(ord.id)}
+                        className="delivo-card-glass"
                         style={{
-                          background: isChecked ? 'rgba(253, 105, 49, 0.15)' : 'rgba(26, 26, 26, 0.72)',
-                          backdropFilter: 'blur(20px)',
-                          border: isChecked ? '1.5px solid #FD6931' : '1px solid rgba(255, 255, 255, 0.08)',
-                          borderRadius: '24px',
-                          padding: '14px',
+                          padding: '16px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          boxShadow: isChecked ? '0 4px 16px rgba(253, 105, 49, 0.25)' : 'none',
+                          background: isChecked
+                            ? 'linear-gradient(135deg, rgba(253, 105, 49, 0.22) 0%, rgba(20, 21, 28, 0.8) 100%)'
+                            : undefined,
+                          borderColor: isChecked ? 'rgba(253, 105, 49, 0.7)' : undefined,
+                          boxShadow: isChecked ? '0 8px 24px rgba(253, 105, 49, 0.25)' : undefined,
                         }}
-                        className="active:scale-[0.99]"
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                           <div
                             style={{
-                              width: '24px',
-                              height: '24px',
-                              borderRadius: '7px',
+                              width: '26px',
+                              height: '26px',
+                              borderRadius: '8px',
                               border: isChecked ? 'none' : '1.5px solid rgba(255, 255, 255, 0.3)',
                               background: isChecked ? '#FD6931' : 'transparent',
                               display: 'flex',
@@ -651,14 +625,15 @@ export const AdminView: React.FC = () => {
                               justifyContent: 'center',
                               color: '#FFFFFF',
                               flexShrink: 0,
+                              boxShadow: isChecked ? '0 0 10px rgba(253, 105, 49, 0.7)' : 'none',
                             }}
                           >
-                            {isChecked && <ShieldCheck size={16} />}
+                            {isChecked && <ShieldCheck size={18} />}
                           </div>
 
                           <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                              <span style={{ fontFamily: 'monospace', fontWeight: 900, color: '#FFFFFF', fontSize: '14px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                              <span style={{ fontFamily: 'monospace', fontWeight: 900, color: '#FFFFFF', fontSize: '14.5px' }}>
                                 {ord.id}
                               </span>
                               <OrderStatusBadge status={ord.status} size="sm" />
@@ -666,14 +641,14 @@ export const AdminView: React.FC = () => {
                             <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
                               Stall: <strong style={{ color: '#E5E7EB' }}>{ord.vendorName}</strong>
                             </div>
-                            <div style={{ fontSize: '12px', color: '#FD6931', fontWeight: 700, marginTop: '1px' }}>
+                            <div style={{ fontSize: '12px', color: '#FD6931', fontWeight: 700, marginTop: '2px' }}>
                               Drop: {ord.hostelBlock.split(' ')[0]} • Rm {ord.roomNumber}
                             </div>
                           </div>
                         </div>
 
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '16px', fontWeight: 900, color: '#FFFFFF' }}>
+                          <div style={{ fontSize: '17px', fontWeight: 900, color: '#FFFFFF' }}>
                             {formatRupees(ord.totalAmount)}
                           </div>
                           <div style={{ fontSize: '10.5px', color: '#6B7280', fontFamily: 'monospace', marginTop: '2px' }}>
@@ -686,19 +661,17 @@ export const AdminView: React.FC = () => {
 
                 {/* Dispatch Pagination */}
                 {filteredDispatchOrders.length > DISPATCH_PAGE_SIZE && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px' }}>
                     <button
                       type="button"
                       onClick={() => setDispatchPage((p) => Math.max(0, p - 1))}
                       disabled={dispatchPage === 0}
+                      className="delivo-btn-glass"
                       style={{
-                        padding: '7px 14px',
-                        borderRadius: '9999px',
-                        fontWeight: 700,
+                        padding: '8px 18px',
                         fontSize: '11.5px',
-                        background: dispatchPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
-                        color: dispatchPage === 0 ? '#4B5563' : '#FFFFFF',
-                        border: 'none',
+                        minHeight: '38px',
+                        opacity: dispatchPage === 0 ? 0.35 : 1,
                         cursor: dispatchPage === 0 ? 'not-allowed' : 'pointer',
                       }}
                     >
@@ -713,18 +686,13 @@ export const AdminView: React.FC = () => {
                         setDispatchPage((p) => Math.min(Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1, p + 1))
                       }
                       disabled={dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1}
+                      className="delivo-btn-primary"
                       style={{
-                        padding: '7px 14px',
-                        borderRadius: '9999px',
-                        fontWeight: 700,
+                        padding: '8px 18px',
                         fontSize: '11.5px',
-                        background:
-                          dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1
-                            ? 'rgba(255, 255, 255, 0.04)'
-                            : '#FD6931',
-                        color:
-                          dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
-                        border: 'none',
+                        minHeight: '38px',
+                        opacity:
+                          dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1 ? 0.35 : 1,
                         cursor:
                           dispatchPage >= Math.ceil(filteredDispatchOrders.length / DISPATCH_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
                       }}
@@ -747,32 +715,19 @@ export const AdminView: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '14px',
+                marginBottom: '16px',
               }}
             >
               <div>
-                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>Courier Roster</h2>
+                <h2 style={{ fontSize: '16.5px', fontWeight: 800, color: '#FFFFFF' }}>Courier Roster</h2>
                 <p style={{ fontSize: '12px', color: '#9CA3AF' }}>Verify student IDs & onboard new runners.</p>
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowAddRunnerModal(true)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
-                  padding: '8px 14px',
-                  borderRadius: '9999px',
-                  color: '#FFFFFF',
-                  fontSize: '12px',
-                  fontWeight: 800,
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(253, 105, 49, 0.3)',
-                }}
-                className="active:scale-95"
+                className="delivo-btn-primary"
+                style={{ padding: '8px 16px', minHeight: '38px', fontSize: '12.5px' }}
               >
                 <Plus size={14} />
                 <span>Add Runner</span>
@@ -780,35 +735,32 @@ export const AdminView: React.FC = () => {
             </div>
 
             {/* Runner Roster Cards */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {studentRunners
                 .slice(rosterPage * ROSTER_PAGE_SIZE, (rosterPage + 1) * ROSTER_PAGE_SIZE)
                 .map((r) => (
                   <div
                     key={r.id}
+                    className="delivo-card-glass"
                     style={{
-                      background: 'rgba(26, 26, 26, 0.72)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '24px',
-                      padding: '14px',
+                      padding: '16px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                     }}
                   >
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#FFFFFF' }}>{r.name}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                        <span style={{ fontSize: '14.5px', fontWeight: 800, color: '#FFFFFF' }}>{r.name}</span>
                         <span
                           style={{
                             fontSize: '10px',
                             fontWeight: 800,
                             padding: '2px 8px',
                             borderRadius: '9999px',
-                            background: r.isVerified ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                            background: r.isVerified ? 'rgba(16, 185, 129, 0.22)' : 'rgba(245, 158, 11, 0.22)',
                             color: r.isVerified ? '#34D399' : '#FBBF24',
-                            border: `1px solid ${r.isVerified ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`,
+                            border: `1px solid ${r.isVerified ? 'rgba(16, 185, 129, 0.45)' : 'rgba(245, 158, 11, 0.45)'}`,
                           }}
                         >
                           {r.isVerified ? '✓ Verified' : 'Pending ID'}
@@ -822,17 +774,12 @@ export const AdminView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => toggleRunnerVerification(r.id)}
+                      className={r.isVerified ? 'delivo-btn-glass' : 'delivo-btn-indigo'}
                       style={{
-                        padding: '6px 12px',
-                        borderRadius: '9999px',
+                        padding: '6px 14px',
+                        minHeight: '34px',
                         fontSize: '11px',
-                        fontWeight: 800,
-                        background: r.isVerified ? 'rgba(255, 255, 255, 0.06)' : 'rgba(99, 102, 241, 0.2)',
-                        border: `1px solid ${r.isVerified ? 'rgba(255, 255, 255, 0.12)' : 'rgba(99, 102, 241, 0.4)'}`,
-                        color: r.isVerified ? '#9CA3AF' : '#818CF8',
-                        cursor: 'pointer',
                       }}
-                      className="active:scale-95"
                     >
                       {r.isVerified ? 'Revoke' : 'Verify ID'}
                     </button>
@@ -841,19 +788,17 @@ export const AdminView: React.FC = () => {
 
               {/* Roster Pagination */}
               {studentRunners.length > ROSTER_PAGE_SIZE && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px' }}>
                   <button
                     type="button"
                     onClick={() => setRosterPage((p) => Math.max(0, p - 1))}
                     disabled={rosterPage === 0}
+                    className="delivo-btn-glass"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background: rosterPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
-                      color: rosterPage === 0 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity: rosterPage === 0 ? 0.35 : 1,
                       cursor: rosterPage === 0 ? 'not-allowed' : 'pointer',
                     }}
                   >
@@ -868,18 +813,13 @@ export const AdminView: React.FC = () => {
                       setRosterPage((p) => Math.min(Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1, p + 1))
                     }
                     disabled={rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1}
+                    className="delivo-btn-primary"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background:
-                        rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1
-                          ? 'rgba(255, 255, 255, 0.04)'
-                          : '#FD6931',
-                      color:
-                        rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity:
+                        rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1 ? 0.35 : 1,
                       cursor:
                         rosterPage >= Math.ceil(studentRunners.length / ROSTER_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
                     }}
@@ -901,32 +841,19 @@ export const AdminView: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '14px',
+                marginBottom: '16px',
               }}
             >
               <div>
-                <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>Campus Stalls</h2>
+                <h2 style={{ fontSize: '16.5px', fontWeight: 800, color: '#FFFFFF' }}>Campus Stalls</h2>
                 <p style={{ fontSize: '12px', color: '#9CA3AF' }}>Manage commissions & onboard partners.</p>
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowAddVendorModal(true)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
-                  padding: '8px 14px',
-                  borderRadius: '9999px',
-                  color: '#FFFFFF',
-                  fontSize: '12px',
-                  fontWeight: 800,
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(253, 105, 49, 0.3)',
-                }}
-                className="active:scale-95"
+                className="delivo-btn-primary"
+                style={{ padding: '8px 16px', minHeight: '38px', fontSize: '12.5px' }}
               >
                 <Plus size={14} />
                 <span>Onboard Stall</span>
@@ -934,39 +861,37 @@ export const AdminView: React.FC = () => {
             </div>
 
             {/* Vendor Cards */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {vendors
                 .slice(vendorPage * VENDOR_PAGE_SIZE, (vendorPage + 1) * VENDOR_PAGE_SIZE)
                 .map((v) => (
                   <div
                     key={v.id}
+                    className="delivo-card-glass"
                     style={{
-                      background: 'rgba(26, 26, 26, 0.72)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '26px',
-                      padding: '14px',
+                      padding: '16px',
                       display: 'flex',
-                      gap: '12px',
+                      gap: '14px',
                       alignItems: 'center',
                     }}
                   >
                     <div
                       style={{
-                        width: '72px',
-                        height: '72px',
-                        borderRadius: '20px',
+                        width: '76px',
+                        height: '76px',
+                        borderRadius: '22px',
                         overflow: 'hidden',
                         background: '#18181D',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
                         flexShrink: 0,
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                       }}
                     >
                       {v.coverImage ? (
                         <img src={v.coverImage} alt={v.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280' }}>
-                          <Store size={26} />
+                          <Store size={28} />
                         </div>
                       )}
                     </div>
@@ -976,27 +901,27 @@ export const AdminView: React.FC = () => {
                         <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {v.name}
                         </h3>
-                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#FBBF24', background: 'rgba(245, 158, 11, 0.15)', padding: '2px 7px', borderRadius: '9999px', flexShrink: 0 }}>
+                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#FBBF24', background: 'rgba(245, 158, 11, 0.18)', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '2px 8px', borderRadius: '9999px', flexShrink: 0 }}>
                           ★ {v.rating}
                         </span>
                       </div>
                       <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>{v.location}</div>
                       
                       {/* Commission split adjustment */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                        <span style={{ fontSize: '11px', color: '#6B7280' }}>{v.menuItems.length} menu items</span>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                        <span style={{ fontSize: '11.5px', color: '#9CA3AF' }}>{v.menuItems.length} menu items</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase' }}>Comm:</span>
                           <select
                             value={v.commissionPct}
                             onChange={(e) => updateVendorCommission(v.id, Number(e.target.value))}
                             style={{
-                              background: 'rgba(0, 0, 0, 0.4)',
-                              border: '1px solid rgba(253, 105, 49, 0.4)',
+                              background: 'rgba(0, 0, 0, 0.45)',
+                              border: '1px solid rgba(253, 105, 49, 0.45)',
                               borderRadius: '9999px',
-                              padding: '2px 8px',
+                              padding: '3px 10px',
                               color: '#FD6931',
-                              fontSize: '11px',
+                              fontSize: '11.5px',
                               fontWeight: 800,
                               outline: 'none',
                             }}
@@ -1015,19 +940,17 @@ export const AdminView: React.FC = () => {
 
               {/* Vendor Pagination */}
               {vendors.length > VENDOR_PAGE_SIZE && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px' }}>
                   <button
                     type="button"
                     onClick={() => setVendorPage((p) => Math.max(0, p - 1))}
                     disabled={vendorPage === 0}
+                    className="delivo-btn-glass"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background: vendorPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
-                      color: vendorPage === 0 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity: vendorPage === 0 ? 0.35 : 1,
                       cursor: vendorPage === 0 ? 'not-allowed' : 'pointer',
                     }}
                   >
@@ -1042,18 +965,13 @@ export const AdminView: React.FC = () => {
                       setVendorPage((p) => Math.min(Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1, p + 1))
                     }
                     disabled={vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1}
+                    className="delivo-btn-primary"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background:
-                        vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1
-                          ? 'rgba(255, 255, 255, 0.04)'
-                          : '#FD6931',
-                      color:
-                        vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity:
+                        vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1 ? 0.35 : 1,
                       cursor:
                         vendorPage >= Math.ceil(vendors.length / VENDOR_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
                     }}
@@ -1069,84 +987,75 @@ export const AdminView: React.FC = () => {
         {/* TAB 5: REPORTS & FINANCIAL AUDIT */}
         {activeTab === 'reports' && (
           <div className="page-transition">
-            {/* 4 Financial Metric Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px' }}>
+            {/* 4 Financial Metric Cards with Radiant Glows */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
               <div
+                className="delivo-card-glass"
                 style={{
-                  background: 'rgba(26, 26, 26, 0.72)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '24px',
-                  padding: '14px',
+                  padding: '16px',
                 }}
               >
-                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase' }}>Gross Volume</div>
-                <div style={{ fontSize: '20px', fontWeight: 900, color: '#FFFFFF', marginTop: '2px' }}>{formatRupees(totalGrossRevenue)}</div>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase' }}>Gross Volume</div>
+                <div style={{ fontSize: '22px', fontWeight: 900, color: '#FFFFFF', marginTop: '2px' }}>{formatRupees(totalGrossRevenue)}</div>
                 <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>{totalOrders} campus orders</div>
               </div>
 
               <div
+                className="delivo-card-glass"
                 style={{
-                  background: 'rgba(16, 185, 129, 0.12)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  borderRadius: '24px',
-                  padding: '14px',
+                  padding: '16px',
+                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(20, 21, 28, 0.8) 100%)',
+                  borderColor: 'rgba(16, 185, 129, 0.4)',
+                  boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)',
                 }}
               >
-                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#A7F3D0', textTransform: 'uppercase' }}>Platform Rev</div>
-                <div style={{ fontSize: '20px', fontWeight: 900, color: '#34D399', marginTop: '2px' }}>{formatRupees(totalCommissionCollected)}</div>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#A7F3D0', textTransform: 'uppercase' }}>Platform Rev</div>
+                <div style={{ fontSize: '22px', fontWeight: 900, color: '#34D399', marginTop: '2px' }}>{formatRupees(totalCommissionCollected)}</div>
                 <div style={{ fontSize: '11px', color: '#6EE7B7', marginTop: '2px' }}>Net fee retained</div>
               </div>
 
               <div
+                className="delivo-card-glass"
                 style={{
-                  background: 'rgba(253, 105, 49, 0.12)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(253, 105, 49, 0.3)',
-                  borderRadius: '24px',
-                  padding: '14px',
+                  padding: '16px',
+                  background: 'linear-gradient(135deg, rgba(253, 105, 49, 0.18) 0%, rgba(20, 21, 28, 0.8) 100%)',
+                  borderColor: 'rgba(253, 105, 49, 0.4)',
+                  boxShadow: '0 8px 24px rgba(253, 105, 49, 0.15)',
                 }}
               >
-                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#FED7AA', textTransform: 'uppercase' }}>Courier Payouts</div>
-                <div style={{ fontSize: '20px', fontWeight: 900, color: '#FD6931', marginTop: '2px' }}>{formatRupees(totalRunnerPayouts)}</div>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#FED7AA', textTransform: 'uppercase' }}>Courier Payouts</div>
+                <div style={{ fontSize: '22px', fontWeight: 900, color: '#FD6931', marginTop: '2px' }}>{formatRupees(totalRunnerPayouts)}</div>
                 <div style={{ fontSize: '11px', color: '#FDBA74', marginTop: '2px' }}>₹18/deliv + batch</div>
               </div>
 
               <div
+                className="delivo-card-glass"
                 style={{
-                  background: 'rgba(26, 26, 26, 0.72)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '24px',
-                  padding: '14px',
+                  padding: '16px',
                 }}
               >
-                <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase' }}>Cancel Rate</div>
-                <div style={{ fontSize: '20px', fontWeight: 900, color: '#FFFFFF', marginTop: '2px' }}>{refundRate}%</div>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase' }}>Cancel Rate</div>
+                <div style={{ fontSize: '22px', fontWeight: 900, color: '#FFFFFF', marginTop: '2px' }}>{refundRate}%</div>
                 <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>{cancelledOrders.length} cancelled</div>
               </div>
             </div>
 
             {/* Audit Log Table Card */}
             <div
+              className="delivo-card-glass"
               style={{
-                background: 'rgba(26, 26, 26, 0.72)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '26px',
-                padding: '16px',
+                padding: '18px',
               }}
             >
-              <h3 style={{ fontSize: '14.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <FileText size={16} color="#FD6931" />
+              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={17} color="#FD6931" />
                 <span>Master Campus Audit Log</span>
               </h3>
 
               <div style={{ overflowX: 'auto' }} className="hide-scrollbar">
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12.5px' }}>
                   <thead>
-                    <tr style={{ color: '#6B7280', fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                    <tr style={{ color: '#6B7280', fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
                       <th style={{ padding: '8px 4px', fontWeight: 800 }}>ID</th>
                       <th style={{ padding: '8px 4px', fontWeight: 800 }}>Stall</th>
                       <th style={{ padding: '8px 4px', fontWeight: 800 }}>Student</th>
@@ -1158,21 +1067,21 @@ export const AdminView: React.FC = () => {
                     {orders
                       .slice(reportPage * REPORT_PAGE_SIZE, (reportPage + 1) * REPORT_PAGE_SIZE)
                       .map((o) => (
-                        <tr key={o.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                          <td style={{ padding: '10px 4px', fontFamily: 'monospace', fontWeight: 800, color: '#FFFFFF' }}>
+                        <tr key={o.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                          <td style={{ padding: '12px 4px', fontFamily: 'monospace', fontWeight: 800, color: '#FFFFFF' }}>
                             {o.id}
                           </td>
-                          <td style={{ padding: '10px 4px', color: '#E5E7EB' }}>
+                          <td style={{ padding: '12px 4px', color: '#E5E7EB' }}>
                             {o.vendorName}
                           </td>
-                          <td style={{ padding: '10px 4px' }}>
+                          <td style={{ padding: '12px 4px' }}>
                             <div style={{ color: '#FFFFFF', fontWeight: 700 }}>{o.studentName}</div>
                             <div style={{ fontSize: '10px', color: '#9CA3AF' }}>{o.hostelBlock.split(' ')[0]}</div>
                           </td>
-                          <td style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 800, color: '#FFFFFF' }}>
+                          <td style={{ padding: '12px 4px', textAlign: 'right', fontWeight: 800, color: '#FFFFFF' }}>
                             {formatRupees(o.totalAmount)}
                           </td>
-                          <td style={{ padding: '10px 4px', textAlign: 'right' }}>
+                          <td style={{ padding: '12px 4px', textAlign: 'right' }}>
                             <OrderStatusBadge status={o.status} size="sm" />
                           </td>
                         </tr>
@@ -1183,19 +1092,17 @@ export const AdminView: React.FC = () => {
 
               {/* Reports Pagination */}
               {orders.length > REPORT_PAGE_SIZE && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '14px' }}>
                   <button
                     type="button"
                     onClick={() => setReportPage((p) => Math.max(0, p - 1))}
                     disabled={reportPage === 0}
+                    className="delivo-btn-glass"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background: reportPage === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
-                      color: reportPage === 0 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity: reportPage === 0 ? 0.35 : 1,
                       cursor: reportPage === 0 ? 'not-allowed' : 'pointer',
                     }}
                   >
@@ -1210,18 +1117,13 @@ export const AdminView: React.FC = () => {
                       setReportPage((p) => Math.min(Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1, p + 1))
                     }
                     disabled={reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1}
+                    className="delivo-btn-primary"
                     style={{
-                      padding: '7px 14px',
-                      borderRadius: '9999px',
-                      fontWeight: 700,
+                      padding: '8px 18px',
                       fontSize: '11.5px',
-                      background:
-                        reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1
-                          ? 'rgba(255, 255, 255, 0.04)'
-                          : '#FD6931',
-                      color:
-                        reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1 ? '#4B5563' : '#FFFFFF',
-                      border: 'none',
+                      minHeight: '38px',
+                      opacity:
+                        reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1 ? 0.35 : 1,
                       cursor:
                         reportPage >= Math.ceil(orders.length / REPORT_PAGE_SIZE) - 1 ? 'not-allowed' : 'pointer',
                     }}
@@ -1296,23 +1198,20 @@ export const AdminView: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(8px)',
+            background: 'rgba(0, 0, 0, 0.78)',
+            backdropFilter: 'blur(12px)',
             padding: '16px',
           }}
           className="animate-in fade-in"
         >
           <div
+            className="delivo-card-glass animate-in zoom-in-95"
             style={{
               width: '100%',
-              maxWidth: '380px',
-              background: '#141419',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '28px',
+              maxWidth: '390px',
               padding: '24px',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.25)',
             }}
-            className="animate-in zoom-in-95"
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#FFFFFF' }}>Add Courier Runner</h3>
@@ -1336,7 +1235,7 @@ export const AdminView: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreateRunner} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <form onSubmit={handleCreateRunner} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
                   Student Name
@@ -1349,8 +1248,8 @@ export const AdminView: React.FC = () => {
                   onChange={(e) => setNewRunnerForm({ ...newRunnerForm, name: e.target.value })}
                   style={{
                     width: '100%',
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
                     borderRadius: '16px',
                     padding: '12px 14px',
                     color: '#FFFFFF',
@@ -1373,8 +1272,8 @@ export const AdminView: React.FC = () => {
                   onChange={(e) => setNewRunnerForm({ ...newRunnerForm, phone: e.target.value })}
                   style={{
                     width: '100%',
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
                     borderRadius: '16px',
                     padding: '12px 14px',
                     color: '#FFFFFF',
@@ -1395,8 +1294,8 @@ export const AdminView: React.FC = () => {
                   onChange={(e) => setNewRunnerForm({ ...newRunnerForm, hostelBlock: e.target.value })}
                   style={{
                     width: '100%',
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
                     borderRadius: '16px',
                     padding: '12px 14px',
                     color: '#FFFFFF',
@@ -1415,20 +1314,12 @@ export const AdminView: React.FC = () => {
 
               <button
                 type="submit"
+                className="delivo-btn-primary"
                 style={{
                   width: '100%',
-                  padding: '14px',
-                  borderRadius: '9999px',
-                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
-                  color: '#FFFFFF',
-                  fontWeight: 900,
-                  fontSize: '14px',
-                  border: 'none',
-                  boxShadow: '0 4px 16px rgba(253, 105, 49, 0.4)',
-                  cursor: 'pointer',
+                  minHeight: '48px',
                   marginTop: '10px',
                 }}
-                className="active:scale-95"
               >
                 Enroll Runner To Roster
               </button>
@@ -1447,25 +1338,22 @@ export const AdminView: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(8px)',
+            background: 'rgba(0, 0, 0, 0.78)',
+            backdropFilter: 'blur(12px)',
             padding: '16px',
           }}
           className="animate-in fade-in"
         >
           <div
+            className="delivo-card-glass animate-in zoom-in-95 hide-scrollbar"
             style={{
               width: '100%',
-              maxWidth: '420px',
+              maxWidth: '430px',
               maxHeight: '90vh',
               overflowY: 'auto',
-              background: '#141419',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '28px',
               padding: '24px',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.25)',
             }}
-            className="animate-in zoom-in-95 hide-scrollbar"
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#FFFFFF' }}>Onboard Campus Stall</h3>
@@ -1489,7 +1377,7 @@ export const AdminView: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreateVendor} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <form onSubmit={handleCreateVendor} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
                   Stall Name
@@ -1502,8 +1390,8 @@ export const AdminView: React.FC = () => {
                   onChange={(e) => setNewVendorForm({ ...newVendorForm, name: e.target.value })}
                   style={{
                     width: '100%',
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
                     borderRadius: '16px',
                     padding: '12px 14px',
                     color: '#FFFFFF',
@@ -1526,8 +1414,8 @@ export const AdminView: React.FC = () => {
                   onChange={(e) => setNewVendorForm({ ...newVendorForm, location: e.target.value })}
                   style={{
                     width: '100%',
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
                     borderRadius: '16px',
                     padding: '12px 14px',
                     color: '#FFFFFF',
@@ -1538,7 +1426,7 @@ export const AdminView: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: '4px' }}>
                     Comm. %
@@ -1550,8 +1438,8 @@ export const AdminView: React.FC = () => {
                     onChange={(e) => setNewVendorForm({ ...newVendorForm, commissionPct: Number(e.target.value) })}
                     style={{
                       width: '100%',
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      background: 'rgba(0, 0, 0, 0.45)',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
                       borderRadius: '16px',
                       padding: '12px 14px',
                       color: '#FFFFFF',
@@ -1573,8 +1461,8 @@ export const AdminView: React.FC = () => {
                     onChange={(e) => setNewVendorForm({ ...newVendorForm, prepTimeMinutes: Number(e.target.value) })}
                     style={{
                       width: '100%',
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      background: 'rgba(0, 0, 0, 0.45)',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
                       borderRadius: '16px',
                       padding: '12px 14px',
                       color: '#FFFFFF',
@@ -1588,7 +1476,7 @@ export const AdminView: React.FC = () => {
               </div>
 
               {/* Initial Menu Item */}
-              <div style={{ paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
                 <div style={{ fontSize: '12px', fontWeight: 800, color: '#FD6931', marginBottom: '6px' }}>
                   Signature Dish
                 </div>
@@ -1601,10 +1489,10 @@ export const AdminView: React.FC = () => {
                     onChange={(e) => setNewVendorForm({ ...newVendorForm, itemName1: e.target.value })}
                     style={{
                       flex: 1,
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      background: 'rgba(0, 0, 0, 0.45)',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
                       borderRadius: '16px',
-                      padding: '10px 12px',
+                      padding: '10px 14px',
                       color: '#FFFFFF',
                       fontSize: '13px',
                       fontWeight: 700,
@@ -1618,11 +1506,11 @@ export const AdminView: React.FC = () => {
                     value={newVendorForm.itemPrice1}
                     onChange={(e) => setNewVendorForm({ ...newVendorForm, itemPrice1: Number(e.target.value) })}
                     style={{
-                      width: '80px',
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      width: '84px',
+                      background: 'rgba(0, 0, 0, 0.45)',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
                       borderRadius: '16px',
-                      padding: '10px 12px',
+                      padding: '10px 14px',
                       color: '#FFFFFF',
                       fontSize: '13px',
                       fontFamily: 'monospace',
@@ -1635,20 +1523,12 @@ export const AdminView: React.FC = () => {
 
               <button
                 type="submit"
+                className="delivo-btn-primary"
                 style={{
                   width: '100%',
-                  padding: '14px',
-                  borderRadius: '9999px',
-                  background: 'linear-gradient(135deg, #FD6931 0%, #F85013 100%)',
-                  color: '#FFFFFF',
-                  fontWeight: 900,
-                  fontSize: '14px',
-                  border: 'none',
-                  boxShadow: '0 4px 16px rgba(253, 105, 49, 0.4)',
-                  cursor: 'pointer',
+                  minHeight: '48px',
                   marginTop: '10px',
                 }}
-                className="active:scale-95"
               >
                 Onboard Stall & Publish
               </button>

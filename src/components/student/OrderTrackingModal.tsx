@@ -53,8 +53,8 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ isOpen, 
   const currentStepIdx = getStepIndex(order.status);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-[#12151C] border border-white/15 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="delivo-card-glass max-w-lg w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200" style={{ borderRadius: '28px', border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.3)' }}>
         {/* Header */}
         <div className="p-5 bg-[#161920] border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">

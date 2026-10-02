@@ -99,7 +99,7 @@ body {
    HOME PAGE STYLES
    ═══════════════════════════════════════════════════ */
 
-/* Home Screen Wrapper - Zero Bezels Edge to Edge */
+/* Home Screen Wrapper - Zero Bezels Edge to Edge with Atmospheric Ambient Glow */
 .home-screen-wrapper {
   display: flex;
   justify-content: center;
@@ -108,7 +108,11 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: var(--bg-dark);
+  background-color: #07070A;
+  background-image: 
+    radial-gradient(circle at 85% 12%, rgba(253, 105, 49, 0.16) 0%, transparent 48%),
+    radial-gradient(circle at 15% 60%, rgba(99, 102, 241, 0.10) 0%, transparent 45%),
+    radial-gradient(circle at 50% 95%, rgba(253, 105, 49, 0.08) 0%, transparent 40%);
 }
 
 .home-screen {
@@ -121,14 +125,21 @@ body {
   overflow: hidden;
   margin: 0;
   padding: 0;
+  background-color: #090A0F;
+  background-image:
+    radial-gradient(circle at 88% 8%, rgba(253, 105, 49, 0.18) 0%, transparent 42%),
+    radial-gradient(circle at 10% 35%, rgba(245, 158, 11, 0.07) 0%, transparent 38%),
+    radial-gradient(circle at 85% 70%, rgba(99, 102, 241, 0.11) 0%, transparent 42%),
+    radial-gradient(circle at 20% 90%, rgba(16, 185, 129, 0.06) 0%, transparent 35%);
 }
 
 @media (min-width: 768px) {
   .home-screen {
     max-width: 500px;
     margin: 0 auto;
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
   }
 }
 
@@ -443,21 +454,26 @@ body {
 .food-card {
   flex-shrink: 0;
   width: 280px;
-  background-color: var(--bg-card);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 21, 28, 0.78);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
   border-radius: 28px;
   overflow: hidden;
-  border: 1px solid var(--border-subtle);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.25s ease;
   scroll-snap-align: start;
 }
 
 .food-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.65), 0 0 24px rgba(253, 105, 49, 0.2);
+  border-color: rgba(253, 105, 49, 0.4);
 }
 
 .food-card:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 .food-card-image {
@@ -666,29 +682,35 @@ body {
 .hot-deal-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background-color: var(--bg-card);
-  border-radius: 24px;
-  padding: 12px;
-  border: 1px solid var(--border-faint);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 21, 28, 0.74);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-radius: 26px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.48), inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.26s ease, border-color 0.25s ease;
 }
 
 .hot-deal-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  border-color: rgba(253, 105, 49, 0.35);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 18px rgba(253, 105, 49, 0.14);
 }
 
 .hot-deal-card:active {
-  transform: scale(0.98);
+  transform: scale(0.985);
 }
 
 .hot-deal-image {
-  width: 88px;
-  height: 72px;
-  border-radius: 18px;
+  width: 90px;
+  height: 76px;
+  border-radius: 20px;
   object-fit: cover;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .hot-deal-info {
@@ -701,7 +723,7 @@ body {
 
 .hot-deal-title {
   font-size: var(--font-14);
-  font-weight: 600;
+  font-weight: 700;
   color: #FFFFFF;
   white-space: nowrap;
   overflow: hidden;
@@ -718,31 +740,42 @@ body {
 }
 
 .hot-deal-price {
-  font-size: var(--font-14);
-  font-weight: 600;
-  color: #FFFFFF;
+  font-size: var(--font-15);
+  font-weight: 800;
+  color: #FD6931;
 }
 
+.buy-now-btn,
 .hot-deal-add {
-  background-color: var(--primary);
+  background: linear-gradient(135deg, #FD6931 0%, #FF8A50 100%);
   border: none;
   color: #FFFFFF;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 9999px;
-  font-size: var(--font-12);
-  font-weight: 700;
+  font-size: var(--font-13);
+  font-weight: 800;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 6px 18px -2px rgba(253, 105, 49, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  min-height: 42px;
 }
 
+.buy-now-btn:hover,
 .hot-deal-add:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(253, 105, 49, 0.65), inset 0 1px 1px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px) scale(1.02);
 }
 
+.buy-now-btn:active,
 .hot-deal-add:active {
-  transform: scale(0.93);
+  transform: scale(0.94);
+  box-shadow: 0 2px 8px rgba(253, 105, 49, 0.35);
 }
 
 /* ─── Floating Island Glass Dock (Fully Rounded Pill Sides) ─── */
@@ -753,13 +786,14 @@ body {
   right: 12px;
   max-width: 480px;
   margin: 0 auto;
-  height: 64px;
-  background: rgba(16, 16, 22, 0.84);
-  backdrop-filter: blur(28px) saturate(200%);
-  -webkit-backdrop-filter: blur(28px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  height: 66px;
+  background: rgba(14, 14, 20, 0.84);
+  backdrop-filter: blur(32px) saturate(210%);
+  -webkit-backdrop-filter: blur(32px) saturate(210%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 9999px;
-  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -793,9 +827,10 @@ body {
 
 .dock-tab.active {
   color: #FD6931;
-  background: linear-gradient(135deg, rgba(253, 105, 49, 0.25), rgba(255, 120, 60, 0.1));
-  border: 1px solid rgba(253, 105, 49, 0.5);
-  box-shadow: 0 4px 14px rgba(253, 105, 49, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, rgba(253, 105, 49, 0.3) 0%, rgba(255, 120, 60, 0.12) 100%);
+  border: 1px solid rgba(253, 105, 49, 0.6);
+  border-top: 1px solid rgba(255, 200, 180, 0.7);
+  box-shadow: 0 4px 18px rgba(253, 105, 49, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.35);
   border-radius: 9999px;
 }
 
@@ -1457,19 +1492,31 @@ html, body, .home-content, .checkout-screen {
 .checkout-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background-color: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid var(--border-subtle);
+  gap: 14px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 21, 28, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.26);
+  box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.checkout-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(253, 105, 49, 0.3);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55), 0 0 18px rgba(253, 105, 49, 0.12);
 }
 
 .item-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
+  width: 68px;
+  height: 68px;
+  border-radius: 16px;
   object-fit: cover;
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .item-details {
@@ -1893,40 +1940,58 @@ html, body, .home-content, .checkout-screen {
 
 /* ─── Slot picker card ─── */
 .slot-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-faint);
-  border-radius: 16px;
-  padding: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 21, 28, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
 }
 
 /* ─── Floating Cart Pill ─── */
 .floating-cart-pill {
-  background: linear-gradient(135deg, #1F1F1F 0%, var(--bg-dark) 100%);
-  border: 1px solid rgba(253, 105, 49, 0.4);
-  border-radius: 20px;
+  background: linear-gradient(135deg, #FD6931 0%, #EA580C 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
   color: white;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(253, 105, 49, 0.25);
+  box-shadow: 0 12px 35px rgba(253, 105, 49, 0.45), 0 0 25px rgba(253, 105, 49, 0.25);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-cart-pill:active {
+  transform: scale(0.97);
 }
 
 /* ─── General card ─── */
 .delivo-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-faint);
-  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 21, 28, 0.8);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 22px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.25s ease;
 }
 
 .delivo-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  border-color: rgba(253, 105, 49, 0.35);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.65), 0 0 24px rgba(253, 105, 49, 0.18);
 }
 
 .delivo-card-static {
-  background: var(--bg-card);
-  border: 1px solid var(--border-faint);
-  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 21, 28, 0.8);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 22px;
   overflow: hidden;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
 }
 
 /* ─── Chip (Categories fallback for Tailwind usage) ─── */
@@ -2105,18 +2170,18 @@ html, body, .home-content, .checkout-screen {
    ═══════════════════════════════════════════════════ */
 
 @keyframes tabFadeSlide {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(14px) scale(0.99);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .page-transition {
-  animation: tabFadeSlide 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: tabFadeSlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -2135,49 +2200,172 @@ html, body, .home-content, .checkout-screen {
   scrollbar-width: none;
 }
 
+/* ─── Authentic Frosted Glass Card Architecture ─── */
+.delivo-card-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 21, 28, 0.76);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.26); /* Specular top highlight */
+  border-radius: 26px;
+  box-shadow: 0 14px 36px -6px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.delivo-card-glass:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 18px 42px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.24);
+}
+
+.delivo-card-glass:active {
+  transform: scale(0.985);
+}
+
+/* ─── Ergonomic Delivo Action Buttons ─── */
+.delivo-btn-primary {
+  background: linear-gradient(135deg, #FD6931 0%, #FF7E47 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 13.5px;
+  padding: 12px 22px;
+  border-radius: 9999px;
+  border: none;
+  box-shadow: 0 6px 20px -2px rgba(253, 105, 49, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  min-height: 46px;
+}
+
+.delivo-btn-primary:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 10px rgba(253, 105, 49, 0.35);
+}
+
+.delivo-btn-success {
+  background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 13.5px;
+  padding: 12px 22px;
+  border-radius: 9999px;
+  border: none;
+  box-shadow: 0 6px 20px -2px rgba(16, 185, 129, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  min-height: 46px;
+}
+
+.delivo-btn-success:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+.delivo-btn-indigo {
+  background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 13.5px;
+  padding: 12px 22px;
+  border-radius: 9999px;
+  border: none;
+  box-shadow: 0 6px 20px -2px rgba(99, 102, 241, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  min-height: 46px;
+}
+
+.delivo-btn-indigo:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+}
+
+.delivo-btn-glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 11px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 44px;
+}
+
+.delivo-btn-glass:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.14);
+}
+
 /* Tactile Delivo Glass Badges & Chips */
 .portal-badge-live {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   color: #FFFFFF;
   font-size: 10.5px;
   font-weight: 800;
   padding: 3px 10px;
   border-radius: 9999px;
   letter-spacing: 0.03em;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .portal-kpi-glass {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.24);
   border: 1px solid rgba(255, 255, 255, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 18px;
-  padding: 6px 8px;
+  padding: 7px 8px;
   text-align: center;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition: transform 0.2s ease;
 }
 
 .portal-kpi-glass:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.32);
 }
 
 .portal-kpi-label {
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 
 .portal-kpi-val {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 900;
   color: #FFFFFF;
   line-height: 1.1;
