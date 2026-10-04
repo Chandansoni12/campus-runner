@@ -437,6 +437,43 @@ export const VendorView: React.FC = () => {
                           ))}
                         </div>
 
+                        {/* Courier Status Box */}
+                        {!isIncoming && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '10px 14px',
+                              borderRadius: '16px',
+                              background: order.runnerName ? 'rgba(16, 185, 129, 0.12)' : 'rgba(253, 105, 49, 0.12)',
+                              border: order.runnerName ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(253, 105, 49, 0.35)',
+                              fontSize: '12px',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontSize: '16px' }}>🚴</span>
+                              <div>
+                                <div style={{ fontSize: '9px', textTransform: 'uppercase', fontWeight: 800, color: order.runnerName ? '#34D399' : '#FED7AA' }}>
+                                  Courier Handover Status
+                                </div>
+                                <div style={{ fontWeight: 800, color: '#FFFFFF', marginTop: '1px', fontSize: '13px' }}>
+                                  {order.runnerName ? `${order.runnerName} (${order.runnerPhone || 'On duty'})` : 'Dispatched: Waiting for runner to claim...'}
+                                </div>
+                              </div>
+                            </div>
+                            {!order.runnerName ? (
+                              <span style={{ fontSize: '11px', color: '#FD6931', fontWeight: 800 }} className="animate-pulse">
+                                Dispatched
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: '11px', color: '#34D399', fontWeight: 800 }}>
+                                Assigned ✓
+                              </span>
+                            )}
+                          </div>
+                        )}
+
                         {/* Action Buttons (Ergonomic 48px Height) */}
                         <div style={{ paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
                           {isIncoming && (

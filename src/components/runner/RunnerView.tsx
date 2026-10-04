@@ -18,6 +18,10 @@ import {
   Zap,
   Sparkles,
   AlertCircle,
+  MapPin,
+  Store,
+  ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const RunnerView: React.FC = () => {
@@ -30,14 +34,16 @@ export const RunnerView: React.FC = () => {
     logout,
     runnerPickUpOrder,
     runnerDeliverOrder,
+    runnerClaimOrder,
   } = useAppStore();
 
   const [otpModalOrderId, setOtpModalOrderId] = useState<string | null>(null);
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpError, setOtpError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<'mission' | 'completed'>('mission');
+  const [activeTab, setActiveTab] = useState<'mission' | 'available' | 'completed'>('mission');
   const [missionPage, setMissionPage] = useState(0);
+  const [availablePage, setAvailablePage] = useState(0);
   const [completedPage, setCompletedPage] = useState(0);
 
   const runners = users.filter((u) => u.role === 'RUNNER');
@@ -46,7 +52,7 @@ export const RunnerView: React.FC = () => {
   // Orders assigned to this runner
   const runnerOrders = orders.filter((o) => o.runnerId === activeRunner.id);
 
-  // Active batch (orders not yet delivered)
+  // Active batch (orders assigned to runner and not yet delivered)
   const activeBatch = runnerOrders.filter(
     (o) =>
       o.status === OrderStatus.READY ||
@@ -54,6 +60,15 @@ export const RunnerView: React.FC = () => {
       o.status === OrderStatus.PREPARING ||
       o.status === OrderStatus.ACCEPTED ||
       o.status === OrderStatus.PLACED
+  );
+
+  // Available orders pool (confirmed by kitchen vendor, waiting for courier)
+  const availableOrders = orders.filter(
+    (o) =>
+      !o.runnerId &&
+      (o.status === OrderStatus.PREPARING ||
+        o.status === OrderStatus.READY ||
+        o.status === OrderStatus.ACCEPTED)
   );
 
   // Completed deliveries today
@@ -64,6 +79,20 @@ export const RunnerView: React.FC = () => {
   const runnerEarnings = calculateRunnerPayout(totalDeliveriesCount);
   const baseEarnings = totalDeliveriesCount * 18;
   const batchBonus = totalDeliveriesCount >= 6 ? 25 : 0;
+
+  const handleClaimOrder = (orderId: string) => {
+    const res = runnerClaimOrder(orderId, activeRunner.id);
+    if (res.success) {
+      confetti({
+        particleCount: 50,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#FD6931', '#10B981', '#6366F1'],
+      });
+      setActiveTab('mission');
+      setMissionPage(0);
+    }
+  };
 
   const handleOpenOtpModal = (orderId: string) => {
     setOtpModalOrderId(orderId);
@@ -83,8 +112,8 @@ export const RunnerView: React.FC = () => {
     const res = runnerDeliverOrder(otpModalOrderId, enteredOtp.trim());
     if (res.success) {
       confetti({
-        particleCount: 65,
-        spread: 75,
+        particleCount: 75,
+        spread: 80,
         origin: { y: 0.65 },
         colors: ['#FD6931', '#10B981', '#6366F1', '#F59E0B'],
       });
@@ -97,12 +126,13 @@ export const RunnerView: React.FC = () => {
   };
 
   const MISSION_PAGE_SIZE = 4;
+  const AVAILABLE_PAGE_SIZE = 4;
   const COMPLETED_PAGE_SIZE = 5;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
       
-      {/* ─── 1. SIGNATURE DELIVO COMPACT ORANGE HEADER ─── */}
+      {/* ─── 1. COMPACT ORANGE HEADER ─── */}
       <header className="home-header">
         <div className="header-content">
           <div className="header-top">
@@ -129,6 +159,7 @@ export const RunnerView: React.FC = () => {
                   onChange={(e) => {
                     setActiveRunnerId(e.target.value);
                     setMissionPage(0);
+                    setAvailablePage(0);
                     setCompletedPage(0);
                   }}
                   style={{
@@ -208,28 +239,89 @@ export const RunnerView: React.FC = () => {
             </div>
           </div>
 
-          {/* Compact 3-KPI Row (Obsidian Glass Chips) */}
+          {/* Compact 3-KPI Row */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginTop: '8px' }}>
             <div className="portal-kpi-glass">
               <div className="portal-kpi-label">Shift Earnings</div>
               <div className="portal-kpi-val" style={{ color: '#6EE7B7' }}>{formatRupees(runnerEarnings)}</div>
             </div>
-            <div className="portal-kpi-glass">
-              <div className="portal-kpi-label">Delivered</div>
-              <div className="portal-kpi-val">{completedOrders.length} drops</div>
+
+            <div
+              className="portal-kpi-glass cursor-pointer"
+              onClick={() => setActiveTab('mission')}
+              style={{
+                background: activeTab === 'mission' ? 'rgba(99, 102, 241, 0.35)' : 'rgba(255, 255, 255, 0.1)',
+                borderColor: activeTab === 'mission' ? 'rgba(99, 102, 241, 0.6)' : 'rgba(255, 255, 255, 0.12)',
+              }}
+            >
+              <div className="portal-kpi-label">My Run</div>
+              <div className="portal-kpi-val">{activeBatch.length} missions</div>
             </div>
-            <div className="portal-kpi-glass" style={{ background: 'rgba(253, 105, 49, 0.28)', borderColor: 'rgba(253, 105, 49, 0.5)' }}>
-              <div className="portal-kpi-label" style={{ color: '#FED7AA' }}>Active Run</div>
-              <div className="portal-kpi-val" style={{ color: '#FFFFFF' }}>{activeBatch.length} missions</div>
+
+            <div
+              className="portal-kpi-glass cursor-pointer"
+              onClick={() => setActiveTab('available')}
+              style={{
+                background: availableOrders.length > 0 ? 'rgba(253, 105, 49, 0.35)' : 'rgba(255, 255, 255, 0.1)',
+                borderColor: availableOrders.length > 0 ? 'rgba(253, 105, 49, 0.6)' : 'rgba(255, 255, 255, 0.12)',
+              }}
+            >
+              <div className="portal-kpi-label" style={{ color: availableOrders.length > 0 ? '#FED7AA' : '#CED2E6' }}>
+                Available
+              </div>
+              <div className="portal-kpi-val" style={{ color: availableOrders.length > 0 ? '#FD6931' : '#FFFFFF' }}>
+                {availableOrders.length} pools
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* ─── 2. MAIN SCROLLABLE CONTENT WITH SILKY PAGE TRANSITION ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-28">
+      {/* ─── 2. MAIN SCROLLABLE CONTENT WITH GENEROUS SPACING ─── */}
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-36">
         
-        {/* TAB 1: ACTIVE MISSIONS */}
+        {/* INCOMING BROADCAST BANNER IF AVAILABLE ORDERS EXIST */}
+        {availableOrders.length > 0 && activeTab !== 'available' && (
+          <div
+            onClick={() => setActiveTab('available')}
+            className="delivo-card-glass mb-4 p-4 rounded-2xl cursor-pointer flex items-center justify-between transition-all hover:scale-[1.01] active:scale-[0.99]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(253, 105, 49, 0.25) 0%, rgba(20, 21, 28, 0.9) 100%)',
+              borderColor: 'rgba(253, 105, 49, 0.55)',
+              borderTopColor: 'rgba(255, 180, 150, 0.7)',
+              boxShadow: '0 8px 24px rgba(253, 105, 49, 0.25)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-xl bg-orange-500/20 text-[#FD6931] flex items-center justify-center border border-orange-500/40 shrink-0"
+              >
+                <Zap size={20} className="animate-pulse" />
+              </div>
+              <div>
+                <div className="text-sm font-extrabold text-white flex items-center gap-2">
+                  <span>{availableOrders.length} New Delivery Available!</span>
+                  <span className="text-[10px] bg-[#FD6931] text-white font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
+                    Ready to Claim
+                  </span>
+                </div>
+                <div className="text-xs text-neutral-300 mt-0.5">
+                  Vendor confirmed order! Tap to accept and start delivery (+₹18).
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="px-3.5 py-1.5 rounded-xl bg-[#FD6931] hover:bg-[#E04B28] text-white text-xs font-bold shrink-0 flex items-center gap-1 shadow-md"
+            >
+              <span>Take Order</span>
+              <ArrowRight size={13} />
+            </button>
+          </div>
+        )}
+
+        {/* ─── TAB 1: ACTIVE MISSIONS (MY RUN) ─── */}
         {activeTab === 'mission' && (
           <div className="page-transition">
             {/* Top Mission Briefing Banner */}
@@ -249,10 +341,10 @@ export const RunnerView: React.FC = () => {
               <div>
                 <h2 style={{ fontSize: '16.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Navigation size={18} color="#818CF8" />
-                  <span>Courier Missions</span>
+                  <span>My Active Run</span>
                 </h2>
                 <p style={{ fontSize: '12px', color: '#9CA3AF' }}>
-                  Stall pickups and student hostel drops.
+                  Collect from stall and hand over to student with OTP.
                 </p>
               </div>
 
@@ -290,7 +382,7 @@ export const RunnerView: React.FC = () => {
               <div
                 className="delivo-card-glass"
                 style={{
-                  padding: '52px 24px',
+                  padding: '48px 24px',
                   textAlign: 'center',
                   display: 'flex',
                   flexDirection: 'column',
@@ -316,11 +408,25 @@ export const RunnerView: React.FC = () => {
                   <Package size={34} />
                 </div>
                 <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
-                  No Active Missions
+                  No Active Missions Claimed
                 </h3>
-                <p style={{ fontSize: '13px', color: '#9CA3AF', maxWidth: '280px', lineHeight: 1.5 }}>
-                  You're currently idle and ready. When campus admin or the system dispatches orders, they will appear here.
+                <p style={{ fontSize: '13px', color: '#9CA3AF', maxWidth: '290px', lineHeight: 1.5, marginBottom: '18px' }}>
+                  {availableOrders.length > 0
+                    ? `There are ${availableOrders.length} order(s) confirmed by vendors ready to be picked up!`
+                    : 'When campus stall owners accept student orders, they appear in Available Orders.'}
                 </p>
+
+                {availableOrders.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('available')}
+                    className="delivo-btn-primary"
+                    style={{ padding: '12px 24px', fontSize: '13.5px' }}
+                  >
+                    <Zap size={16} />
+                    <span>View & Claim Available Orders ({availableOrders.length})</span>
+                  </button>
+                )}
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -339,7 +445,7 @@ export const RunnerView: React.FC = () => {
                         key={order.id}
                         className="delivo-card-glass"
                         style={{
-                          padding: '18px',
+                          padding: '20px',
                           display: 'flex',
                           flexDirection: 'column',
                           gap: '16px',
@@ -347,7 +453,7 @@ export const RunnerView: React.FC = () => {
                             ? '1.5px solid rgba(253, 105, 49, 0.7)'
                             : isOutForDelivery
                             ? '1.5px solid rgba(99, 102, 241, 0.7)'
-                            : '1px solid rgba(255, 255, 255, 0.12)',
+                            : '1px solid rgba(255, 255, 255, 0.14)',
                           boxShadow: isReadyForPickup
                             ? '0 12px 32px rgba(253, 105, 49, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25)'
                             : isOutForDelivery
@@ -366,35 +472,35 @@ export const RunnerView: React.FC = () => {
                           <SlotBadge slot={order.slot} size="sm" />
                         </div>
 
-                        {/* Route Timeline */}
+                        {/* Route Timeline with comfortable spacing */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingLeft: '4px' }}>
                           
                           {/* Step 1: Pickup Point */}
                           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                             <div
                               style={{
-                                width: '24px',
-                                height: '24px',
+                                width: '28px',
+                                height: '28px',
                                 borderRadius: '50%',
                                 background: isReadyForPickup || isOutForDelivery ? '#FD6931' : '#374151',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 color: '#FFFFFF',
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 fontWeight: 900,
                                 flexShrink: 0,
                                 marginTop: '2px',
-                                boxShadow: isReadyForPickup ? '0 0 12px rgba(253, 105, 49, 0.7)' : 'none',
+                                boxShadow: isReadyForPickup ? '0 0 14px rgba(253, 105, 49, 0.7)' : 'none',
                               }}
                             >
                               1
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                                Pickup From Stall
+                              <div style={{ fontSize: '10px', fontWeight: 800, color: '#FD6931', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                Stall Pickup Counter
                               </div>
-                              <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
+                              <div style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
                                 {order.vendorName}
                               </div>
                               <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
@@ -404,38 +510,38 @@ export const RunnerView: React.FC = () => {
                           </div>
 
                           {/* Connector Line */}
-                          <div style={{ width: '2px', height: '16px', background: 'rgba(255, 255, 255, 0.14)', marginLeft: '11px' }} />
+                          <div style={{ width: '2px', height: '18px', background: 'rgba(255, 255, 255, 0.16)', marginLeft: '13px' }} />
 
                           {/* Step 2: Dropoff Point */}
                           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                             <div
                               style={{
-                                width: '24px',
-                                height: '24px',
+                                width: '28px',
+                                height: '28px',
                                 borderRadius: '50%',
                                 background: isOutForDelivery ? '#6366F1' : '#374151',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 color: '#FFFFFF',
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 fontWeight: 900,
                                 flexShrink: 0,
                                 marginTop: '2px',
-                                boxShadow: isOutForDelivery ? '0 0 12px rgba(99, 102, 241, 0.7)' : 'none',
+                                boxShadow: isOutForDelivery ? '0 0 14px rgba(99, 102, 241, 0.7)' : 'none',
                               }}
                             >
                               2
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: '9.5px', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                                Deliver To Student
+                              <div style={{ fontSize: '10px', fontWeight: 800, color: '#818CF8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                Hostel Gate Drop
                               </div>
-                              <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
+                              <div style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF', marginTop: '1px' }}>
                                 {order.hostelBlock} • <span style={{ color: '#FD6931' }}>Room {order.roomNumber}</span>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
-                                <span style={{ fontSize: '12.5px', color: '#E5E7EB', fontWeight: 700 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px' }}>
+                                <span style={{ fontSize: '13px', color: '#E5E7EB', fontWeight: 700 }}>
                                   {order.studentName}
                                 </span>
                                 {order.studentPhone && (
@@ -443,14 +549,15 @@ export const RunnerView: React.FC = () => {
                                     href={`tel:${order.studentPhone}`}
                                     className="delivo-btn-glass"
                                     style={{
-                                      padding: '4px 12px',
-                                      minHeight: '30px',
-                                      fontSize: '11px',
+                                      padding: '5px 14px',
+                                      minHeight: '32px',
+                                      fontSize: '11.5px',
                                       fontWeight: 800,
                                       textDecoration: 'none',
+                                      gap: '4px',
                                     }}
                                   >
-                                    <Phone size={11} />
+                                    <Phone size={12} />
                                     <span>Call</span>
                                   </a>
                                 )}
@@ -461,28 +568,38 @@ export const RunnerView: React.FC = () => {
                         </div>
 
                         {/* Action Buttons (Ergonomic 50px Height) */}
-                        <div style={{ paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                        <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
                           {isKitchenCooking && (
-                            <div
-                              style={{
-                                width: '100%',
-                                minHeight: '48px',
-                                padding: '12px',
-                                borderRadius: '9999px',
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                color: '#9CA3AF',
-                                fontSize: '13px',
-                                fontWeight: 700,
-                                textAlign: 'center',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                              }}
-                            >
-                              <Clock size={16} />
-                              <span>Kitchen is preparing items...</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              <div
+                                style={{
+                                  width: '100%',
+                                  padding: '10px 14px',
+                                  borderRadius: '16px',
+                                  background: 'rgba(255, 255, 255, 0.05)',
+                                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                                  color: '#9CA3AF',
+                                  fontSize: '12px',
+                                  fontWeight: 700,
+                                  textAlign: 'center',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '8px',
+                                }}
+                              >
+                                <Clock size={15} />
+                                <span>Kitchen is preparing items... Head to stall counter</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => runnerPickUpOrder(order.id)}
+                                className="delivo-btn-primary"
+                                style={{ width: '100%', minHeight: '48px', fontSize: '13.5px' }}
+                              >
+                                <Package size={17} />
+                                <span>Confirm Stall Pickup</span>
+                              </button>
                             </div>
                           )}
 
@@ -494,7 +611,7 @@ export const RunnerView: React.FC = () => {
                               style={{ width: '100%', minHeight: '50px', fontSize: '14px' }}
                             >
                               <Package size={18} />
-                              <span>Confirm Stall Pickup</span>
+                              <span>Pick Up Order from Stall</span>
                             </button>
                           )}
 
@@ -506,7 +623,7 @@ export const RunnerView: React.FC = () => {
                               style={{ width: '100%', minHeight: '50px', fontSize: '14px' }}
                             >
                               <KeyRound size={18} />
-                              <span>Handover & Enter OTP</span>
+                              <span>Deliver to Student & Verify OTP (+₹18)</span>
                             </button>
                           )}
                         </div>
@@ -561,7 +678,222 @@ export const RunnerView: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 2: COMPLETED DROPS LOG */}
+        {/* ─── TAB 2: AVAILABLE DELIVERIES (CLAIM ORDERS) ─── */}
+        {activeTab === 'available' && (
+          <div className="page-transition">
+            {/* Briefing Banner */}
+            <div
+              className="delivo-card-glass"
+              style={{
+                padding: '18px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'linear-gradient(135deg, rgba(253, 105, 49, 0.22) 0%, rgba(20, 21, 28, 0.8) 100%)',
+                borderColor: 'rgba(253, 105, 49, 0.45)',
+                borderTopColor: 'rgba(255, 180, 150, 0.7)',
+              }}
+            >
+              <div>
+                <h2 style={{ fontSize: '16.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Zap size={18} color="#FD6931" />
+                  <span>Available Delivery Pool</span>
+                </h2>
+                <p style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                  Orders confirmed by stalls. Claim to deliver and earn ₹18/drop.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(253, 105, 49, 0.2)',
+                  border: '1px solid rgba(253, 105, 49, 0.4)',
+                  padding: '6px 12px',
+                  borderRadius: '9999px',
+                  color: '#FD6931',
+                  fontWeight: 800,
+                  fontSize: '12px',
+                }}
+              >
+                {availableOrders.length} Ready
+              </div>
+            </div>
+
+            {/* List of Available Orders */}
+            {availableOrders.length === 0 ? (
+              <div
+                className="delivo-card-glass"
+                style={{
+                  padding: '52px 24px',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: '68px',
+                    height: '68px',
+                    borderRadius: '50%',
+                    background: 'rgba(253, 105, 49, 0.15)',
+                    border: '1px solid rgba(253, 105, 49, 0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FD6931',
+                    marginBottom: '16px',
+                    boxShadow: '0 0 24px rgba(253, 105, 49, 0.2)',
+                  }}
+                >
+                  <Sparkles size={34} />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
+                  All Caught Up!
+                </h3>
+                <p style={{ fontSize: '13px', color: '#9CA3AF', maxWidth: '280px', lineHeight: 1.5 }}>
+                  No unassigned orders right now. When students order and stalls confirm, they will appear here instantly.
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {availableOrders
+                  .slice(availablePage * AVAILABLE_PAGE_SIZE, (availablePage + 1) * AVAILABLE_PAGE_SIZE)
+                  .map((order) => (
+                    <div
+                      key={order.id}
+                      className="delivo-card-glass"
+                      style={{
+                        padding: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '14px',
+                        border: '1.5px solid rgba(253, 105, 49, 0.4)',
+                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+                      }}
+                    >
+                      {/* Top Header */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontFamily: 'monospace', fontSize: '15px', fontWeight: 900, color: '#FFFFFF' }}>
+                            {order.id}
+                          </span>
+                          <OrderStatusBadge status={order.status} size="sm" />
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <SlotBadge slot={order.slot} size="sm" />
+                          <span
+                            style={{
+                              background: 'rgba(16, 185, 129, 0.2)',
+                              color: '#34D399',
+                              border: '1px solid rgba(16, 185, 129, 0.4)',
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
+                            }}
+                          >
+                            +₹18.00 Payout
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Pickup & Drop Details */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div
+                          style={{
+                            background: 'rgba(253, 105, 49, 0.08)',
+                            border: '1px solid rgba(253, 105, 49, 0.25)',
+                            borderRadius: '16px',
+                            padding: '10px 12px',
+                          }}
+                        >
+                          <div style={{ fontSize: '9px', fontWeight: 800, color: '#FD6931', textTransform: 'uppercase' }}>
+                            Pickup Stall
+                          </div>
+                          <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px' }}>
+                            {order.vendorName}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#9CA3AF' }}>
+                            {order.items.length} items • ₹{order.totalAmount}
+                          </div>
+                        </div>
+
+                        <div
+                          style={{
+                            background: 'rgba(99, 102, 241, 0.08)',
+                            border: '1px solid rgba(99, 102, 241, 0.25)',
+                            borderRadius: '16px',
+                            padding: '10px 12px',
+                          }}
+                        >
+                          <div style={{ fontSize: '9px', fontWeight: 800, color: '#818CF8', textTransform: 'uppercase' }}>
+                            Drop Destination
+                          </div>
+                          <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px' }}>
+                            {order.hostelBlock.split(' ')[0]} Rm {order.roomNumber}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#9CA3AF' }}>
+                            Customer: {order.studentName}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Items Summary */}
+                      <div style={{ fontSize: '12px', color: '#D1D5DB', padding: '4px 0' }}>
+                        <span style={{ color: '#9CA3AF' }}>Items: </span>
+                        {order.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')}
+                      </div>
+
+                      {/* Claim Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleClaimOrder(order.id)}
+                        className="delivo-btn-primary"
+                        style={{ width: '100%', minHeight: '48px', fontSize: '14px', gap: '8px' }}
+                      >
+                        <Bike size={18} />
+                        <span>Take Order & Start Delivery (+₹18)</span>
+                      </button>
+                    </div>
+                  ))}
+
+                {/* Pagination */}
+                {availableOrders.length > AVAILABLE_PAGE_SIZE && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setAvailablePage((p) => Math.max(0, p - 1))}
+                      disabled={availablePage === 0}
+                      className="delivo-btn-glass"
+                      style={{ padding: '8px 18px', fontSize: '12px' }}
+                    >
+                      Prev
+                    </button>
+                    <div style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9CA3AF' }}>
+                      Page {availablePage + 1} / {Math.ceil(availableOrders.length / AVAILABLE_PAGE_SIZE)}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setAvailablePage((p) => Math.min(Math.ceil(availableOrders.length / AVAILABLE_PAGE_SIZE) - 1, p + 1))
+                      }
+                      disabled={availablePage >= Math.ceil(availableOrders.length / AVAILABLE_PAGE_SIZE) - 1}
+                      className="delivo-btn-primary"
+                      style={{ padding: '8px 18px', fontSize: '12px' }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ─── TAB 3: COMPLETED DROPS LOG ─── */}
         {activeTab === 'completed' && (
           <div className="page-transition">
             {/* Shift Earnings Breakdown Card */}
@@ -650,7 +982,7 @@ export const RunnerView: React.FC = () => {
                       key={ord.id}
                       className="delivo-card-glass"
                       style={{
-                        padding: '14px 18px',
+                        padding: '16px 20px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
@@ -737,17 +1069,29 @@ export const RunnerView: React.FC = () => {
         )}
       </div>
 
-      {/* ─── 3. FLOATING ISLAND GLASS DOCK WITH ACTIVE CAPSULE ─── */}
-      <nav className="floating-glass-dock">
+      {/* ─── 3. FLOATING ISLAND GLASS DOCK WITH 3 TABS ─── */}
+      <nav className="floating-glass-dock" style={{ zIndex: 40 }}>
         <button
           type="button"
           onClick={() => setActiveTab('mission')}
           className={`dock-tab ${activeTab === 'mission' ? 'active' : ''}`}
         >
           <Navigation size={20} />
-          <span className="dock-tab-label">Missions</span>
+          <span className="dock-tab-label">My Run</span>
           {activeBatch.length > 0 && (
             <span className="dock-badge-count">{activeBatch.length}</span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('available')}
+          className={`dock-tab ${activeTab === 'available' ? 'active' : ''}`}
+        >
+          <Zap size={20} />
+          <span className="dock-tab-label">Available</span>
+          {availableOrders.length > 0 && (
+            <span className="dock-badge-count" style={{ background: '#FD6931' }}>{availableOrders.length}</span>
           )}
         </button>
 

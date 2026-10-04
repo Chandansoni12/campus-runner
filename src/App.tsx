@@ -11,6 +11,7 @@ import { VendorView } from './components/vendor/VendorView';
 import { RunnerView } from './components/runner/RunnerView';
 import { AdminView } from './components/admin/AdminView';
 import { LoginView } from './components/auth/LoginView';
+import { TopPortalNav } from './components/common/TopPortalNav';
 
 export default function App() {
   const { currentRole, isAuthenticated } = useAppStore();
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <div className="home-screen-wrapper">
       <div className="home-screen">
+        <TopPortalNav />
         {currentRole === Role.STUDENT && <StudentView />}
         {currentRole === Role.VENDOR && <VendorView />}
         {currentRole === Role.RUNNER && <RunnerView />}

@@ -34,6 +34,7 @@ import {
   isOrderingOpen,
   generateHandoverOtp,
 } from './business-logic';
+import { useOrderTrackingStore } from './orderTrackingStore';
 
 interface AppState {
   // Current session
@@ -94,6 +95,7 @@ interface AppState {
   updateVendorCommission: (vendorId: string, commissionPct: number) => void;
 
   // Runner & Dispatch Actions
+  runnerClaimOrder: (orderId: string, runnerId?: string) => { success: boolean; error?: string };
   assignOrderToRunner: (orderId: string, runnerId: string) => void;
   batchAssignOrders: (orderIds: string[], runnerId: string) => void;
   runnerPickUpOrder: (orderId: string) => void;
@@ -331,55 +333,89 @@ export const useAppStore = create<AppState>()(
           cart: [],
           activeStudentOrderId: orderId,
           toastMessage: {
-            message: `Order ${orderId} placed successfully! Sent to ${vendor.name}.`,
+            message: `Order ${orderId} placed successfully! Sent to ${vendor.name} kitchen.`,
             type: 'success',
           },
         });
 
+        useOrderTrackingStore.getState().syncWithOrder(newOrder);
         return { success: true, orderId };
       },
 
       acceptOrder: (orderId) => {
-        set({
-          orders: get().orders.map((o) =>
-            o.id === orderId
-              ? {
-                  ...o,
-                  status: OrderStatus.PREPARING,
-                }
-              : o
-          ),
-          toastMessage: { message: `Order ${orderId} accepted and preparing in kitchen!`, type: 'info' },
+        let updatedOrder: Order | undefined;
+        const updatedOrders = get().orders.map((o) => {
+          if (o.id === orderId) {
+            updatedOrder = {
+              ...o,
+              status: OrderStatus.PREPARING,
+            };
+            return updatedOrder;
+          }
+          return o;
         });
+
+        set({
+          orders: updatedOrders,
+          toastMessage: {
+            message: `🔔 Order ${orderId} confirmed! Kitchen is cooking. Couriers notified for delivery.`,
+            type: 'info',
+          },
+        });
+
+        if (updatedOrder) {
+          useOrderTrackingStore.getState().syncWithOrder(updatedOrder);
+        }
       },
 
       rejectOrder: (orderId, reason = 'Kitchen capacity reached / items sold out') => {
+        let updatedOrder: Order | undefined;
+        const updatedOrders = get().orders.map((o) => {
+          if (o.id === orderId) {
+            updatedOrder = {
+              ...o,
+              status: OrderStatus.CANCELLED,
+              rejectionReason: reason,
+            };
+            return updatedOrder;
+          }
+          return o;
+        });
+
         set({
-          orders: get().orders.map((o) =>
-            o.id === orderId
-              ? {
-                  ...o,
-                  status: OrderStatus.CANCELLED,
-                  rejectionReason: reason,
-                }
-              : o
-          ),
+          orders: updatedOrders,
           toastMessage: { message: `Order ${orderId} rejected: ${reason}`, type: 'error' },
         });
+
+        if (updatedOrder) {
+          useOrderTrackingStore.getState().syncWithOrder(updatedOrder);
+        }
       },
 
       markOrderReady: (orderId) => {
-        set({
-          orders: get().orders.map((o) =>
-            o.id === orderId
-              ? {
-                  ...o,
-                  status: OrderStatus.READY,
-                }
-              : o
-          ),
-          toastMessage: { message: `Order ${orderId} marked ready for runner pickup!`, type: 'success' },
+        let updatedOrder: Order | undefined;
+        const updatedOrders = get().orders.map((o) => {
+          if (o.id === orderId) {
+            updatedOrder = {
+              ...o,
+              status: OrderStatus.READY,
+            };
+            return updatedOrder;
+          }
+          return o;
         });
+
+        set({
+          orders: updatedOrders,
+          toastMessage: {
+            message: `📦 Order ${orderId} marked ready for runner pickup at stall!`,
+            type: 'success',
+          },
+        });
+
+        if (updatedOrder) {
+          useOrderTrackingStore.getState().syncWithOrder(updatedOrder);
+        }
       },
 
       toggleMenuItemStock: (vendorId, menuItemId) => {
@@ -419,27 +455,75 @@ export const useAppStore = create<AppState>()(
         });
       },
 
+      runnerClaimOrder: (orderId, runnerId) => {
+        const { orders, users, activeRunnerId } = get();
+        const targetRunnerId = runnerId || activeRunnerId;
+        const runner = users.find((u) => u.id === targetRunnerId) || users.find((u) => u.role === Role.RUNNER);
+        if (!runner) return { success: false, error: 'Runner profile not found.' };
+
+        const targetOrder = orders.find((o) => o.id === orderId);
+        if (!targetOrder) return { success: false, error: 'Order not found.' };
+
+        let updatedOrder: Order | undefined;
+        const updatedOrders = orders.map((o) => {
+          if (o.id === orderId) {
+            updatedOrder = {
+              ...o,
+              runnerId: runner.id,
+              runnerName: runner.name,
+              runnerPhone: runner.phone || '9876543210',
+            };
+            return updatedOrder;
+          }
+          return o;
+        });
+
+        set({
+          orders: updatedOrders,
+          toastMessage: {
+            message: `🚴 Delivery mission for Order ${orderId} accepted! Head to ${targetOrder.vendorName} to collect.`,
+            type: 'success',
+          },
+        });
+
+        if (updatedOrder) {
+          useOrderTrackingStore.getState().syncWithOrder(updatedOrder);
+        }
+
+        return { success: true };
+      },
+
       assignOrderToRunner: (orderId, runnerId) => {
         const { orders, users } = get();
         const runner = users.find((u) => u.id === runnerId);
         if (!runner) return;
 
+        let updatedOrder: Order | undefined;
+        const updatedOrders = orders.map((o) => {
+          if (o.id === orderId) {
+            updatedOrder = {
+              ...o,
+              runnerId,
+              runnerName: runner.name,
+              runnerPhone: runner.phone || '9876543210',
+              status: OrderStatus.OUT_FOR_DELIVERY,
+            };
+            return updatedOrder;
+          }
+          return o;
+        });
+
         set({
-          orders: orders.map((o) =>
-            o.id === orderId
-              ? {
-                  ...o,
-                  runnerId,
-                  runnerName: runner.name,
-                  status: OrderStatus.OUT_FOR_DELIVERY,
-                }
-              : o
-          ),
+          orders: updatedOrders,
           toastMessage: {
             message: `Order ${orderId} assigned to runner ${runner.name}.`,
             type: 'success',
           },
         });
+
+        if (updatedOrder) {
+          useOrderTrackingStore.getState().syncWithOrder(updatedOrder);
+        }
       },
 
       batchAssignOrders: (orderIds, runnerId) => {
@@ -447,17 +531,20 @@ export const useAppStore = create<AppState>()(
         const runner = users.find((u) => u.id === runnerId);
         if (!runner) return;
 
+        const updatedOrders = orders.map((o) =>
+          orderIds.includes(o.id)
+            ? {
+                ...o,
+                runnerId,
+                runnerName: runner.name,
+                runnerPhone: runner.phone || '9876543210',
+                status: o.status === OrderStatus.PLACED || o.status === OrderStatus.ACCEPTED ? OrderStatus.PREPARING : o.status,
+              }
+            : o
+        );
+
         set({
-          orders: orders.map((o) =>
-            orderIds.includes(o.id)
-              ? {
-                  ...o,
-                  runnerId,
-                  runnerName: runner.name,
-                  status: o.status === OrderStatus.PLACED || o.status === OrderStatus.ACCEPTED ? OrderStatus.PREPARING : o.status,
-                }
-              : o
-          ),
+          orders: updatedOrders,
           toastMessage: {
             message: `Batch of ${orderIds.length} orders dispatched to ${runner.name}!`,
             type: 'success',
@@ -466,18 +553,31 @@ export const useAppStore = create<AppState>()(
       },
 
       runnerPickUpOrder: (orderId) => {
-        set({
-          orders: get().orders.map((o) =>
-            o.id === orderId
-              ? {
-                  ...o,
-                  status: OrderStatus.OUT_FOR_DELIVERY,
-                  pickedUpAt: new Date().toISOString(),
-                }
-              : o
-          ),
-          toastMessage: { message: `Order ${orderId} picked up from vendor stall!`, type: 'info' },
+        let updatedOrder: Order | undefined;
+        const now = new Date().toISOString();
+        const updatedOrders = get().orders.map((o) => {
+          if (o.id === orderId) {
+            updatedOrder = {
+              ...o,
+              status: OrderStatus.OUT_FOR_DELIVERY,
+              pickedUpAt: now,
+            };
+            return updatedOrder;
+          }
+          return o;
         });
+
+        set({
+          orders: updatedOrders,
+          toastMessage: {
+            message: `🛵 Order ${orderId} picked up from stall! Out for delivery to ${updatedOrder?.hostelBlock}.`,
+            type: 'info',
+          },
+        });
+
+        if (updatedOrder) {
+          useOrderTrackingStore.getState().syncWithOrder(updatedOrder);
+        }
       },
 
       // HARD QA RULE: Order cannot reach DELIVERED without a correct OTP entry!
@@ -497,23 +597,30 @@ export const useAppStore = create<AppState>()(
         }
 
         const now = new Date().toISOString();
-        const updatedOrders = orders.map((o) =>
-          o.id === orderId
-            ? {
-                ...o,
-                status: OrderStatus.DELIVERED,
-                deliveredAt: now,
-              }
-            : o
-        );
+        let updatedOrder: Order | undefined;
+        const updatedOrders = orders.map((o) => {
+          if (o.id === orderId) {
+            updatedOrder = {
+              ...o,
+              status: OrderStatus.DELIVERED,
+              deliveredAt: now,
+            };
+            return updatedOrder;
+          }
+          return o;
+        });
 
         set({
           orders: updatedOrders,
           toastMessage: {
-            message: `Order ${orderId} verified with OTP and marked DELIVERED!`,
+            message: `🎉 Order ${orderId} verified with OTP and marked DELIVERED! Shift earnings updated.`,
             type: 'success',
           },
         });
+
+        if (updatedOrder) {
+          useOrderTrackingStore.getState().syncWithOrder(updatedOrder);
+        }
 
         return { success: true };
       },

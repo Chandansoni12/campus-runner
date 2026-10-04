@@ -864,6 +864,44 @@ export const StudentView: React.FC = () => {
                   </div>
                 )}
 
+                {/* Assigned Runner Info Card if runner has taken order */}
+                {trackedOrder.runnerName && (
+                  <div
+                    style={{
+                      background: 'rgba(16, 185, 129, 0.12)',
+                      border: '1px solid rgba(16, 185, 129, 0.35)',
+                      borderRadius: '16px',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '20px' }}>🚴</span>
+                      <div>
+                        <div style={{ fontSize: '9.5px', textTransform: 'uppercase', fontWeight: 800, color: '#34D399' }}>
+                          Assigned Courier
+                        </div>
+                        <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#FFFFFF' }}>
+                          {trackedOrder.runnerName}
+                        </div>
+                      </div>
+                    </div>
+                    {trackedOrder.runnerPhone && (
+                      <a
+                        href={`tel:${trackedOrder.runnerPhone}`}
+                        className="delivo-btn-glass"
+                        style={{ padding: '4px 12px', minHeight: '30px', fontSize: '11px', fontWeight: 800, textDecoration: 'none' }}
+                      >
+                        <Phone size={12} />
+                        <span>Call Courier</span>
+                      </a>
+                    )}
+                  </div>
+                )}
+
                 {/* Timeline Steps with connected glowing bar */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative', paddingLeft: '6px' }}>
                   {[

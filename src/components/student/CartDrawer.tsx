@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../../store';
 import { calculateDeliveryFee } from '../../business-logic';
+import { UpiQrCode } from '../common/UpiQrCode';
 import {
   X,
   Plus,
@@ -324,32 +325,54 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheck
         </div>
       </div>
 
-      {/* QR Code Modal Overlay if triggered */}
+      {/* QR Code Modal Overlay with High-Resolution Component */}
       {showQrModal && (
-        <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#161920] border border-white/15 rounded-3xl p-6 max-w-sm w-full text-center space-y-4">
-            <h3 className="text-base font-extrabold text-white">Scan UPI QR Code</h3>
-            <p className="text-xs text-slate-400">Scan with GPay, PhonePe, Paytm, or Cred UPI app</p>
-            
-            <div className="w-48 h-48 bg-white rounded-2xl p-3 mx-auto flex items-center justify-center shadow-2xl">
-              {/* Simulated QR Code Render */}
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=campusrunner@icici&pn=CampusRunnerPilot&am=${finalTotal}&cu=INR`}
-                alt="UPI QR Code"
-                className="w-full h-full rounded-lg"
-              />
+        <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#161922] border border-white/15 rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <h3 className="text-base font-extrabold text-white">Scan UPI QR Code</h3>
+              <button
+                type="button"
+                onClick={() => setShowQrModal(false)}
+                className="text-neutral-400 hover:text-white p-1 rounded-full bg-white/5"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className="text-xs font-mono text-slate-300 bg-white/5 py-2 px-3 rounded-xl border border-white/10">
-              VPA: campusrunner@icici
-            </div>
+            <p className="text-xs text-neutral-400">
+              Scan with Google Pay, PhonePe, Paytm, or BHIM app
+            </p>
 
-            <button
-              onClick={() => setShowQrModal(false)}
-              className="w-full py-2.5 rounded-xl bg-[#FF5E3A] text-white font-bold text-xs"
-            >
-              Done Scanning
-            </button>
+            <UpiQrCode
+              vpa="campusrunner@icici"
+              upiName="CampusRunner"
+              amount={finalTotal}
+              size={200}
+              showDetails={true}
+            />
+
+            <div className="pt-2 flex flex-col gap-2">
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={async () => {
+                  setShowQrModal(false);
+                  await handlePlaceOrder();
+                }}
+                className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#FF5E3A] to-[#E04B28] text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-2 active:scale-98"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>I Have Paid ₹{finalTotal} — Confirm Order</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowQrModal(false)}
+                className="w-full py-2 rounded-xl bg-white/5 text-neutral-300 text-xs font-semibold hover:bg-white/10"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
