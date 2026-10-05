@@ -253,14 +253,14 @@ export const AdminView: React.FC = () => {
             </div>
             <div className="portal-kpi-glass" style={{ background: 'rgba(16, 185, 129, 0.22)', borderColor: 'rgba(16, 185, 129, 0.45)' }}>
               <div className="portal-kpi-label" style={{ color: '#A7F3D0' }}>Runners</div>
-              <div className="portal-kpi-val" style={{ color: '#6EE7B7' }}>{studentRunners.length}</div>
+              <div className="portal-kpi-val" style={{ color: '#FFFFFF' }}>{studentRunners.length}</div>
             </div>
           </div>
         </div>
       </header>
 
       {/* ─── 2. MAIN SCROLLABLE CONTENT WITH SILKY PAGE TRANSITION ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-28">
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4" style={{ paddingBottom: '130px' }}>
         
         {/* TAB 1: EMERGENCY CONTROLS */}
         {activeTab === 'killswitch' && (
@@ -384,6 +384,7 @@ export const AdminView: React.FC = () => {
                           padding: '6px 16px',
                           minHeight: '34px',
                           fontSize: '12px',
+                          whiteSpace: 'nowrap',
                         }}
                       >
                         {isPaused ? 'Unpause' : 'Pause Zone'}

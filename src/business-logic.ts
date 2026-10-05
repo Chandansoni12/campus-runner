@@ -70,18 +70,18 @@ export const SLOT_TIMINGS: Record<SlotWindow, { label: string; deliveryTime: str
   [SlotWindow.NIGHT]: {
     label: 'Night Dinner (8:30 PM)',
     deliveryTime: '20:30',
-    orderCloseTime: '21:15', // Final night cutoff at 9:15 PM
+    orderCloseTime: '23:59', // Final night cutoff
   },
 };
 
 /**
- * Single source of truth for the 9:15pm cutoff and slot-window logic
+ * Single source of truth for the cutoff and slot-window logic
  * Called by both the UI (to hide/show slots) and checkout action (to reject late orders)
  */
 export function isOrderingOpen(
   slot?: SlotWindow,
   currentTime: Date = new Date(),
-  cutoffTime: string = '21:15'
+  cutoffTime: string = '23:59'
 ): { isOpen: boolean; reason?: string } {
   const currentHours = currentTime.getHours();
   const currentMinutes = currentTime.getMinutes();

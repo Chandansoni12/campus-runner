@@ -61,6 +61,9 @@ interface AppState {
 
   // Session / Role actions
   isAuthenticated: boolean;
+  pendingRoleSwitch: Role | null;
+  requestRoleSwitch: (role: Role) => void;
+  cancelRoleSwitch: () => void;
   loginAsRole: (role: Role) => void;
   logout: () => void;
   setRole: (role: Role) => void;
@@ -119,6 +122,7 @@ export const useAppStore = create<AppState>()(
       activeVendorId: SEED_VENDORS[0].id,
       activeRunnerId: SEED_USERS[3].id, // Vikram Singh
       isAuthenticated: false,
+      pendingRoleSwitch: null,
 
       hostels: SEED_HOSTELS,
       vendors: SEED_VENDORS,
@@ -131,6 +135,20 @@ export const useAppStore = create<AppState>()(
       selectedSlot: SlotWindow.NIGHT,
       activeStudentOrderId: INITIAL_ORDERS[0].id,
       toastMessage: null,
+
+      requestRoleSwitch: (role: Role) => {
+        set({
+          pendingRoleSwitch: role,
+          isAuthenticated: false,
+        });
+      },
+
+      cancelRoleSwitch: () => {
+        set({
+          pendingRoleSwitch: null,
+          isAuthenticated: true,
+        });
+      },
 
       setRole: (role) => {
         const state = get();
@@ -162,11 +180,11 @@ export const useAppStore = create<AppState>()(
           targetUser = state.users.find((u) => u.role === Role.ADMIN) || state.users[5];
         }
 
-        set({ currentRole: role, currentUser: targetUser, isAuthenticated: true });
+        set({ currentRole: role, currentUser: targetUser, isAuthenticated: true, pendingRoleSwitch: null });
       },
 
       logout: () => {
-        set({ isAuthenticated: false });
+        set({ isAuthenticated: false, pendingRoleSwitch: null });
       },
 
       setCurrentUser: (user) => set({ currentUser: user, currentRole: user.role }),

@@ -809,7 +809,7 @@ export const INITIAL_SETTLEMENTS: Settlement[] = [
 
 export const INITIAL_SETTINGS: CampusSettings = {
   globalOrderingPaused: false,
-  cutoffTime: '21:15', // 9:15 PM
+  cutoffTime: '23:59', // Late night demo cutoff (23:59)
   upiVpa: 'campusrunner@icici',
   upiName: 'Campus Runner Pilot',
   pausedHostelBlocks: [], // empty by default

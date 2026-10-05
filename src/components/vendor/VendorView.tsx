@@ -116,6 +116,8 @@ export const VendorView: React.FC = () => {
                     setMenuPage(0);
                   }}
                   style={{
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
                     background: 'transparent',
                     border: 'none',
                     color: '#FFFFFF',
@@ -215,7 +217,7 @@ export const VendorView: React.FC = () => {
       </header>
 
       {/* ─── 2. MAIN SCROLLABLE CONTENT WITH SILKY PAGE TRANSITION ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-28">
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4" style={{ paddingBottom: '130px' }}>
         
         {/* TAB 1: KITCHEN ORDER QUEUE */}
         {activeTab === 'queue' && (
@@ -1074,7 +1076,7 @@ export const VendorView: React.FC = () => {
           className={`dock-tab ${activeTab === 'menu' ? 'active' : ''}`}
         >
           <ChefHat size={20} />
-          <span className="dock-tab-label">Menu Stock</span>
+          <span className="dock-tab-label">Menu</span>
         </button>
 
         <button

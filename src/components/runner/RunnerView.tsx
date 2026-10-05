@@ -163,6 +163,8 @@ export const RunnerView: React.FC = () => {
                     setCompletedPage(0);
                   }}
                   style={{
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
                     background: 'transparent',
                     border: 'none',
                     color: '#FFFFFF',
@@ -266,10 +268,10 @@ export const RunnerView: React.FC = () => {
                 borderColor: availableOrders.length > 0 ? 'rgba(253, 105, 49, 0.6)' : 'rgba(255, 255, 255, 0.12)',
               }}
             >
-              <div className="portal-kpi-label" style={{ color: availableOrders.length > 0 ? '#FED7AA' : '#CED2E6' }}>
+              <div className="portal-kpi-label" style={{ color: availableOrders.length > 0 ? '#FED7AA' : 'rgba(255,255,255,0.75)' }}>
                 Available
               </div>
-              <div className="portal-kpi-val" style={{ color: availableOrders.length > 0 ? '#FD6931' : '#FFFFFF' }}>
+              <div className="portal-kpi-val" style={{ color: '#FFFFFF' }}>
                 {availableOrders.length} pools
               </div>
             </div>
@@ -278,7 +280,7 @@ export const RunnerView: React.FC = () => {
       </header>
 
       {/* ─── 2. MAIN SCROLLABLE CONTENT WITH GENEROUS SPACING ─── */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-36">
+      <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4" style={{ paddingBottom: '130px' }}>
         
         {/* INCOMING BROADCAST BANNER IF AVAILABLE ORDERS EXIST */}
         {availableOrders.length > 0 && activeTab !== 'available' && (

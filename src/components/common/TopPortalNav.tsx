@@ -18,6 +18,7 @@ export const TopPortalNav: React.FC = () => {
   const {
     currentRole,
     setRole,
+    requestRoleSwitch,
     orders,
     activeVendorId,
     toastMessage,
@@ -135,7 +136,11 @@ export const TopPortalNav: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={() => setRole(Role.ADMIN)}
+            onClick={() => {
+              if (currentRole !== Role.ADMIN) {
+                requestRoleSwitch(Role.ADMIN);
+              }
+            }}
             className="text-[11px] bg-rose-900 hover:bg-rose-800 text-rose-100 px-2.5 py-1 rounded font-mono font-bold shrink-0 ml-2"
           >
             Admin Ops
@@ -143,9 +148,9 @@ export const TopPortalNav: React.FC = () => {
         </div>
       )}
 
-      {/* ─── 3. TOP PORTAL SWITCHER BAR ─── */}
+      {/* ─── 3. TOP PORTAL SWITCHER BAR (Hidden on mobile layout) ─── */}
       <div
-        className="w-full relative z-[100] transition-all duration-300"
+        className="hidden md:block w-full relative z-[100] transition-all duration-300"
         style={{
           background: 'rgba(10, 11, 16, 0.88)',
           backdropFilter: 'blur(20px)',
@@ -179,7 +184,11 @@ export const TopPortalNav: React.FC = () => {
                     key={r.id}
                     id={`nav-role-${r.id.toLowerCase()}`}
                     type="button"
-                    onClick={() => setRole(r.id)}
+                    onClick={() => {
+                      if (currentRole !== r.id) {
+                        requestRoleSwitch(r.id);
+                      }
+                    }}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 shrink-0 ${
                       isActive
                         ? 'bg-gradient-to-r from-[#FD6931] to-[#E04B28] text-white shadow-md shadow-orange-950 scale-[1.02]'
